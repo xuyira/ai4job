@@ -1,0 +1,320 @@
+:root {
+  --bg: #f3f5f9;
+  --card: #ffffff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --primary: #2563eb;
+  --primary-soft: #dbeafe;
+  --border: #e5e7eb;
+  --ok: #16a34a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", "PingFang SC", "Noto Sans CJK SC", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.brand p {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  padding: 12px 24px;
+}
+
+.tab {
+  border: 1px solid var(--border);
+  background: #fff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.tab.active {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  color: #1e40af;
+}
+
+.container {
+  padding: 0 24px 24px;
+}
+
+.panel {
+  display: none;
+}
+
+.panel.active {
+  display: block;
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.grid.two {
+  grid-template-columns: 1fr 1fr;
+}
+
+.grid.three {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.metric {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 4px 0 0;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.list li {
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--border);
+}
+
+.list li:last-child {
+  border-bottom: none;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.chip {
+  font-size: 12px;
+  background: var(--primary-soft);
+  color: #1e3a8a;
+  border: 1px solid #bfdbfe;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.score-row {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px dashed var(--border);
+  padding: 8px 0;
+}
+
+.score-row.highlight strong {
+  color: var(--ok);
+}
+
+.suggestions li {
+  padding: 12px 0;
+}
+
+.suggestion-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+.mini-btn {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.mini-btn.accepted {
+  background: #ecfdf3;
+  border-color: #86efac;
+}
+
+.mini-btn.rejected {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.segmented {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.seg-btn {
+  padding: 8px 16px;
+  background: #fff;
+  border: none;
+  border-right: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.seg-btn:last-child {
+  border-right: none;
+}
+
+.seg-btn.active {
+  background: var(--primary-soft);
+  color: #1e40af;
+}
+
+.qa-box,
+.review-box {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 12px;
+  background: #fcfcfd;
+}
+
+textarea {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  padding: 10px;
+  font-size: 14px;
+}
+
+.kanban {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.kanban-col {
+  background: #f9fafb;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.kanban-col h4 {
+  margin: 0 0 10px;
+}
+
+.kanban-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.primary-btn,
+.secondary-btn {
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 8px 14px;
+}
+
+.primary-btn {
+  background: var(--primary);
+  color: #fff;
+}
+
+.secondary-btn {
+  background: #f3f4f6;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.upload-row {
+  display: block;
+  margin: 12px 0;
+}
+
+dialog {
+  border: none;
+  border-radius: 12px;
+  width: 360px;
+}
+
+dialog form {
+  display: grid;
+  gap: 8px;
+}
+
+dialog input,
+dialog select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+menu {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+@media (max-width: 900px) {
+  .grid.two,
+  .grid.three,
+  .kanban {
+    grid-template-columns: 1fr;
+  }
+}

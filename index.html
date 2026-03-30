@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OfferFlow - 求职闭环工作台</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">OF</div>
+        <div>
+          <h1>OfferFlow</h1>
+          <p>JD解析 -> 简历优化 -> 模拟面试 -> 投递管理</p>
+        </div>
+      </div>
+      <button id="newJobBtn" class="primary-btn">+ 新建 JD 任务</button>
+    </header>
+
+    <nav class="tabs" id="tabs">
+      <button class="tab active" data-target="dashboard">工作台</button>
+      <button class="tab" data-target="resume">简历优化</button>
+      <button class="tab" data-target="interview">模拟面试</button>
+      <button class="tab" data-target="applications">投递管理</button>
+      <button class="tab" data-target="assets">资料库</button>
+    </nav>
+
+    <main class="container">
+      <section class="panel active" id="dashboard">
+        <div class="grid three">
+          <article class="card">
+            <h3>本周投递数</h3>
+            <p class="metric" id="metricApplications">0</p>
+          </article>
+          <article class="card">
+            <h3>面试邀约率</h3>
+            <p class="metric" id="metricInterviewRate">0%</p>
+          </article>
+          <article class="card">
+            <h3>优化完成率</h3>
+            <p class="metric" id="metricOptimizationRate">0%</p>
+          </article>
+        </div>
+
+        <div class="grid two">
+          <article class="card">
+            <div class="card-title-row">
+              <h3>最近 JD 任务</h3>
+            </div>
+            <ul id="jobList" class="list"></ul>
+          </article>
+          <article class="card">
+            <div class="card-title-row">
+              <h3>本周待办</h3>
+            </div>
+            <ul id="todoList" class="list"></ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" id="resume">
+        <div class="grid two">
+          <article class="card">
+            <h3>JD 核心特质（Top 5）</h3>
+            <div id="traits" class="chips"></div>
+            <h4>优化前后评分对比</h4>
+            <div class="score-row">
+              <span>优化前</span><strong id="scoreBefore">0</strong>
+            </div>
+            <div class="score-row">
+              <span>优化后</span><strong id="scoreAfter">0</strong>
+            </div>
+            <div class="score-row highlight">
+              <span>提升</span><strong id="scoreDelta">+0</strong>
+            </div>
+          </article>
+
+          <article class="card">
+            <h3>逐条修改清单</h3>
+            <ul id="suggestions" class="list suggestions"></ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" id="interview">
+        <div class="grid two">
+          <article class="card">
+            <h3>选择轮次</h3>
+            <div class="segmented">
+              <button class="seg-btn active" data-round="一面">一面</button>
+              <button class="seg-btn" data-round="二面">二面</button>
+              <button class="seg-btn" data-round="HR面">HR面</button>
+            </div>
+            <p class="muted">每轮至少 2 次，问题尽量去重。</p>
+            <button id="genQuestionBtn" class="primary-btn">生成问题</button>
+            <div class="qa-box">
+              <h4>本轮问题</h4>
+              <p id="questionText">点击“生成问题”开始模拟。</p>
+            </div>
+          </article>
+
+          <article class="card">
+            <h3>答后复盘</h3>
+            <textarea
+              id="answerInput"
+              rows="6"
+              placeholder="在这里输入你的回答，系统将给出结构化建议..."
+            ></textarea>
+            <button id="reviewBtn" class="secondary-btn">生成复盘</button>
+            <div class="review-box" id="reviewBox">
+              <p class="muted">复盘结果会展示在这里。</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" id="applications">
+        <article class="card">
+          <h3>投递看板（Kanban）</h3>
+          <div class="kanban" id="kanbanBoard"></div>
+        </article>
+      </section>
+
+      <section class="panel" id="assets">
+        <div class="grid two">
+          <article class="card">
+            <h3>上传资料（MVP 原型）</h3>
+            <label class="upload-row">
+              JD（必传）
+              <input type="file" />
+            </label>
+            <label class="upload-row">
+              简历（必传）
+              <input type="file" />
+            </label>
+            <label class="upload-row">
+              个人经历数据库（可选）
+              <input type="file" multiple />
+            </label>
+            <label class="upload-row">
+              JD 相关数据库（可选）
+              <input type="file" multiple />
+            </label>
+          </article>
+
+          <article class="card">
+            <h3>资料摘要</h3>
+            <ul class="list">
+              <li>支持文件：PDF / DOCX / PPT / TXT / MD / 代码文件</li>
+              <li>每条建议附证据链：JD 条款 + 用户材料片段</li>
+              <li>支持版本回滚与任务空间复用</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <dialog id="newJobDialog">
+      <form method="dialog" id="newJobForm">
+        <h3>创建 JD 任务空间</h3>
+        <label>公司<input name="company" required /></label>
+        <label>岗位<input name="role" required /></label>
+        <label>城市<input name="city" required /></label>
+        <label>
+          类型
+          <select name="type">
+            <option>实习</option>
+            <option>正职</option>
+          </select>
+        </label>
+        <menu>
+          <button value="cancel">取消</button>
+          <button value="confirm" class="primary-btn">保存</button>
+        </menu>
+      </form>
+    </dialog>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
