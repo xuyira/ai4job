@@ -3,26 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI4JOB Prototype Gallery</title>
+    <title>AI4JOB Workspace</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         theme: {
           extend: {
             colors: {
-              ink: "#14213D",
-              mist: "#F6F8FC",
-              accent: "#0F766E",
-              amberish: "#F59E0B",
-              coral: "#F97316",
-              skyline: "#DBEAFE",
-            },
-            fontFamily: {
-              sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+              ink: "#142132",
+              shell: "#f5efe6",
+              cloud: "#fffdfa",
+              line: "#dccdb8",
+              accent: "#0f766e",
+              accentSoft: "#d8f0eb",
+              ember: "#c2410c",
+              emberSoft: "#fde8dc",
+              plum: "#6d4c41",
             },
             boxShadow: {
-              card: "0 20px 45px rgba(15, 23, 42, 0.10)",
-              board: "0 30px 80px rgba(15, 23, 42, 0.16)",
+              card: "0 18px 40px rgba(20, 33, 50, 0.08)",
+            },
+            fontFamily: {
+              sans: ["IBM Plex Sans", "ui-sans-serif", "system-ui", "sans-serif"],
             },
           },
         },
@@ -31,1527 +33,862 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     />
     <style>
+      :root {
+        color-scheme: light;
+      }
+
       body {
         background:
-          radial-gradient(circle at top left, rgba(14, 165, 233, 0.18), transparent 28%),
-          radial-gradient(circle at top right, rgba(249, 115, 22, 0.18), transparent 22%),
-          linear-gradient(180deg, #f8fbff 0%, #eef3fb 100%);
+          radial-gradient(circle at 0% 0%, rgba(15, 118, 110, 0.16), transparent 24%),
+          radial-gradient(circle at 100% 0%, rgba(194, 65, 12, 0.12), transparent 24%),
+          linear-gradient(180deg, #fbf7f0 0%, #f2ede3 100%);
       }
 
-      .artboard {
-        width: 1440px;
-        min-height: 980px;
+      .surface {
+        background: rgba(255, 253, 250, 0.92);
+        backdrop-filter: blur(14px);
       }
 
-      .screen-bg {
-        background:
-          linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(246, 248, 252, 0.96)),
-          url("https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1600&q=80")
-            center/cover;
+      .tab-btn,
+      .btn,
+      .input,
+      .select,
+      .textarea {
+        transition: all 0.2s ease;
       }
 
-      .mesh {
-        background:
-          radial-gradient(circle at 20% 20%, rgba(14, 165, 233, 0.13), transparent 20%),
-          radial-gradient(circle at 80% 12%, rgba(249, 115, 22, 0.10), transparent 24%),
-          radial-gradient(circle at 60% 80%, rgba(16, 185, 129, 0.09), transparent 26%),
-          #f7f9fc;
+      .tab-btn.active {
+        background: #142132;
+        color: #fffdfa;
+        box-shadow: 0 10px 20px rgba(20, 33, 50, 0.16);
+      }
+
+      .btn:hover,
+      .tab-btn:hover {
+        transform: translateY(-1px);
+      }
+
+      .input,
+      .select,
+      .textarea {
+        width: 100%;
+        border-radius: 1rem;
+        border: 1px solid #dccdb8;
+        background: rgba(255, 253, 250, 0.96);
+        color: #142132;
+        outline: none;
+      }
+
+      .input,
+      .select {
+        padding: 0.9rem 1rem;
+      }
+
+      .textarea {
+        padding: 1rem;
+        resize: none;
+      }
+
+      .input:focus,
+      .select:focus,
+      .textarea:focus {
+        border-color: #0f766e;
+        box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.1);
+      }
+
+      .btn,
+      .tab-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        font-weight: 700;
+      }
+
+      .btn {
+        padding: 0.8rem 1.1rem;
+      }
+
+      .tab-btn {
+        padding: 0.55rem 1rem;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 0.3rem 0.7rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+
+      .app-shell {
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .view {
+        display: none;
+      }
+
+      .view.active {
+        display: block;
+      }
+
+      .table-wrap::-webkit-scrollbar,
+      .panel-scroll::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+
+      .table-wrap::-webkit-scrollbar-thumb,
+      .panel-scroll::-webkit-scrollbar-thumb {
+        background: rgba(109, 76, 65, 0.28);
+        border-radius: 999px;
+      }
+
+      .menu-hidden {
+        display: none;
       }
     </style>
   </head>
   <body class="font-sans text-slate-800">
-    <div class="px-8 py-12">
-      <div class="mx-auto max-w-7xl">
-        <div class="mb-10 flex items-end justify-between">
-          <div>
-            <p class="mb-3 inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-sm font-semibold text-slate-600 shadow-sm backdrop-blur">
-              <i class="fa-solid fa-layer-group text-accent"></i>
-              AI4JOB High-Fidelity Prototype Gallery
-            </p>
-            <h1 class="max-w-4xl text-4xl font-extrabold tracking-tight text-ink">
-              基于 PRD 的 Web 端高保真原型画板
-            </h1>
-            <p class="mt-4 max-w-3xl text-base leading-7 text-slate-600">
-              单个 HTML 内展示多张独立界面，便于直接截图或导入 Figma 继续修改。整体风格偏专业求职 SaaS，优先贴近真实开发落地。
-            </p>
-          </div>
-          <div class="rounded-3xl bg-white/85 px-6 py-4 shadow-card backdrop-blur">
-            <p class="text-sm font-semibold text-slate-500">画板数量</p>
-            <p class="mt-1 text-3xl font-extrabold text-ink">9</p>
-          </div>
-        </div>
-
-        <div class="mb-12 grid grid-cols-4 gap-4">
-          <div class="rounded-2xl bg-white/80 p-4 shadow-sm backdrop-blur">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Core</p>
-            <p class="mt-2 text-sm font-semibold text-slate-700">投递看板 + 工作台</p>
-          </div>
-          <div class="rounded-2xl bg-white/80 p-4 shadow-sm backdrop-blur">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Resume</p>
-            <p class="mt-2 text-sm font-semibold text-slate-700">版本选择 + 简历优化</p>
-          </div>
-          <div class="rounded-2xl bg-white/80 p-4 shadow-sm backdrop-blur">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Interview</p>
-            <p class="mt-2 text-sm font-semibold text-slate-700">模拟面试 + 真实复盘</p>
-          </div>
-          <div class="rounded-2xl bg-white/80 p-4 shadow-sm backdrop-blur">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Ops</p>
-            <p class="mt-2 text-sm font-semibold text-slate-700">状态管理 + 节点 DDL</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="space-y-14">
-        <section class="mx-auto w-fit">
-          <div class="mb-4 flex items-center justify-between">
+    <div class="app-shell p-4 sm:p-6">
+      <div class="surface mx-auto flex h-full max-w-[1600px] flex-col rounded-[2rem] border border-white/70 p-4 shadow-card sm:p-6">
+        <header class="flex flex-col gap-4 border-b border-line/70 pb-4 lg:flex-row lg:items-center lg:justify-between">
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-center">
             <div>
-              <p class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Screen 01</p>
-              <h2 class="text-2xl font-bold text-ink">首页投递看板</h2>
+              <p class="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">AI4JOB</p>
+              <h1 class="mt-1 text-2xl font-bold text-ink">求职任务空间</h1>
             </div>
-            <div class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 shadow-sm">
-              Dashboard / Application Table
-            </div>
+            <nav class="flex flex-wrap gap-2">
+              <button class="tab-btn border border-line bg-white text-slate-700" data-view-target="home">首页</button>
+              <button class="tab-btn border border-line bg-white text-slate-700" data-view-target="resume">简历优化</button>
+              <button class="tab-btn border border-line bg-white text-slate-700" data-view-target="interview">面试优化</button>
+            </nav>
           </div>
-          <div class="artboard overflow-hidden rounded-[36px] border border-white/70 bg-white shadow-board">
-            <div class="flex h-full">
-              <aside class="w-72 bg-ink px-6 py-8 text-white">
-                <div class="flex items-center gap-3">
-                  <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-xl text-orange-300">
-                    <i class="fa-solid fa-briefcase"></i>
-                  </div>
-                  <div>
-                    <p class="text-lg font-bold">AI4JOB</p>
-                    <p class="text-sm text-slate-300">Offer Operating System</p>
-                  </div>
-                </div>
-                <div class="mt-10 space-y-2">
-                  <div class="flex items-center gap-3 rounded-2xl bg-white/10 px-4 py-3 font-semibold">
-                    <i class="fa-solid fa-grip"></i>
-                    工作台
-                  </div>
-                  <div class="flex items-center gap-3 rounded-2xl px-4 py-3 text-slate-300">
-                    <i class="fa-regular fa-file-lines"></i>
-                    简历优化
-                  </div>
-                  <div class="flex items-center gap-3 rounded-2xl px-4 py-3 text-slate-300">
-                    <i class="fa-regular fa-comments"></i>
-                    模拟面试
-                  </div>
-                  <div class="flex items-center gap-3 rounded-2xl px-4 py-3 text-slate-300">
-                    <i class="fa-solid fa-database"></i>
-                    用户资产库
-                  </div>
-                  <div class="flex items-center gap-3 rounded-2xl px-4 py-3 text-slate-300">
-                    <i class="fa-regular fa-calendar-check"></i>
-                    节点提醒
-                  </div>
-                </div>
-
-                <div class="mt-10 rounded-3xl bg-white/8 p-5">
-                  <p class="text-xs uppercase tracking-[0.16em] text-slate-300">This Week</p>
-                  <div class="mt-4 space-y-4">
-                    <div class="rounded-2xl bg-white/10 p-4">
-                      <p class="text-2xl font-bold">12</p>
-                      <p class="mt-1 text-sm text-slate-300">待跟进岗位</p>
-                    </div>
-                    <div class="rounded-2xl bg-white/10 p-4">
-                      <p class="text-2xl font-bold">3</p>
-                      <p class="mt-1 text-sm text-slate-300">本周面试</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="mt-auto pt-10">
-                  <div class="flex items-center gap-3 rounded-2xl bg-white/10 p-3">
-                    <img
-                      class="h-12 w-12 rounded-2xl object-cover"
-                      src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80"
-                      alt="avatar"
-                    />
-                    <div>
-                      <p class="font-semibold">Yuki Chen</p>
-                      <p class="text-sm text-slate-300">产品 / 商业分析方向</p>
-                    </div>
-                  </div>
-                </div>
-              </aside>
-
-              <main class="mesh flex-1 px-8 py-7">
-                <div class="flex items-center justify-between">
-                  <div>
-                    <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">Monday overview</p>
-                    <h3 class="mt-2 text-3xl font-extrabold text-ink">让每一次投递都更有把握</h3>
-                  </div>
-                  <div class="flex items-center gap-3">
-                    <button class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm">
-                      <i class="fa-solid fa-sliders mr-2"></i>筛选视图
-                    </button>
-                    <button class="rounded-2xl bg-accent px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-900/15">
-                      <i class="fa-solid fa-plus mr-2"></i>新增岗位
-                    </button>
-                  </div>
-                </div>
-
-                <div class="mt-6 grid grid-cols-3 gap-5">
-                  <div class="screen-bg rounded-[28px] p-6 shadow-card">
-                    <div class="max-w-sm rounded-3xl bg-white/92 p-5 backdrop-blur">
-                      <p class="text-sm font-semibold text-slate-500">今日重点</p>
-                      <h4 class="mt-3 text-2xl font-bold text-ink">字节跳动 产品策略实习</h4>
-                      <p class="mt-3 text-sm leading-6 text-slate-600">
-                        你的匹配度 86 分，明天 10:30 一面，建议今晚完成业务洞察模拟和自我介绍精修。
-                      </p>
-                      <div class="mt-5 flex items-center gap-3">
-                        <span class="rounded-full bg-orange-100 px-3 py-1 text-xs font-bold text-orange-700">高优先级</span>
-                        <span class="rounded-full bg-sky-100 px-3 py-1 text-xs font-bold text-sky-700">明日一面</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="rounded-[28px] bg-white p-6 shadow-card">
-                    <div class="flex items-center justify-between">
-                      <p class="text-sm font-semibold text-slate-500">转化漏斗</p>
-                      <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-500">近 30 天</span>
-                    </div>
-                    <div class="mt-5 space-y-4">
-                      <div>
-                        <div class="mb-2 flex justify-between text-sm"><span>已新增岗位</span><span>24</span></div>
-                        <div class="h-3 rounded-full bg-slate-100"><div class="h-3 w-full rounded-full bg-slate-800"></div></div>
-                      </div>
-                      <div>
-                        <div class="mb-2 flex justify-between text-sm"><span>已投递</span><span>18</span></div>
-                        <div class="h-3 rounded-full bg-slate-100"><div class="h-3 w-4/5 rounded-full bg-teal-600"></div></div>
-                      </div>
-                      <div>
-                        <div class="mb-2 flex justify-between text-sm"><span>进入面试</span><span>9</span></div>
-                        <div class="h-3 rounded-full bg-slate-100"><div class="h-3 w-2/5 rounded-full bg-amber-500"></div></div>
-                      </div>
-                      <div>
-                        <div class="mb-2 flex justify-between text-sm"><span>Offer</span><span>2</span></div>
-                        <div class="h-3 rounded-full bg-slate-100"><div class="h-3 w-1/5 rounded-full bg-emerald-500"></div></div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="rounded-[28px] bg-white p-6 shadow-card">
-                    <div class="flex items-center justify-between">
-                      <p class="text-sm font-semibold text-slate-500">最近节点</p>
-                      <i class="fa-regular fa-clock text-slate-400"></i>
-                    </div>
-                    <div class="mt-5 space-y-4">
-                      <div class="rounded-2xl border border-rose-200 bg-rose-50 p-4">
-                        <p class="text-sm font-semibold text-rose-700">今天 18:00</p>
-                        <p class="mt-1 font-semibold text-slate-800">小红书 商业分析笔试提交</p>
-                      </div>
-                      <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4">
-                        <p class="text-sm font-semibold text-amber-700">明天 10:30</p>
-                        <p class="mt-1 font-semibold text-slate-800">字节跳动 一面</p>
-                      </div>
-                      <div class="rounded-2xl border border-sky-200 bg-sky-50 p-4">
-                        <p class="text-sm font-semibold text-sky-700">周三 14:00</p>
-                        <p class="mt-1 font-semibold text-slate-800">阿里国际站 HR 面</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="mt-6 rounded-[30px] bg-white p-6 shadow-card">
-                  <div class="mb-5 flex items-center justify-between">
-                    <div>
-                      <h4 class="text-xl font-bold text-ink">投递记录表</h4>
-                      <p class="mt-1 text-sm text-slate-500">按最近 DDL 排序，双击岗位名进入对应 Job Workspace</p>
-                    </div>
-                    <div class="flex gap-2">
-                      <span class="rounded-full bg-slate-100 px-4 py-2 text-xs font-semibold text-slate-500">全部岗位 24</span>
-                      <span class="rounded-full bg-amber-100 px-4 py-2 text-xs font-semibold text-amber-700">紧急 5</span>
-                    </div>
-                  </div>
-                  <div class="overflow-hidden rounded-3xl border border-slate-200">
-                    <table class="min-w-full text-left text-sm">
-                      <thead class="bg-slate-50 text-slate-500">
-                        <tr>
-                          <th class="px-5 py-4 font-semibold">岗位 JD</th>
-                          <th class="px-5 py-4 font-semibold">公司</th>
-                          <th class="px-5 py-4 font-semibold">进展</th>
-                          <th class="px-5 py-4 font-semibold">匹配度</th>
-                          <th class="px-5 py-4 font-semibold">下一节点 DDL</th>
-                          <th class="px-5 py-4 font-semibold">一面</th>
-                          <th class="px-5 py-4 font-semibold">重视度</th>
-                        </tr>
-                      </thead>
-                      <tbody class="divide-y divide-slate-100 bg-white">
-                        <tr class="bg-rose-50/60">
-                          <td class="px-5 py-4 font-semibold text-ink">产品策略实习生</td>
-                          <td class="px-5 py-4">字节跳动</td>
-                          <td class="px-5 py-4"><span class="rounded-full bg-sky-100 px-3 py-1 text-xs font-bold text-sky-700">一面中</span></td>
-                          <td class="px-5 py-4">86 / 100</td>
-                          <td class="px-5 py-4 text-rose-600 font-semibold">明天 10:30</td>
-                          <td class="px-5 py-4">03/31 10:30</td>
-                          <td class="px-5 py-4"><span class="text-amberish"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span></td>
-                        </tr>
-                        <tr>
-                          <td class="px-5 py-4 font-semibold text-ink">商业分析培训生</td>
-                          <td class="px-5 py-4">小红书</td>
-                          <td class="px-5 py-4"><span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700">待投递</span></td>
-                          <td class="px-5 py-4">78 / 100</td>
-                          <td class="px-5 py-4 font-semibold text-slate-700">今天 18:00</td>
-                          <td class="px-5 py-4">-</td>
-                          <td class="px-5 py-4"><span class="text-amberish"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span></td>
-                        </tr>
-                        <tr>
-                          <td class="px-5 py-4 font-semibold text-ink">增长产品经理</td>
-                          <td class="px-5 py-4">美团</td>
-                          <td class="px-5 py-4"><span class="rounded-full bg-violet-100 px-3 py-1 text-xs font-bold text-violet-700">已投递</span></td>
-                          <td class="px-5 py-4">82 / 100</td>
-                          <td class="px-5 py-4">04/02 17:00</td>
-                          <td class="px-5 py-4">-</td>
-                          <td class="px-5 py-4"><span class="text-amberish"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i></span></td>
-                        </tr>
-                        <tr>
-                          <td class="px-5 py-4 font-semibold text-ink">用户研究实习</td>
-                          <td class="px-5 py-4">阿里国际站</td>
-                          <td class="px-5 py-4"><span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">HR 面中</span></td>
-                          <td class="px-5 py-4">84 / 100</td>
-                          <td class="px-5 py-4">04/03 14:00</td>
-                          <td class="px-5 py-4">03/28 15:00</td>
-                          <td class="px-5 py-4"><span class="text-amberish"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </main>
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="rounded-full bg-accentSoft px-4 py-2 text-sm font-semibold text-accent">
+              当前任务 <span id="header-job-name">未选择岗位</span>
             </div>
+            <button id="switch-user" class="btn border border-line bg-white text-slate-700"></button>
           </div>
-        </section>
+        </header>
 
-        <section class="mx-auto w-fit">
-          <div class="mb-4 flex items-center justify-between">
-            <div>
-              <p class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Screen 02</p>
-              <h2 class="text-2xl font-bold text-ink">新增岗位 / 创建 Job Workspace</h2>
-            </div>
-            <div class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 shadow-sm">
-              Modal / Input Setup
-            </div>
-          </div>
-          <div class="artboard mesh relative overflow-hidden rounded-[36px] border border-white/70 shadow-board">
-            <div class="absolute inset-0 bg-slate-950/25"></div>
-            <div class="relative flex h-full items-center justify-center p-14">
-              <div class="w-[1120px] rounded-[36px] bg-white shadow-board">
-                <div class="grid grid-cols-[1.1fr_0.9fr]">
-                  <div class="border-r border-slate-100 p-10">
-                    <div class="flex items-center justify-between">
-                      <div>
-                        <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">New job workspace</p>
-                        <h3 class="mt-2 text-3xl font-extrabold text-ink">添加目标岗位</h3>
-                      </div>
-                      <button class="h-11 w-11 rounded-2xl bg-slate-100 text-slate-500">
-                        <i class="fa-solid fa-xmark"></i>
-                      </button>
-                    </div>
-
-                    <div class="mt-8 space-y-6">
-                      <div>
-                        <label class="mb-3 block text-sm font-semibold text-slate-700">岗位 JD</label>
-                        <div class="rounded-[28px] border-2 border-dashed border-slate-200 bg-mist p-6">
-                          <div class="flex items-start gap-4">
-                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-accent shadow-sm">
-                              <i class="fa-solid fa-file-arrow-up"></i>
-                            </div>
-                            <div class="flex-1">
-                              <p class="font-semibold text-slate-800">拖拽 JD 文件到这里，或粘贴文本</p>
-                              <p class="mt-1 text-sm text-slate-500">支持 PDF / DOCX / TXT。MVP 不支持 URL 抓取。</p>
-                              <div class="mt-4 rounded-2xl bg-white p-4 text-sm leading-6 text-slate-600 shadow-sm">
-                                负责用户增长策略分析，支持 AB 实验设计、行业研究与产品机会识别，要求具备数据分析能力、结构化思考能力...
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="grid grid-cols-2 gap-5">
-                        <div>
-                          <label class="mb-3 block text-sm font-semibold text-slate-700">简历</label>
-                          <div class="rounded-3xl border border-slate-200 bg-white p-5">
-                            <p class="text-sm font-semibold text-slate-800">从用户资产库中选择</p>
-                            <div class="mt-4 rounded-2xl bg-slate-50 p-4">
-                              <div class="flex items-center justify-between">
-                                <div>
-                                  <p class="font-semibold">General Resume V5</p>
-                                  <p class="text-sm text-slate-500">最近更新于 03/29</p>
-                                </div>
-                                <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">默认</span>
-                              </div>
-                            </div>
-                            <button class="mt-4 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700">
-                              上传新简历
-                            </button>
-                          </div>
-                        </div>
-                        <div>
-                          <label class="mb-3 block text-sm font-semibold text-slate-700">JD 相关资料</label>
-                          <div class="rounded-3xl border border-slate-200 bg-white p-5">
-                            <p class="text-sm text-slate-600">绑定当前岗位，供简历优化和模拟面试专用。</p>
-                            <div class="mt-4 flex items-center gap-3 rounded-2xl bg-slate-50 p-4">
-                              <i class="fa-regular fa-folder-open text-slate-400"></i>
-                              <span class="text-sm font-semibold">3 份面经 + 1 份公司分析</span>
-                            </div>
-                            <button class="mt-4 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700">
-                              继续添加岗位资料
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div>
-                        <label class="mb-3 block text-sm font-semibold text-slate-700">基础信息</label>
-                        <div class="grid grid-cols-3 gap-4">
-                          <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500">公司：字节跳动</div>
-                          <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500">岗位：产品策略实习</div>
-                          <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500">地点：北京</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="screen-bg p-10">
-                    <div class="rounded-[30px] bg-white/92 p-6 shadow-card backdrop-blur">
-                      <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">AI Parsed Summary</p>
-                      <h4 class="mt-3 text-2xl font-bold text-ink">岗位解析预览</h4>
-                      <div class="mt-6 space-y-5">
-                        <div>
-                          <p class="text-sm font-semibold text-slate-500">岗位类型</p>
-                          <p class="mt-1 font-semibold text-slate-800">产品策略 / 实习</p>
-                        </div>
-                        <div>
-                          <p class="text-sm font-semibold text-slate-500">核心特质 Top 5</p>
-                          <div class="mt-3 flex flex-wrap gap-2">
-                            <span class="rounded-full bg-sky-100 px-3 py-2 text-xs font-bold text-sky-700">数据分析</span>
-                            <span class="rounded-full bg-emerald-100 px-3 py-2 text-xs font-bold text-emerald-700">结构化表达</span>
-                            <span class="rounded-full bg-orange-100 px-3 py-2 text-xs font-bold text-orange-700">业务敏感度</span>
-                            <span class="rounded-full bg-violet-100 px-3 py-2 text-xs font-bold text-violet-700">跨团队协作</span>
-                            <span class="rounded-full bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700">增长意识</span>
-                          </div>
-                        </div>
-                        <div class="rounded-3xl bg-slate-50 p-5">
-                          <p class="text-sm font-semibold text-slate-500">共享资产接入</p>
-                          <div class="mt-4 space-y-3 text-sm text-slate-700">
-                            <div class="flex items-center justify-between"><span>用户级简历资产</span><span class="font-semibold">6 份</span></div>
-                            <div class="flex items-center justify-between"><span>个人经历资料库</span><span class="font-semibold">28 项</span></div>
-                            <div class="flex items-center justify-between"><span>岗位专属资料</span><span class="font-semibold">4 项</span></div>
-                          </div>
-                        </div>
-                        <div class="rounded-3xl border border-amber-200 bg-amber-50 p-5">
-                          <div class="flex items-start gap-3">
-                            <i class="fa-solid fa-circle-info mt-1 text-amber-600"></i>
-                            <p class="text-sm leading-6 text-amber-800">
-                              如未选择可用简历，系统将在下一步要求填写简化简历表单，生成基础简历 V0。
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="mt-8 flex gap-3">
-                        <button class="flex-1 rounded-2xl border border-slate-200 px-4 py-3 font-semibold text-slate-700">保存草稿</button>
-                        <button class="flex-1 rounded-2xl bg-ink px-4 py-3 font-semibold text-white">创建岗位空间</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="mx-auto w-fit">
-          <div class="mb-4 flex items-center justify-between">
-            <div>
-              <p class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Screen 03</p>
-              <h2 class="text-2xl font-bold text-ink">简历版本选择 / 用户资产库</h2>
-            </div>
-            <div class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 shadow-sm">
-              Resume Selector
-            </div>
-          </div>
-          <div class="artboard mesh overflow-hidden rounded-[36px] border border-white/70 p-10 shadow-board">
-            <div class="grid h-full grid-cols-[0.9fr_1.1fr] gap-8">
-              <div class="rounded-[30px] bg-ink p-8 text-white">
-                <p class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-300">Optimization setup</p>
-                <h3 class="mt-3 text-3xl font-extrabold">先选择本轮待优化简历版本</h3>
-                <p class="mt-4 max-w-md text-sm leading-7 text-slate-300">
-                  所有简历和个人资料均来自用户级资产库，可在多个 JD 间复用。当前岗位将基于你选择的版本生成新的定制分支。
-                </p>
-
-                <div class="mt-8 space-y-4">
-                  <div class="rounded-3xl bg-white/10 p-5">
-                    <p class="text-sm text-slate-300">当前目标岗位</p>
-                    <p class="mt-2 text-xl font-bold">字节跳动 · 产品策略实习生</p>
-                    <div class="mt-3 flex gap-2">
-                      <span class="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-slate-200">实习</span>
-                      <span class="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-slate-200">增长 / 分析</span>
-                    </div>
-                  </div>
-                  <div class="rounded-3xl bg-white/10 p-5">
-                    <p class="text-sm text-slate-300">规则提示</p>
-                    <ul class="mt-3 space-y-2 text-sm leading-6 text-slate-200">
-                      <li>1. 若存在多版本，必须显式选择输入基线。</li>
-                      <li>2. 新版本会记录父版本 ID，支持回滚与差异对比。</li>
-                      <li>3. 若没有任何可用简历，必须进入简化简历表单。</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              <div class="rounded-[30px] bg-white p-8 shadow-card">
-                <div class="flex items-center justify-between">
-                  <div>
-                    <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">User shared assets</p>
-                    <h3 class="mt-2 text-3xl font-extrabold text-ink">你的简历版本库</h3>
-                  </div>
-                  <button class="rounded-2xl bg-accent px-4 py-3 text-sm font-semibold text-white">上传新简历</button>
-                </div>
-
-                <div class="mt-6 grid grid-cols-2 gap-4">
-                  <div class="rounded-[28px] border-2 border-accent bg-emerald-50 p-5">
-                    <div class="flex items-start justify-between">
-                      <div>
-                        <p class="text-lg font-bold text-ink">General Resume V5</p>
-                        <p class="mt-1 text-sm text-slate-500">最近用于美团增长产品经理</p>
-                      </div>
-                      <span class="rounded-full bg-accent px-3 py-1 text-xs font-bold text-white">已选中</span>
-                    </div>
-                    <div class="mt-5 grid grid-cols-3 gap-3 text-center">
-                      <div class="rounded-2xl bg-white p-3"><p class="text-xs text-slate-500">总分</p><p class="mt-1 font-bold">83</p></div>
-                      <div class="rounded-2xl bg-white p-3"><p class="text-xs text-slate-500">复用岗位</p><p class="mt-1 font-bold">5</p></div>
-                      <div class="rounded-2xl bg-white p-3"><p class="text-xs text-slate-500">更新时间</p><p class="mt-1 font-bold">03/29</p></div>
-                    </div>
-                    <div class="mt-5 flex flex-wrap gap-2">
-                      <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">通用版</span>
-                      <span class="rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700">数据分析</span>
-                    </div>
-                  </div>
-
-                  <div class="rounded-[28px] border border-slate-200 bg-white p-5">
-                    <div class="flex items-start justify-between">
-                      <div>
-                        <p class="text-lg font-bold text-ink">PM Intern V3</p>
-                        <p class="mt-1 text-sm text-slate-500">偏产品实习表达</p>
-                      </div>
-                      <i class="fa-regular fa-circle text-slate-300"></i>
-                    </div>
-                    <div class="mt-5 grid grid-cols-3 gap-3 text-center">
-                      <div class="rounded-2xl bg-slate-50 p-3"><p class="text-xs text-slate-500">总分</p><p class="mt-1 font-bold">79</p></div>
-                      <div class="rounded-2xl bg-slate-50 p-3"><p class="text-xs text-slate-500">复用岗位</p><p class="mt-1 font-bold">3</p></div>
-                      <div class="rounded-2xl bg-slate-50 p-3"><p class="text-xs text-slate-500">更新时间</p><p class="mt-1 font-bold">03/22</p></div>
-                    </div>
-                  </div>
-
-                  <div class="rounded-[28px] border border-slate-200 bg-white p-5">
-                    <div class="flex items-start justify-between">
-                      <div>
-                        <p class="text-lg font-bold text-ink">Biz Analyst V2</p>
-                        <p class="mt-1 text-sm text-slate-500">偏商业分析岗位表达</p>
-                      </div>
-                      <i class="fa-regular fa-circle text-slate-300"></i>
-                    </div>
-                    <div class="mt-5 grid grid-cols-3 gap-3 text-center">
-                      <div class="rounded-2xl bg-slate-50 p-3"><p class="text-xs text-slate-500">总分</p><p class="mt-1 font-bold">81</p></div>
-                      <div class="rounded-2xl bg-slate-50 p-3"><p class="text-xs text-slate-500">复用岗位</p><p class="mt-1 font-bold">4</p></div>
-                      <div class="rounded-2xl bg-slate-50 p-3"><p class="text-xs text-slate-500">更新时间</p><p class="mt-1 font-bold">03/18</p></div>
-                    </div>
-                  </div>
-
-                  <div class="rounded-[28px] border border-dashed border-slate-300 bg-slate-50 p-5">
-                    <div class="flex h-full flex-col items-center justify-center text-center">
-                      <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-slate-400 shadow-sm">
-                        <i class="fa-solid fa-plus"></i>
-                      </div>
-                      <p class="mt-4 font-semibold text-slate-700">没有合适版本？</p>
-                      <p class="mt-1 text-sm leading-6 text-slate-500">可上传新简历，或在下一画板中进入简化简历表单创建 V0。</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="mt-6 flex items-center justify-between rounded-3xl bg-slate-50 p-5">
-                  <div>
-                    <p class="text-sm font-semibold text-slate-500">将要创建的新版本</p>
-                    <p class="mt-1 font-semibold text-slate-800">字节跳动 / 产品策略实习 / from General Resume V5</p>
-                  </div>
-                  <button class="rounded-2xl bg-ink px-5 py-3 font-semibold text-white">开始优化</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="mx-auto w-fit">
-          <div class="mb-4 flex items-center justify-between">
-            <div>
-              <p class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Screen 04</p>
-              <h2 class="text-2xl font-bold text-ink">简化简历表单 / 基础简历 V0</h2>
-            </div>
-            <div class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 shadow-sm">
-              Empty Resume Flow
-            </div>
-          </div>
-          <div class="artboard overflow-hidden rounded-[36px] border border-white/70 bg-white shadow-board">
-            <div class="grid h-full grid-cols-[0.85fr_1.15fr]">
-              <div class="screen-bg p-10">
-                <div class="max-w-md rounded-[30px] bg-white/92 p-8 shadow-card backdrop-blur">
-                  <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">Required when no resume exists</p>
-                  <h3 class="mt-3 text-3xl font-extrabold text-ink">先生成你的基础简历 V0</h3>
-                  <p class="mt-4 text-sm leading-7 text-slate-600">
-                    你当前没有可用简历。完成这张表单后，系统会生成用户级基础简历版本，供所有岗位后续复用和定制。
+        <main class="mt-4 min-h-0 flex-1">
+          <section id="view-home" class="view active h-full">
+            <div class="grid h-full gap-4 lg:grid-cols-[360px_minmax(0,1fr)]">
+              <aside class="panel-scroll min-h-0 overflow-y-auto rounded-[1.8rem] border border-line/70 bg-white/70 p-5">
+                <div class="rounded-[1.5rem] bg-ink p-5 text-white">
+                  <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-300">Workspace</p>
+                  <h2 class="mt-3 text-2xl font-bold">首页工作台</h2>
+                  <p class="mt-3 text-sm leading-7 text-slate-200">
+                    左侧录入岗位 JD，右侧管理当前用户的全部投递记录。页面固定在一屏内，内部区域独立滚动。
                   </p>
-                  <div class="mt-7 space-y-4">
-                    <div class="rounded-3xl bg-slate-50 p-5">
-                      <p class="font-semibold text-slate-800">系统会自动抽取</p>
-                      <ul class="mt-3 space-y-2 text-sm leading-6 text-slate-600">
-                        <li>教育背景与时间线</li>
-                        <li>经历结构与关键词</li>
-                        <li>可量化成果候选字段</li>
-                        <li>技能与作品链接</li>
-                      </ul>
-                    </div>
-                    <div class="rounded-3xl border border-sky-200 bg-sky-50 p-5">
-                      <p class="font-semibold text-sky-800">用户级共享规则</p>
-                      <p class="mt-2 text-sm leading-6 text-sky-700">生成后的 V0 将进入资产库，在所有 JD 中都可作为待优化简历版本使用。</p>
-                    </div>
-                  </div>
                 </div>
-              </div>
 
-              <div class="mesh p-10">
-                <div class="rounded-[32px] bg-white p-8 shadow-card">
-                  <div class="mb-8 flex items-center justify-between">
+                <div class="mt-4 rounded-[1.5rem] border border-line/80 bg-shell/70 p-5">
+                  <div class="flex items-center justify-between gap-3">
                     <div>
-                      <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">Form builder</p>
-                      <h3 class="mt-2 text-3xl font-extrabold text-ink">简化简历表单</h3>
+                      <p class="text-sm font-semibold text-slate-500">岗位上传入口</p>
+                      <h3 class="mt-1 text-xl font-bold text-ink">新增岗位</h3>
                     </div>
-                    <span class="rounded-full bg-amber-100 px-4 py-2 text-sm font-bold text-amber-700">必经步骤</span>
+                    <span class="pill bg-emberSoft text-ember">支持文本 / 链接</span>
                   </div>
 
-                  <div class="grid grid-cols-2 gap-5">
-                    <div class="rounded-2xl border border-slate-200 px-4 py-4 text-sm text-slate-500">姓名：陈雨琪</div>
-                    <div class="rounded-2xl border border-slate-200 px-4 py-4 text-sm text-slate-500">求职方向：产品 / 商业分析</div>
-                    <div class="rounded-2xl border border-slate-200 px-4 py-4 text-sm text-slate-500">学校：同济大学</div>
-                    <div class="rounded-2xl border border-slate-200 px-4 py-4 text-sm text-slate-500">专业：信息管理与信息系统</div>
-                  </div>
-
-                  <div class="mt-6 rounded-[28px] border border-slate-200 p-6">
-                    <div class="flex items-center justify-between">
+                  <div class="mt-4 space-y-4">
+                    <div>
+                      <label class="text-sm font-semibold text-slate-600">岗位 JD 文本</label>
+                      <textarea
+                        id="job-jd-text"
+                        class="textarea mt-2 min-h-[180px]"
+                        placeholder="粘贴岗位职责、任职要求或招聘描述"
+                      ></textarea>
+                    </div>
+                    <div>
+                      <label class="text-sm font-semibold text-slate-600">岗位链接</label>
+                      <input id="job-jd-link" class="input mt-2" type="url" placeholder="https://example.com/job" />
+                    </div>
+                    <div class="grid gap-4 md:grid-cols-2">
                       <div>
-                        <p class="font-bold text-ink">经历 01</p>
-                        <p class="text-sm text-slate-500">项目 / 科研 / 竞赛 / 志愿 任一至少一段</p>
+                        <label class="text-sm font-semibold text-slate-600">公司</label>
+                        <input id="job-company" class="input mt-2" type="text" placeholder="可留空等待补全" />
                       </div>
-                      <span class="rounded-full bg-rose-100 px-3 py-1 text-xs font-bold text-rose-700">必填</span>
-                    </div>
-                    <div class="mt-5 grid grid-cols-2 gap-4">
-                      <div class="rounded-2xl border border-slate-200 px-4 py-4 text-sm text-slate-500">经历名称：用户增长研究项目</div>
-                      <div class="rounded-2xl border border-slate-200 px-4 py-4 text-sm text-slate-500">角色：项目负责人</div>
-                      <div class="col-span-2 rounded-2xl border border-slate-200 px-4 py-4 text-sm leading-7 text-slate-500">
-                        描述：负责问卷设计、访谈分析、数据清洗与结论汇报，形成完整用户分层策略建议。
+                      <div>
+                        <label class="text-sm font-semibold text-slate-600">职位</label>
+                        <input id="job-position" class="input mt-2" type="text" placeholder="可留空等待补全" />
                       </div>
-                      <div class="rounded-2xl border border-slate-200 px-4 py-4 text-sm text-slate-500">量化成果：完成 120 份问卷，访谈 18 人</div>
-                      <div class="rounded-2xl border border-slate-200 px-4 py-4 text-sm text-slate-500">使用工具：Excel / SQL / Figma</div>
+                      <div>
+                        <label class="text-sm font-semibold text-slate-600">地点</label>
+                        <input id="job-location" class="input mt-2" type="text" placeholder="如：上海 / Remote" />
+                      </div>
+                      <div>
+                        <label class="text-sm font-semibold text-slate-600">来源渠道</label>
+                        <input id="job-channel" class="input mt-2" type="text" placeholder="官网 / Boss / 内推" />
+                      </div>
                     </div>
-                  </div>
-
-                  <div class="mt-6 grid grid-cols-3 gap-4">
-                    <div class="rounded-2xl border border-slate-200 px-4 py-4 text-sm text-slate-500">技能：SQL / Python / Tableau</div>
-                    <div class="rounded-2xl border border-slate-200 px-4 py-4 text-sm text-slate-500">作品集：www.behance.net/yuki</div>
-                    <div class="rounded-2xl border border-slate-200 px-4 py-4 text-sm text-slate-500">GitHub：github.com/yukichen</div>
-                  </div>
-
-                  <div class="mt-8 flex items-center justify-between rounded-[28px] bg-slate-50 p-5">
-                    <div>
-                      <p class="text-sm font-semibold text-slate-500">生成结果</p>
-                      <p class="mt-1 font-semibold text-slate-800">将创建用户级基础简历版本 Resume V0</p>
-                    </div>
-                    <button class="rounded-2xl bg-ink px-5 py-3 font-semibold text-white">保存并生成 V0</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="mx-auto w-fit">
-          <div class="mb-4 flex items-center justify-between">
-            <div>
-              <p class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Screen 05</p>
-              <h2 class="text-2xl font-bold text-ink">岗位详情页 / Job Workspace</h2>
-            </div>
-            <div class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 shadow-sm">
-              Workspace Overview
-            </div>
-          </div>
-          <div class="artboard overflow-hidden rounded-[36px] border border-white/70 bg-white shadow-board">
-            <div class="grid h-full grid-cols-[280px_1fr]">
-              <aside class="bg-slate-50 p-7">
-                <button class="flex items-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-slate-600 shadow-sm">
-                  <i class="fa-solid fa-arrow-left"></i>
-                  返回看板
-                </button>
-                <div class="mt-8 rounded-[28px] bg-white p-5 shadow-sm">
-                  <p class="text-sm font-semibold text-slate-500">当前岗位</p>
-                  <h3 class="mt-2 text-2xl font-bold text-ink">字节跳动 · 产品策略实习生</h3>
-                  <div class="mt-4 flex flex-wrap gap-2">
-                    <span class="rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700">一面中</span>
-                    <span class="rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-700">高优先级</span>
+                    <button id="create-job" class="btn w-full bg-accent text-white">创建并加入投递管理</button>
                   </div>
                 </div>
 
-                <div class="mt-6 rounded-[28px] bg-ink p-5 text-white">
-                  <p class="text-sm font-semibold text-slate-300">共享上下文</p>
-                  <div class="mt-4 space-y-3 text-sm">
-                    <div class="flex items-center justify-between"><span>当前基线简历</span><span>V5</span></div>
-                    <div class="flex items-center justify-between"><span>用户级简历资产</span><span>6</span></div>
-                    <div class="flex items-center justify-between"><span>个人经历资料</span><span>28</span></div>
-                    <div class="flex items-center justify-between"><span>岗位专属资料</span><span>4</span></div>
-                    <div class="flex items-center justify-between"><span>真实面试记录</span><span>2</span></div>
-                  </div>
-                </div>
-
-                <div class="mt-6 rounded-[28px] bg-white p-5 shadow-sm">
-                  <p class="text-sm font-semibold text-slate-500">最近活动</p>
-                  <div class="mt-4 space-y-4 text-sm">
-                    <div class="flex gap-3"><div class="mt-1 h-2.5 w-2.5 rounded-full bg-accent"></div><p>03/30 21:00 生成 Resume V6，评分 83 → 88</p></div>
-                    <div class="flex gap-3"><div class="mt-1 h-2.5 w-2.5 rounded-full bg-sky-500"></div><p>03/30 19:20 完成一面模拟，第 2 场</p></div>
-                    <div class="flex gap-3"><div class="mt-1 h-2.5 w-2.5 rounded-full bg-amber-500"></div><p>03/29 14:15 更新一面时间为 03/31 10:30</p></div>
+                <div class="mt-4 rounded-[1.5rem] border border-line/80 bg-white p-5">
+                  <p class="text-sm font-semibold text-slate-500">快速筛选</p>
+                  <div class="mt-4 space-y-3">
+                    <input id="filter-search" class="input" type="text" placeholder="搜索公司 / 职位 / 标签 / 地点" />
+                    <select id="filter-status" class="select">
+                      <option value="all">全部状态</option>
+                    </select>
+                    <select id="filter-importance" class="select">
+                      <option value="all">全部重视度</option>
+                      <option value="高">高</option>
+                      <option value="中">中</option>
+                      <option value="低">低</option>
+                    </select>
                   </div>
                 </div>
               </aside>
 
-              <main class="mesh p-7">
-                <div class="grid grid-cols-[1.05fr_0.95fr] gap-6">
-                  <div class="rounded-[30px] bg-white p-7 shadow-card">
-                    <div class="flex items-center justify-between">
-                      <div>
-                        <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">Module 01 / Resume Optimization</p>
-                        <h3 class="mt-2 text-2xl font-extrabold text-ink">简历优化模块</h3>
-                        <p class="mt-2 text-sm text-slate-500">负责岗位匹配度提升、版本管理与证据链改写。</p>
-                      </div>
-                      <button class="rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-white">继续优化</button>
-                    </div>
-                    <div class="mt-6 grid grid-cols-3 gap-4">
-                      <div class="rounded-2xl bg-slate-50 p-4"><p class="text-xs text-slate-500">当前版本</p><p class="mt-1 text-xl font-bold">Resume V6</p></div>
-                      <div class="rounded-2xl bg-slate-50 p-4"><p class="text-xs text-slate-500">匹配度</p><p class="mt-1 text-xl font-bold">88</p></div>
-                      <div class="rounded-2xl bg-slate-50 p-4"><p class="text-xs text-slate-500">优化轮次</p><p class="mt-1 text-xl font-bold">3</p></div>
-                    </div>
-                    <div class="mt-6 rounded-[28px] border border-slate-200 p-5">
-                      <div class="flex items-center justify-between">
-                        <p class="font-semibold text-slate-800">Top 5 核心特质覆盖</p>
-                        <span class="text-sm text-accent font-semibold">4 / 5 强覆盖</span>
-                      </div>
-                      <div class="mt-4 space-y-4">
-                        <div><div class="mb-2 flex justify-between text-sm"><span>数据分析</span><span>95%</span></div><div class="h-2 rounded-full bg-slate-100"><div class="h-2 w-[95%] rounded-full bg-sky-500"></div></div></div>
-                        <div><div class="mb-2 flex justify-between text-sm"><span>结构化思考</span><span>88%</span></div><div class="h-2 rounded-full bg-slate-100"><div class="h-2 w-[88%] rounded-full bg-emerald-500"></div></div></div>
-                        <div><div class="mb-2 flex justify-between text-sm"><span>业务敏感度</span><span>76%</span></div><div class="h-2 rounded-full bg-slate-100"><div class="h-2 w-[76%] rounded-full bg-orange-500"></div></div></div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="rounded-[30px] bg-white p-7 shadow-card">
-                    <div class="flex items-center justify-between">
-                      <div>
-                        <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">Module 02 / Interview</p>
-                        <h3 class="mt-2 text-2xl font-extrabold text-ink">模拟面试与真实面试反哺</h3>
-                        <p class="mt-2 text-sm text-slate-500">负责分轮次模拟、历史复盘查看，以及真实面试记录回流训练策略。</p>
-                      </div>
-                      <button class="rounded-2xl bg-accent px-4 py-3 text-sm font-semibold text-white">进入工作台</button>
-                    </div>
-                    <div class="mt-6 grid grid-cols-3 gap-4">
-                      <div class="rounded-2xl bg-slate-50 p-4"><p class="text-xs text-slate-500">已完成</p><p class="mt-1 text-xl font-bold">5 场</p></div>
-                      <div class="rounded-2xl bg-slate-50 p-4"><p class="text-xs text-slate-500">最佳场次</p><p class="mt-1 text-xl font-bold">87</p></div>
-                      <div class="rounded-2xl bg-slate-50 p-4"><p class="text-xs text-slate-500">真实记录</p><p class="mt-1 text-xl font-bold">2</p></div>
-                    </div>
-                    <div class="mt-6 grid grid-cols-2 gap-4">
-                      <div class="rounded-[28px] border border-slate-200 p-5">
-                        <p class="font-semibold text-slate-800">推荐下一场</p>
-                        <div class="mt-4 rounded-2xl bg-slate-50 p-4">
-                          <div class="flex items-center justify-between">
-                            <div>
-                              <p class="font-semibold">一面模拟 · 业务深挖版</p>
-                              <p class="mt-1 text-sm text-slate-500">基于真实面试反馈，强化增长指标与实验设计表达</p>
-                            </div>
-                            <span class="rounded-full bg-rose-100 px-3 py-1 text-xs font-bold text-rose-700">高优先级</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="rounded-[28px] border border-slate-200 p-5">
-                        <p class="font-semibold text-slate-800">工作台能力</p>
-                        <div class="mt-4 space-y-3 text-sm text-slate-600">
-                          <div class="flex items-center gap-3"><i class="fa-regular fa-calendar-check text-accent"></i><span>选择进行哪一场模拟</span></div>
-                          <div class="flex items-center gap-3"><i class="fa-regular fa-file-lines text-accent"></i><span>查看历史场次复盘报告</span></div>
-                          <div class="flex items-center gap-3"><i class="fa-solid fa-cloud-arrow-up text-accent"></i><span>上传真实面试并生成复盘</span></div>
-                          <div class="flex items-center gap-3"><i class="fa-solid fa-arrows-rotate text-accent"></i><span>根据真实面试反馈调整后续题目权重</span></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="mt-6 rounded-[30px] bg-white p-7 shadow-card">
-                  <div class="flex items-center justify-between">
-                    <div>
-                      <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">Module 03 / Application Management</p>
-                      <h3 class="mt-2 text-2xl font-extrabold text-ink">投递管理与节点维护</h3>
-                      <p class="mt-2 text-sm text-slate-500">负责状态流转、关键面试时间、下一节点 DDL 和岗位时间线管理。</p>
-                    </div>
-                    <button class="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700">编辑节点</button>
-                  </div>
-                  <div class="mt-6 grid grid-cols-5 gap-4">
-                    <div class="rounded-[28px] border border-sky-200 bg-sky-50 p-5">
-                      <p class="text-sm font-semibold text-sky-700">当前状态</p>
-                      <p class="mt-2 font-bold text-slate-900">一面中</p>
-                      <p class="mt-3 text-sm text-slate-600">已进入面试阶段</p>
-                    </div>
-                    <div class="rounded-[28px] border border-amber-200 bg-amber-50 p-5">
-                      <p class="text-sm font-semibold text-amber-700">下一节点 DDL</p>
-                      <p class="mt-2 font-bold text-slate-900">03/31 10:30</p>
-                      <p class="mt-3 text-sm text-slate-600">字节跳动一面</p>
-                    </div>
-                    <div class="rounded-[28px] border border-slate-200 bg-white p-5">
-                      <p class="text-sm font-semibold text-slate-500">一面时间</p>
-                      <p class="mt-2 font-bold text-slate-900">03/31 10:30</p>
-                      <p class="mt-3 text-sm text-slate-500">已预约</p>
-                    </div>
-                    <div class="rounded-[28px] border border-slate-200 bg-white p-5">
-                      <p class="text-sm font-semibold text-slate-500">二面时间</p>
-                      <p class="mt-2 font-bold text-slate-900">待定</p>
-                      <p class="mt-3 text-sm text-slate-500">收到邀约后补充</p>
-                    </div>
-                    <div class="rounded-[28px] border border-slate-200 bg-white p-5">
-                      <p class="text-sm font-semibold text-slate-500">HR 面时间</p>
-                      <p class="mt-2 font-bold text-slate-900">待定</p>
-                      <p class="mt-3 text-sm text-slate-500">当前无需填写</p>
-                    </div>
-                    <div class="rounded-[28px] border border-slate-200 bg-white p-5">
-                      <p class="text-sm font-semibold text-slate-500">投递日期</p>
-                      <p class="mt-2 font-bold text-slate-900">03/27</p>
-                      <p class="mt-3 text-sm text-slate-500">官网投递</p>
-                    </div>
-                  </div>
-                  <div class="mt-5 grid grid-cols-[1.1fr_0.9fr] gap-4">
-                    <div class="rounded-[28px] border border-slate-200 p-5">
-                      <p class="font-semibold text-slate-800">关键节点时间线</p>
-                      <div class="mt-4 space-y-3 text-sm text-slate-600">
-                        <div class="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3"><span>03/27 已投递</span><span class="font-semibold text-slate-800">官网</span></div>
-                        <div class="flex items-center justify-between rounded-2xl bg-amber-50 px-4 py-3"><span>03/31 一面</span><span class="font-semibold text-amber-700">最近 DDL</span></div>
-                        <div class="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3"><span>04/02 笔试提交截止</span><span class="font-semibold text-slate-800">自定义节点</span></div>
-                      </div>
-                    </div>
-                    <div class="rounded-[28px] border border-slate-200 p-5">
-                      <p class="font-semibold text-slate-800">管理规则</p>
-                      <div class="mt-4 space-y-3 text-sm text-slate-600">
-                        <div>1. 面试状态变化时优先补充对应面试时间。</div>
-                        <div>2. 下一节点 DDL 用于首页排序和紧急提醒。</div>
-                        <div>3. 真实面试复盘会写入时间线，但不在这里主导操作。</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </main>
-            </div>
-          </div>
-        </section>
-
-        <section class="mx-auto w-fit">
-          <div class="mb-4 flex items-center justify-between">
-            <div>
-              <p class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Screen 06</p>
-              <h2 class="text-2xl font-bold text-ink">简历优化工作台</h2>
-            </div>
-            <div class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 shadow-sm">
-              Resume Optimization Detail
-            </div>
-          </div>
-          <div class="artboard overflow-hidden rounded-[36px] border border-white/70 bg-white shadow-board">
-            <div class="grid h-full grid-cols-[300px_1fr_360px]">
-              <aside class="border-r border-slate-100 bg-slate-50 p-6">
-                <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">Inputs</p>
-                <h3 class="mt-2 text-2xl font-extrabold text-ink">优化基线</h3>
-                <div class="mt-6 rounded-[28px] bg-white p-5 shadow-sm">
-                  <p class="text-sm text-slate-500">待优化简历版本</p>
-                  <p class="mt-2 text-xl font-bold text-ink">General Resume V5</p>
-                  <p class="mt-2 text-sm text-slate-500">将生成岗位定制分支 Resume V6</p>
-                  <button class="mt-5 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700">切换版本</button>
-                </div>
-                <div class="mt-5 rounded-[28px] bg-white p-5 shadow-sm">
-                  <p class="text-sm font-semibold text-slate-500">评分对比</p>
-                  <div class="mt-4 flex items-end gap-4">
-                    <div class="rounded-2xl bg-slate-50 px-4 py-3">
-                      <p class="text-xs text-slate-500">优化前</p>
-                      <p class="mt-1 text-2xl font-bold">83</p>
-                    </div>
-                    <i class="fa-solid fa-arrow-right text-slate-400"></i>
-                    <div class="rounded-2xl bg-emerald-50 px-4 py-3">
-                      <p class="text-xs text-emerald-700">优化后预估</p>
-                      <p class="mt-1 text-2xl font-bold text-emerald-700">88</p>
-                    </div>
-                  </div>
-                </div>
-              </aside>
-
-              <main class="mesh p-6">
-                <div class="rounded-[30px] bg-white p-6 shadow-card">
-                  <div class="flex items-center justify-between">
-                    <div>
-                      <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">Suggestion List</p>
-                      <h3 class="mt-2 text-2xl font-extrabold text-ink">逐条优化建议</h3>
-                    </div>
-                    <div class="flex gap-3">
-                      <button class="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700">轻改模式</button>
-                      <button class="rounded-2xl bg-ink px-4 py-3 text-sm font-semibold text-white">生成 Resume V6</button>
-                    </div>
-                  </div>
-
-                  <div class="mt-6 space-y-5">
-                    <div class="rounded-[28px] border border-emerald-200 bg-emerald-50 p-5">
-                      <div class="flex items-start justify-between gap-6">
-                        <div class="flex-1">
-                          <div class="mb-3 flex items-center gap-2">
-                            <span class="rounded-full bg-emerald-600 px-3 py-1 text-xs font-bold text-white">高增益</span>
-                            <span class="text-sm font-semibold text-emerald-700">对应核心特质：数据分析</span>
-                          </div>
-                          <p class="text-sm text-slate-500">原句</p>
-                          <p class="mt-1 rounded-2xl bg-white px-4 py-3 text-sm leading-7 text-slate-700">
-                            负责用户调研并整理相关结果，为团队输出分析结论。
-                          </p>
-                          <p class="mt-4 text-sm text-slate-500">建议改写</p>
-                          <p class="mt-1 rounded-2xl bg-white px-4 py-3 text-sm leading-7 text-slate-800">
-                            独立设计并执行 120 份问卷与 18 场用户访谈，完成数据清洗与分层分析，沉淀 3 条增长策略建议并用于团队方案评审。
-                          </p>
-                        </div>
-                        <div class="w-44 space-y-3">
-                          <button class="w-full rounded-2xl bg-accent px-4 py-3 text-sm font-semibold text-white">接受</button>
-                          <button class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700">手动编辑</button>
-                          <button class="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-500">拒绝</button>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="rounded-[28px] border border-slate-200 bg-white p-5">
-                      <div class="mb-3 flex items-center gap-2">
-                        <span class="rounded-full bg-orange-100 px-3 py-1 text-xs font-bold text-orange-700">中增益</span>
-                        <span class="text-sm font-semibold text-slate-600">对应核心特质：业务敏感度</span>
-                      </div>
-                      <p class="text-sm text-slate-500">原句</p>
-                      <p class="mt-1 rounded-2xl bg-slate-50 px-4 py-3 text-sm leading-7 text-slate-700">
-                        参与竞品研究，支持产品策略讨论。
-                      </p>
-                      <p class="mt-4 text-sm text-slate-500">建议改写</p>
-                      <p class="mt-1 rounded-2xl bg-slate-50 px-4 py-3 text-sm leading-7 text-slate-800">
-                        拆解 6 个同类产品的拉新与留存路径，归纳 4 个关键转化触点，支持团队完成季度增长优先级排序。
-                      </p>
-                    </div>
-
-                    <div class="rounded-[28px] border border-slate-200 bg-slate-50 p-5">
-                      <div class="mb-3 flex items-center gap-2">
-                        <span class="rounded-full bg-slate-200 px-3 py-1 text-xs font-bold text-slate-700">保持不变</span>
-                        <span class="text-sm font-semibold text-slate-600">该内容已有较高收益 / 无需强改</span>
-                      </div>
-                      <p class="rounded-2xl bg-white px-4 py-3 text-sm leading-7 text-slate-700">
-                        同济大学 信息管理与信息系统 本科，GPA 3.8/4.0
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </main>
-
-              <aside class="border-l border-slate-100 bg-white p-6">
-                <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">Evidence</p>
-                <h3 class="mt-2 text-2xl font-extrabold text-ink">证据链</h3>
-                <div class="mt-6 space-y-5">
-                  <div class="rounded-[28px] bg-slate-50 p-5">
-                    <p class="text-sm font-semibold text-slate-500">JD 条款</p>
-                    <p class="mt-3 text-sm leading-7 text-slate-700">
-                      需要具备较强的数据分析能力，能够结合用户研究与业务目标输出策略建议。
+              <section class="flex min-h-0 flex-col rounded-[1.8rem] border border-line/70 bg-white/70 p-5">
+                <div class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+                  <div>
+                    <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Application Table</p>
+                    <h2 class="mt-1 text-2xl font-bold text-ink">投递管理</h2>
+                    <p class="mt-2 text-sm leading-7 text-slate-600">
+                      双击单元格可直接修改。点击“进入优化”可跳到简历优化、面试优化或回到投递管理。
                     </p>
                   </div>
-                  <div class="rounded-[28px] bg-slate-50 p-5">
-                    <p class="text-sm font-semibold text-slate-500">用户材料证据</p>
-                    <p class="mt-3 text-sm leading-7 text-slate-700">
-                      《用户增长研究报告》P4 提及问卷数量 120；《项目答辩稿》P7 提及 18 场访谈与分层分析方法。
-                    </p>
-                  </div>
-                  <div class="rounded-[28px] border border-amber-200 bg-amber-50 p-5">
-                    <p class="text-sm font-semibold text-amber-700">风险提醒</p>
-                    <p class="mt-3 text-sm leading-7 text-amber-800">
-                      “增长提升 25%” 缺少直接证据，不建议写入最终版本，除非用户补充可验证数据来源。
-                    </p>
-                  </div>
-                  <div class="rounded-[28px] bg-ink p-5 text-white">
-                    <p class="text-sm font-semibold text-slate-300">版本关系</p>
-                    <div class="mt-3 text-sm leading-7 text-slate-200">
-                      Resume V5
-                      <i class="fa-solid fa-arrow-right mx-2 text-slate-400"></i>
-                      Resume V6
-                      <br />
-                      Job Tag: ByteDance / Product Strategy Intern
+                  <div class="grid gap-3 sm:grid-cols-3">
+                    <div class="rounded-[1.2rem] bg-shell px-4 py-3">
+                      <p class="text-xs text-slate-500">当前用户</p>
+                      <p id="summary-user-count" class="mt-1 text-xl font-bold text-ink"></p>
                     </div>
-                  </div>
-                </div>
-              </aside>
-            </div>
-          </div>
-        </section>
-
-        <section class="mx-auto w-fit">
-          <div class="mb-4 flex items-center justify-between">
-            <div>
-              <p class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Screen 07</p>
-              <h2 class="text-2xl font-bold text-ink">模拟面试工作台</h2>
-            </div>
-            <div class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 shadow-sm">
-              Interview Workspace
-            </div>
-          </div>
-          <div class="artboard overflow-hidden rounded-[36px] border border-white/70 bg-white shadow-board">
-            <div class="grid h-full grid-cols-[300px_1fr_360px]">
-              <aside class="bg-ink p-6 text-white">
-                <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-300">Interview workspace</p>
-                <h3 class="mt-2 text-2xl font-extrabold">面试训练与复盘中心</h3>
-                <div class="mt-6 space-y-4">
-                  <div class="rounded-[28px] bg-white/10 p-5">
-                    <p class="text-sm text-slate-300">当前岗位</p>
-                    <p class="mt-2 text-lg font-bold">字节跳动 · 产品策略实习生</p>
-                    <p class="mt-2 text-sm leading-6 text-slate-200">当前使用简历：Resume V6，已同步 2 条真实面试复盘。</p>
-                  </div>
-                  <div class="rounded-[28px] bg-white/10 p-5">
-                    <p class="text-sm text-slate-300">工作台能力</p>
-                    <div class="mt-3 space-y-2 text-sm text-slate-200">
-                      <div>1. 选择下一场模拟面试</div>
-                      <div>2. 查看任意历史场次复盘</div>
-                      <div>3. 上传真实面试记录并生成复盘</div>
-                      <div>4. 查看历史真实面试复盘</div>
-                      <div>5. 管理模拟面试计划与优先级</div>
+                    <div class="rounded-[1.2rem] bg-accentSoft px-4 py-3">
+                      <p class="text-xs text-accent">进行中</p>
+                      <p id="summary-active-count" class="mt-1 text-xl font-bold text-accent"></p>
                     </div>
-                  </div>
-                </div>
-              </aside>
-
-              <main class="mesh p-6">
-                <div class="grid grid-cols-2 gap-6">
-                  <div class="rounded-[30px] bg-white p-6 shadow-card">
-                    <div class="flex items-center justify-between">
-                      <div>
-                        <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">Next session</p>
-                        <h3 class="mt-2 text-2xl font-extrabold text-ink">选择要进行的模拟面试</h3>
-                      </div>
-                      <button class="rounded-2xl bg-accent px-4 py-3 text-sm font-semibold text-white">开始选中场次</button>
-                    </div>
-                    <div class="mt-6 space-y-4">
-                      <div class="rounded-[28px] border-2 border-accent bg-emerald-50 p-5">
-                        <div class="flex items-center justify-between">
-                          <div>
-                            <p class="font-bold text-ink">一面模拟 · 业务深挖版</p>
-                            <p class="mt-1 text-sm text-slate-600">预计 25 分钟，重点补强增长指标表达与实验设计</p>
-                          </div>
-                          <span class="rounded-full bg-accent px-3 py-1 text-xs font-bold text-white">推荐</span>
-                        </div>
-                      </div>
-                      <div class="rounded-[28px] border border-slate-200 bg-white p-5">
-                        <p class="font-bold text-ink">二面模拟 · 系统思考版</p>
-                        <p class="mt-1 text-sm text-slate-600">预计 35 分钟，偏业务拆解与项目深挖</p>
-                      </div>
-                      <div class="rounded-[28px] border border-slate-200 bg-white p-5">
-                        <p class="font-bold text-ink">HR 面模拟 · 动机匹配版</p>
-                        <p class="mt-1 text-sm text-slate-600">预计 20 分钟，偏稳定性、沟通与价值观</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="rounded-[30px] bg-white p-6 shadow-card">
-                    <div class="flex items-center justify-between">
-                      <div>
-                        <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">Recent reports</p>
-                        <h3 class="mt-2 text-2xl font-extrabold text-ink">历史模拟面试复盘</h3>
-                      </div>
-                      <button class="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700">查看全部</button>
-                    </div>
-                    <div class="mt-6 space-y-4">
-                      <div class="rounded-[28px] bg-slate-50 p-5">
-                        <div class="flex items-center justify-between">
-                          <div>
-                            <p class="font-bold text-ink">一面模拟 · 第 2 场</p>
-                            <p class="mt-1 text-sm text-slate-500">03/30 19:20 · 总分 87</p>
-                          </div>
-                          <button class="rounded-2xl bg-ink px-4 py-2 text-sm font-semibold text-white">查看复盘</button>
-                        </div>
-                      </div>
-                      <div class="rounded-[28px] bg-slate-50 p-5">
-                        <div class="flex items-center justify-between">
-                          <div>
-                            <p class="font-bold text-ink">二面模拟 · 第 1 场</p>
-                            <p class="mt-1 text-sm text-slate-500">03/29 21:10 · 总分 81</p>
-                          </div>
-                          <button class="rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700">查看复盘</button>
-                        </div>
-                      </div>
+                    <div class="rounded-[1.2rem] bg-emberSoft px-4 py-3">
+                      <p class="text-xs text-ember">高重视度</p>
+                      <p id="summary-priority-count" class="mt-1 text-xl font-bold text-ember"></p>
                     </div>
                   </div>
                 </div>
 
-                <div class="mt-6 rounded-[30px] bg-white p-6 shadow-card">
-                  <div class="flex items-center justify-between">
-                    <div>
-                      <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">Plan board</p>
-                      <h3 class="mt-2 text-2xl font-extrabold text-ink">模拟面试计划</h3>
-                    </div>
-                    <button class="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700">编辑计划</button>
-                  </div>
-                  <div class="mt-6 grid grid-cols-3 gap-4">
-                    <div class="rounded-[28px] border border-amber-200 bg-amber-50 p-5">
-                      <p class="text-sm font-semibold text-amber-700">本周 P0</p>
-                      <p class="mt-2 font-bold text-slate-900">完成 1 场一面模拟</p>
-                      <p class="mt-3 text-sm text-slate-600">与明天真实一面强相关</p>
-                    </div>
-                    <div class="rounded-[28px] border border-slate-200 bg-white p-5">
-                      <p class="text-sm font-semibold text-slate-500">本周 P1</p>
-                      <p class="mt-2 font-bold text-slate-900">查看第 2 场复盘</p>
-                      <p class="mt-3 text-sm text-slate-600">优先修正实验设计表达</p>
-                    </div>
-                    <div class="rounded-[28px] border border-slate-200 bg-white p-5">
-                      <p class="text-sm font-semibold text-slate-500">真实面试后</p>
-                      <p class="mt-2 font-bold text-slate-900">上传 Q&amp;A 生成复盘</p>
-                      <p class="mt-3 text-sm text-slate-600">自动影响后续题目权重</p>
-                    </div>
-                  </div>
+                <div class="table-wrap mt-5 min-h-0 flex-1 overflow-auto rounded-[1.4rem] border border-line/80">
+                  <table class="min-w-[1550px] w-full border-collapse text-left text-sm">
+                    <thead class="sticky top-0 z-10 bg-[#f7f2ea] text-slate-600">
+                      <tr>
+                        <th class="border-b border-line px-3 py-3 font-semibold">选择框</th>
+                        <th class="border-b border-line px-3 py-3 font-semibold">进入优化</th>
+                        <th class="border-b border-line px-3 py-3 font-semibold">岗位 JD</th>
+                        <th class="border-b border-line px-3 py-3 font-semibold">公司</th>
+                        <th class="border-b border-line px-3 py-3 font-semibold">职位</th>
+                        <th class="border-b border-line px-3 py-3 font-semibold">地点</th>
+                        <th class="border-b border-line px-3 py-3 font-semibold">来源渠道</th>
+                        <th class="border-b border-line px-3 py-3 font-semibold">投递链接</th>
+                        <th class="border-b border-line px-3 py-3 font-semibold">重视度</th>
+                        <th class="border-b border-line px-3 py-3 font-semibold">标签</th>
+                        <th class="border-b border-line px-3 py-3 font-semibold">进展状态</th>
+                        <th class="border-b border-line px-3 py-3 font-semibold">投递日期</th>
+                        <th class="border-b border-line px-3 py-3 font-semibold">下一节点 DDL</th>
+                        <th class="border-b border-line px-3 py-3 font-semibold">最后更新时间</th>
+                        <th class="border-b border-line px-3 py-3 font-semibold">备注</th>
+                        <th class="border-b border-line px-3 py-3 font-semibold">删除</th>
+                      </tr>
+                    </thead>
+                    <tbody id="jobs-table-body" class="bg-white"></tbody>
+                  </table>
                 </div>
-              </main>
+              </section>
+            </div>
+          </section>
 
-              <aside class="border-l border-slate-100 bg-white p-6">
-                <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">Real interview</p>
-                <h3 class="mt-2 text-2xl font-extrabold text-ink">真实面试专区</h3>
-                <div class="mt-6 space-y-5">
-                  <div class="rounded-[28px] border-2 border-dashed border-slate-200 bg-slate-50 p-6">
-                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-accent shadow-sm">
-                      <i class="fa-solid fa-cloud-arrow-up"></i>
-                    </div>
-                    <p class="mt-4 font-bold text-ink">上传真实面试记录</p>
-                    <p class="mt-2 text-sm leading-6 text-slate-600">支持文本、面试记录整理稿、转写内容。上传后自动生成复盘报告并同步到工作台。</p>
-                    <button class="mt-5 w-full rounded-2xl bg-ink px-4 py-3 font-semibold text-white">上传并生成复盘</button>
-                  </div>
-                  <div class="rounded-[28px] bg-slate-50 p-5">
-                    <p class="font-semibold text-slate-800">上传后将自动完成</p>
-                    <div class="mt-3 space-y-2 text-sm text-slate-600">
-                      <div>1. 提取高频问题与卡壳问题</div>
-                      <div>2. 形成该场真实面试复盘报告</div>
-                      <div>3. 更新后续模拟面试计划</div>
-                    </div>
-                  </div>
-                  <div class="rounded-[28px] border border-slate-200 bg-white p-5">
-                    <div class="flex items-center justify-between">
-                      <div>
-                        <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">Uploaded reports</p>
-                        <p class="mt-2 text-lg font-bold text-ink">已上传的真实面试复盘</p>
-                      </div>
-                      <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">2 场</span>
-                    </div>
-                    <div class="mt-5 space-y-3">
-                      <div class="rounded-2xl bg-emerald-50 p-4">
-                        <div class="flex items-center justify-between gap-3">
-                          <div>
-                            <p class="font-semibold text-slate-900">字节跳动一面 · 真实场次</p>
-                            <p class="mt-1 text-sm text-slate-600">03/28 15:00 · 6 题 · 高频短板：追问下的实验细节</p>
-                          </div>
-                          <button class="rounded-2xl bg-accent px-4 py-2 text-sm font-semibold text-white">查看复盘</button>
-                        </div>
-                      </div>
-                      <div class="rounded-2xl bg-slate-50 p-4">
-                        <div class="flex items-center justify-between gap-3">
-                          <div>
-                            <p class="font-semibold text-slate-900">小红书商业分析初面 · 真实场次</p>
-                            <p class="mt-1 text-sm text-slate-600">03/24 20:10 · 5 题 · 高频短板：案例拆解不够先结论后展开</p>
-                          </div>
-                          <button class="rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700">查看复盘</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+          <section id="view-resume" class="view h-full">
+            <div class="grid h-full gap-4 lg:grid-cols-[360px_minmax(0,1fr)]">
+              <aside class="panel-scroll min-h-0 overflow-y-auto rounded-[1.8rem] border border-line/70 bg-white/70 p-5">
+                <div class="rounded-[1.5rem] bg-accent p-5 text-white">
+                  <p class="text-xs font-bold uppercase tracking-[0.24em] text-white/70">Resume Optimization</p>
+                  <h2 class="mt-2 text-2xl font-bold">简历优化入口</h2>
+                  <p class="mt-3 text-sm leading-7 text-white/80">
+                    本页先保留接口。可通过顶部导航进入，也可从首页表格中某一行的“进入优化”跳转过来。
+                  </p>
                 </div>
-              </aside>
-            </div>
-          </div>
-        </section>
-
-        <section class="mx-auto w-fit">
-          <div class="mb-4 flex items-center justify-between">
-            <div>
-              <p class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Screen 08</p>
-              <h2 class="text-2xl font-bold text-ink">模拟面试进行中</h2>
-            </div>
-            <div class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 shadow-sm">
-              Mock Interview Session
-            </div>
-          </div>
-          <div class="artboard mesh overflow-hidden rounded-[36px] border border-white/70 p-10 shadow-board">
-            <div class="grid h-full grid-cols-[300px_1fr_360px] gap-8">
-              <aside class="rounded-[32px] bg-ink p-6 text-white shadow-card">
-                <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-300">Session setup</p>
-                <h3 class="mt-2 text-2xl font-extrabold">一面模拟 · 业务深挖版</h3>
-                <div class="mt-6 space-y-4">
-                  <div class="rounded-[28px] bg-white/10 p-5">
-                    <p class="text-sm text-slate-300">本场规则</p>
-                    <div class="mt-3 space-y-2 text-sm text-slate-200">
-                      <div>1. 用户逐题作答并提交</div>
-                      <div>2. 是否追问由 AI 根据题目与回答自行判断</div>
-                      <div>3. 场次结束后统一生成复盘报告</div>
-                    </div>
-                  </div>
-                  <div class="rounded-[28px] bg-white/10 p-5">
-                    <p class="text-sm text-slate-300">题目构成</p>
-                    <div class="mt-3 space-y-2 text-sm">
-                      <div class="flex justify-between"><span>自我介绍</span><span>1</span></div>
-                      <div class="flex justify-between"><span>经历面</span><span>3</span></div>
-                      <div class="flex justify-between"><span>业务面</span><span>2</span></div>
-                      <div class="flex justify-between"><span>行为面</span><span>1</span></div>
-                    </div>
-                  </div>
+                <div class="mt-4 rounded-[1.5rem] border border-line/80 bg-white p-5">
+                  <p class="text-sm font-semibold text-slate-500">当前选中岗位</p>
+                  <div id="resume-job-card" class="mt-4 text-sm leading-7 text-slate-700"></div>
                 </div>
+                <button class="btn mt-4 w-full border border-line bg-white text-slate-700" data-back-home>返回首页投递管理</button>
               </aside>
 
-              <div class="space-y-6">
-                <div class="rounded-[32px] bg-white p-7 shadow-card">
-                  <div class="flex items-center justify-between">
-                    <div>
-                      <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">Question 03 / 07</p>
-                      <h3 class="mt-2 text-3xl font-extrabold text-ink">如果要提升一个新功能的次日留存，你会如何设计分析和实验方案？</h3>
-                    </div>
-                    <div class="rounded-2xl bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600">
-                      剩余 16:24
-                    </div>
-                  </div>
-
-                  <div class="mt-6 rounded-[28px] border border-sky-200 bg-sky-50 p-5">
-                    <div class="flex items-start gap-4">
-                      <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-sky-600 shadow-sm">
-                        <i class="fa-solid fa-robot"></i>
-                      </div>
-                      <div>
-                        <p class="font-semibold text-sky-800">AI 追问策略</p>
-                        <p class="mt-1 text-sm leading-6 text-sky-700">
-                          你只需要提交回答。系统会根据答案完整度、风险点和题型，自动决定是否追问以及追问几轮。
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="mt-6 rounded-[30px] border border-slate-200 bg-white p-6">
-                    <p class="text-sm font-semibold text-slate-500">你的回答</p>
-                    <div class="mt-3 min-h-[320px] rounded-[24px] bg-slate-50 p-5 text-sm leading-8 text-slate-700">
-                      我会先定义留存的目标用户群和产品场景，区分新用户首日体验和回访路径，然后拆解影响次留的关键行为...
-                    </div>
-                    <div class="mt-5 flex items-center justify-between">
-                      <div class="flex gap-3">
-                        <button class="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700">结束作答</button>
-                        <button class="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700">查看提纲</button>
-                      </div>
-                      <button class="rounded-2xl bg-accent px-5 py-3 text-sm font-semibold text-white">提交</button>
-                    </div>
-                  </div>
+              <section class="panel-scroll min-h-0 overflow-y-auto rounded-[1.8rem] border border-line/70 bg-white/70 p-5">
+                <div class="rounded-[1.6rem] border border-dashed border-line bg-shell/70 p-8">
+                  <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Placeholder</p>
+                  <h3 class="mt-3 text-3xl font-bold text-ink">简历优化内容暂缓修改</h3>
+                  <p class="mt-4 max-w-3xl text-sm leading-8 text-slate-600">
+                    当前版本仅保留入口、岗位上下文和后续接入位置。后续可以在这里挂接简历版本选择、JD 匹配分析、逐条改写建议和导出能力。
+                  </p>
                 </div>
+              </section>
+            </div>
+          </section>
 
-                <div class="rounded-[32px] bg-white p-7 shadow-card">
-                  <div class="flex items-center justify-between">
-                    <div>
-                      <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">Session flow</p>
-                      <h3 class="mt-2 text-2xl font-extrabold text-ink">本场面试结束后</h3>
-                    </div>
-                    <button class="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700">查看流程说明</button>
-                  </div>
-                  <div class="mt-5 grid grid-cols-3 gap-4 text-sm">
-                    <div class="rounded-[28px] border border-slate-200 p-5"><p class="font-semibold">生成场次复盘</p><p class="mt-2 leading-6 text-slate-600">统一输出题级反馈、总评和行动建议。</p></div>
-                    <div class="rounded-[28px] border border-slate-200 p-5"><p class="font-semibold">自动判断追问链路</p><p class="mt-2 leading-6 text-slate-600">系统根据作答质量决定是否增加追问题。</p></div>
-                    <div class="rounded-[28px] border border-slate-200 p-5"><p class="font-semibold">更新工作台计划</p><p class="mt-2 leading-6 text-slate-600">本场结果会同步到后续训练建议。</p></div>
-                  </div>
+          <section id="view-interview" class="view h-full">
+            <div class="grid h-full gap-4 lg:grid-cols-[360px_minmax(0,1fr)]">
+              <aside class="panel-scroll min-h-0 overflow-y-auto rounded-[1.8rem] border border-line/70 bg-white/70 p-5">
+                <div class="rounded-[1.5rem] bg-plum p-5 text-white">
+                  <p class="text-xs font-bold uppercase tracking-[0.24em] text-white/70">Interview Optimization</p>
+                  <h2 class="mt-2 text-2xl font-bold">面试优化入口</h2>
+                  <p class="mt-3 text-sm leading-7 text-white/80">
+                    本页同样先保留接口。导航入口与表格入口都已接好，后续可直接扩展具体交互。
+                  </p>
                 </div>
-              </div>
-
-              <aside class="rounded-[32px] bg-white p-7 shadow-card">
-                <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">Outline</p>
-                <h3 class="mt-2 text-3xl font-extrabold text-ink">本题提纲</h3>
-
-                <div class="mt-6 space-y-4">
-                  <div class="rounded-[28px] bg-slate-50 p-5">
-                    <p class="font-semibold text-slate-800">建议回答结构</p>
-                    <div class="mt-3 space-y-2 text-sm leading-6 text-slate-600">
-                      <div>1. 定义目标用户与场景</div>
-                      <div>2. 明确次留核心指标</div>
-                      <div>3. 拆解关键行为漏斗</div>
-                      <div>4. 设计实验与风险控制</div>
-                    </div>
-                  </div>
-                  <div class="rounded-[28px] border border-sky-200 bg-sky-50 p-5">
-                    <p class="font-semibold text-sky-800">当前状态</p>
-                    <p class="mt-2 text-sm leading-6 text-sky-700">面试进行中不展示复盘。完整复盘将在整场面试结束后统一生成。</p>
-                  </div>
+                <div class="mt-4 rounded-[1.5rem] border border-line/80 bg-white p-5">
+                  <p class="text-sm font-semibold text-slate-500">当前选中岗位</p>
+                  <div id="interview-job-card" class="mt-4 text-sm leading-7 text-slate-700"></div>
                 </div>
+                <button class="btn mt-4 w-full border border-line bg-white text-slate-700" data-back-home>返回首页投递管理</button>
               </aside>
-            </div>
-          </div>
-        </section>
 
-        <section class="mx-auto w-fit">
-          <div class="mb-4 flex items-center justify-between">
-            <div>
-              <p class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">Screen 09</p>
-              <h2 class="text-2xl font-bold text-ink">面试复盘详情页</h2>
-            </div>
-            <div class="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 shadow-sm">
-              Review Detail
-            </div>
-          </div>
-          <div class="artboard mesh overflow-hidden rounded-[36px] border border-white/70 p-10 shadow-board">
-            <div class="grid h-full grid-cols-[1fr_420px] gap-8">
-              <div class="space-y-6">
-                <div class="rounded-[32px] bg-white p-7 shadow-card">
-                  <div class="flex items-center justify-between">
-                    <div>
-                      <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">Session review</p>
-                      <h3 class="mt-2 text-3xl font-extrabold text-ink">本场模拟面试复盘报告</h3>
-                    </div>
-                    <span class="rounded-full bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-600">一面模拟 · 第 3 场</span>
-                  </div>
-
-                  <div class="mt-6 grid grid-cols-4 gap-4">
-                    <div class="rounded-2xl bg-slate-50 p-4"><p class="text-xs text-slate-500">整体表现</p><p class="mt-1 text-xl font-bold">84</p></div>
-                    <div class="rounded-2xl bg-slate-50 p-4"><p class="text-xs text-slate-500">追问题数</p><p class="mt-1 text-xl font-bold">2</p></div>
-                    <div class="rounded-2xl bg-slate-50 p-4"><p class="text-xs text-slate-500">高频短板</p><p class="mt-1 text-xl font-bold">实验设计</p></div>
-                    <div class="rounded-2xl bg-slate-50 p-4"><p class="text-xs text-slate-500">题目总数</p><p class="mt-1 text-xl font-bold">5</p></div>
-                  </div>
-
-                  <div class="mt-6 grid grid-cols-2 gap-5">
-                    <div class="rounded-[28px] border border-slate-200 p-5">
-                      <p class="font-semibold text-slate-800">整体问题诊断</p>
-                      <div class="mt-4 space-y-4 text-sm">
-                        <div class="rounded-2xl bg-rose-50 p-4">
-                          <p class="font-semibold text-rose-700">核心短板 01 · 结构有框架，但落不到可执行细节</p>
-                          <p class="mt-2 leading-6 text-rose-800">涉及指标定义、实验分组和风险控制时，回答会停留在方法名，缺少变量、口径和判断标准。</p>
-                        </div>
-                        <div class="rounded-2xl bg-amber-50 p-4">
-                          <p class="font-semibold text-amber-700">核心短板 02 · 岗位贴合度表达偏后置</p>
-                          <p class="mt-2 leading-6 text-amber-800">自我介绍和项目回答里，你先讲经历再讲岗位关联，导致面试官需要替你做映射。</p>
-                        </div>
-                        <div class="rounded-2xl bg-sky-50 p-4">
-                          <p class="font-semibold text-sky-700">核心短板 03 · 追问下稳定性一般</p>
-                          <p class="mt-2 leading-6 text-sky-800">主问题表现尚可，但在连续追问时容易出现重复表述，结论先行和优先级判断不够稳定。</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="rounded-[28px] border border-slate-200 p-5">
-                      <p class="font-semibold text-slate-800">后续训练建议</p>
-                      <div class="mt-4 space-y-4 text-sm">
-                        <div class="rounded-2xl bg-emerald-50 p-4">
-                          <p class="font-semibold text-emerald-700">优先级 P0</p>
-                          <p class="mt-2 leading-6 text-emerald-800">增加 1 场“业务面 + 连续追问版”模拟，专练指标定义、实验方案和结论先行表达。</p>
-                        </div>
-                        <div class="rounded-2xl bg-sky-50 p-4">
-                          <p class="font-semibold text-sky-700">优先级 P1</p>
-                          <p class="mt-2 leading-6 text-sky-800">把自我介绍首段改为“目标岗位匹配结论 + 关键经历证据”结构，压缩背景铺垫到 20 秒内。</p>
-                        </div>
-                        <div class="rounded-2xl bg-amber-50 p-4">
-                          <p class="font-semibold text-amber-700">优先级 P2</p>
-                          <p class="mt-2 leading-6 text-amber-800">对 2 个核心项目分别整理“背景-目标-动作-结果-反思”口径，形成可复用标准答案模板。</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="mt-6 rounded-[28px] border border-slate-200 p-5">
-                    <div class="flex items-center justify-between">
-                      <div>
-                        <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">Question-level review</p>
-                        <h4 class="mt-2 text-2xl font-extrabold text-ink">逐题复盘</h4>
-                      </div>
-                      <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">含题型 / 要点 / 标答 / 我的答案 / 优化点</span>
-                    </div>
-
-                    <div class="mt-6 space-y-4">
-                      <div class="rounded-[28px] bg-slate-50 p-5">
-                        <div class="flex items-center justify-between">
-                          <p class="text-lg font-bold text-ink">Q1 请做一个 1 分钟自我介绍</p>
-                          <span class="rounded-full bg-sky-100 px-3 py-1 text-xs font-bold text-sky-700">题型：动机与匹配</span>
-                        </div>
-                        <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
-                          <div class="rounded-2xl bg-white p-4">
-                            <p class="font-semibold text-slate-800">答题要点</p>
-                            <p class="mt-2 leading-6 text-slate-600">首句给出岗位匹配结论；中段用 1 段项目证明增长分析能力；结尾收束到为什么适合这类岗位。</p>
-                          </div>
-                          <div class="rounded-2xl bg-white p-4">
-                            <p class="font-semibold text-slate-800">标准答案</p>
-                            <p class="mt-2 leading-6 text-slate-600">我是一个偏增长分析和产品策略方向的候选人，过去在用户研究项目中负责数据分析与策略输出，因此我对通过指标洞察驱动业务优化非常熟悉。</p>
-                          </div>
-                          <div class="rounded-2xl bg-white p-4">
-                            <p class="font-semibold text-slate-800">我的答案</p>
-                            <p class="mt-2 leading-6 text-slate-600">先从学校和专业背景展开，再介绍做过的项目，最后简单提到想做产品策略相关岗位。</p>
-                          </div>
-                          <div class="rounded-2xl bg-amber-50 p-4">
-                            <p class="font-semibold text-amber-800">不足与优化点</p>
-                            <p class="mt-2 leading-6 text-amber-700">开头缺少岗位结论，信息顺序偏“简历复述”。建议把“我为什么适合这个岗位”提前到第一句，并删掉弱相关背景。</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="rounded-[28px] bg-slate-50 p-5">
-                        <div class="flex items-center justify-between">
-                          <p class="text-lg font-bold text-ink">Q2 讲一个你做过的增长分析项目</p>
-                          <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">题型：项目经历深挖</span>
-                        </div>
-                        <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
-                          <div class="rounded-2xl bg-white p-4">
-                            <p class="font-semibold text-slate-800">答题要点</p>
-                            <p class="mt-2 leading-6 text-slate-600">说明业务背景、核心问题、分析方法、关键发现、最终动作与结果，用数字体现影响。</p>
-                          </div>
-                          <div class="rounded-2xl bg-white p-4">
-                            <p class="font-semibold text-slate-800">标准答案</p>
-                            <p class="mt-2 leading-6 text-slate-600">我们发现新用户次日留存低，于是按来源和关键行为分层分析，定位到首日激活链路断点，最终提出 onboarding 优化建议并推动验证。</p>
-                          </div>
-                          <div class="rounded-2xl bg-white p-4">
-                            <p class="font-semibold text-slate-800">我的答案</p>
-                            <p class="mt-2 leading-6 text-slate-600">提到了做过问卷、访谈和数据整理，也讲了最后形成建议，但中间分析链路和结论影响讲得比较散。</p>
-                          </div>
-                          <div class="rounded-2xl bg-amber-50 p-4">
-                            <p class="font-semibold text-amber-800">不足与优化点</p>
-                            <p class="mt-2 leading-6 text-amber-700">动作多、结论少，缺少“问题是怎么被定位出来的”这一层。建议固定采用“问题-分析-发现-动作-结果”五句模板。</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="rounded-[28px] bg-slate-50 p-5">
-                        <div class="flex items-center justify-between">
-                          <p class="text-lg font-bold text-ink">Q3 如果某个核心页面留存下降，你会怎么分析？</p>
-                          <span class="rounded-full bg-rose-100 px-3 py-1 text-xs font-bold text-rose-700">题型：案例分析 / 业务拆解</span>
-                        </div>
-                        <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
-                          <div class="rounded-2xl bg-white p-4">
-                            <p class="font-semibold text-slate-800">答题要点</p>
-                            <p class="mt-2 leading-6 text-slate-600">先确认口径和阶段，再按流量、页面、用户分层、外部变化拆解，最后给出验证方案和优先级。</p>
-                          </div>
-                          <div class="rounded-2xl bg-white p-4">
-                            <p class="font-semibold text-slate-800">标准答案</p>
-                            <p class="mt-2 leading-6 text-slate-600">我会先确认是整体留存还是特定 cohort 的变化，再从流量结构、关键行为漏斗和版本变更切入，定位异常点后设计 A/B 或灰度验证。</p>
-                          </div>
-                          <div class="rounded-2xl bg-white p-4">
-                            <p class="font-semibold text-slate-800">我的答案</p>
-                            <p class="mt-2 leading-6 text-slate-600">回答了看漏斗、看用户分层、看近期改版，也提到要做实验，但没有把优先级和具体验证方法说清楚。</p>
-                          </div>
-                          <div class="rounded-2xl bg-rose-50 p-4">
-                            <p class="font-semibold text-rose-800">不足与优化点</p>
-                            <p class="mt-2 leading-6 text-rose-700">框架正确，但缺少“先确认什么、再排什么、最后怎么验证”的顺序感。建议补齐指标口径、假设排序和实验设计三件事。</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="rounded-[28px] bg-slate-50 p-5">
-                        <div class="flex items-center justify-between">
-                          <p class="text-lg font-bold text-ink">Q4 如何设计一个新用户激活实验？</p>
-                          <span class="rounded-full bg-orange-100 px-3 py-1 text-xs font-bold text-orange-700">题型：实验设计</span>
-                        </div>
-                        <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
-                          <div class="rounded-2xl bg-white p-4">
-                            <p class="font-semibold text-slate-800">答题要点</p>
-                            <p class="mt-2 leading-6 text-slate-600">明确目标指标、实验对象、分组方式、样本周期、风险指标和判断标准，说明实验结束后的决策逻辑。</p>
-                          </div>
-                          <div class="rounded-2xl bg-white p-4">
-                            <p class="font-semibold text-slate-800">标准答案</p>
-                            <p class="mt-2 leading-6 text-slate-600">若目标是提升首日激活率，我会先定义激活行为，再做随机分组，对 onboarding 文案或流程进行干预，同时监控转化率和副作用指标。</p>
-                          </div>
-                          <div class="rounded-2xl bg-white p-4">
-                            <p class="font-semibold text-slate-800">我的答案</p>
-                            <p class="mt-2 leading-6 text-slate-600">说到了可以做 A/B test，也提到想测试不同引导方式，但没有具体说明主指标、副指标、分组口径和样本周期。</p>
-                          </div>
-                          <div class="rounded-2xl bg-rose-50 p-4">
-                            <p class="font-semibold text-rose-800">不足与优化点</p>
-                            <p class="mt-2 leading-6 text-rose-700">这是本场最明显短板。建议直接套用“目标-假设-方案-指标-风险-决策”六段模板，避免只停留在概念层。</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="rounded-[28px] bg-slate-50 p-5">
-                        <div class="flex items-center justify-between">
-                          <p class="text-lg font-bold text-ink">Q5 为什么想来字节跳动做产品策略？</p>
-                          <span class="rounded-full bg-violet-100 px-3 py-1 text-xs font-bold text-violet-700">题型：求职动机</span>
-                        </div>
-                        <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
-                          <div class="rounded-2xl bg-white p-4">
-                            <p class="font-semibold text-slate-800">答题要点</p>
-                            <p class="mt-2 leading-6 text-slate-600">围绕平台复杂度、业务节奏、个人能力契合点展开，避免泛泛而谈“大平台、成长快”。</p>
-                          </div>
-                          <div class="rounded-2xl bg-white p-4">
-                            <p class="font-semibold text-slate-800">标准答案</p>
-                            <p class="mt-2 leading-6 text-slate-600">我希望进入数据驱动且业务变化快的平台，把自己的分析和策略表达能力放到更真实、更高频的业务场景里验证和迭代。</p>
-                          </div>
-                          <div class="rounded-2xl bg-white p-4">
-                            <p class="font-semibold text-slate-800">我的答案</p>
-                            <p class="mt-2 leading-6 text-slate-600">提到了字节平台大、机会多、节奏快，也说自己喜欢挑战，但和过往经历之间连接还不够紧。</p>
-                          </div>
-                          <div class="rounded-2xl bg-amber-50 p-4">
-                            <p class="font-semibold text-amber-800">不足与优化点</p>
-                            <p class="mt-2 leading-6 text-amber-700">动机真实但偏泛，缺少“为什么是我适合这里”。建议补 1 句与你过往增长分析经历直接相关的证据。</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+              <section class="panel-scroll min-h-0 overflow-y-auto rounded-[1.8rem] border border-line/70 bg-white/70 p-5">
+                <div class="rounded-[1.6rem] border border-dashed border-line bg-shell/70 p-8">
+                  <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Placeholder</p>
+                  <h3 class="mt-3 text-3xl font-bold text-ink">面试优化内容暂缓修改</h3>
+                  <p class="mt-4 max-w-3xl text-sm leading-8 text-slate-600">
+                    当前保留岗位上下文、页面跳转和占位接口。后续可接入面试轮次、题目生成、复盘与真实面试回流。
+                  </p>
                 </div>
-              </div>
-
-              <aside class="rounded-[32px] bg-white p-7 shadow-card">
-                <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">Review actions</p>
-                <h3 class="mt-2 text-3xl font-extrabold text-ink">复盘依据与后续动作</h3>
-
-                <div class="mt-6 space-y-4">
-                  <div class="rounded-[28px] border border-sky-200 bg-sky-50 p-5">
-                    <p class="font-semibold text-sky-800">评价依据</p>
-                    <div class="mt-3 space-y-2 text-sm leading-6 text-sky-700">
-                      <div>1. 是否覆盖题目核心考察点</div>
-                      <div>2. 回答是否基于真实经历和可验证证据</div>
-                      <div>3. 面对追问时是否能保持结构与结论</div>
-                    </div>
-                  </div>
-
-                  <div class="rounded-[28px] bg-slate-50 p-5">
-                    <p class="font-semibold text-slate-800">建议立即执行</p>
-                    <div class="mt-3 space-y-3 text-sm text-slate-600">
-                      <div class="rounded-2xl bg-white px-4 py-3">重写 1 分钟自我介绍，并首句直接对齐岗位。</div>
-                      <div class="rounded-2xl bg-white px-4 py-3">整理“增长分析项目”标准回答口径，补齐数字与结果。</div>
-                      <div class="rounded-2xl bg-white px-4 py-3">针对实验设计单独做 15 分钟口述训练。</div>
-                    </div>
-                  </div>
-
-                  <div class="rounded-[28px] border border-emerald-200 bg-emerald-50 p-5">
-                    <p class="font-semibold text-emerald-800">关联动作</p>
-                    <p class="mt-2 text-sm leading-6 text-emerald-700">本页只处理复盘与训练建议。若要修改状态、面试时间或 DDL，应回到 Job Workspace 的“投递管理与节点维护”模块。</p>
-                  </div>
-
-                  <div class="rounded-[28px] bg-ink p-5 text-white">
-                    <p class="text-sm font-semibold text-slate-300">下一步推荐</p>
-                    <div class="mt-3 space-y-2 text-sm leading-6 text-slate-200">
-                      <div>1. 基于本页建议发起下一场一面模拟。</div>
-                      <div>2. 若完成真实面试，去面试工作台上传记录。</div>
-                      <div>3. 若收到邀约变更，去投递管理模块维护节点。</div>
-                    </div>
-                  </div>
-                </div>
-
-                <button class="mt-6 w-full rounded-2xl bg-accent px-4 py-4 font-semibold text-white">
-                  按建议生成下一轮训练计划
-                </button>
-              </aside>
+              </section>
             </div>
-          </div>
-        </section>
+          </section>
+        </main>
       </div>
     </div>
+
+    <script>
+      const STORAGE_KEY = "ai4job-revise1-state";
+      const STATUS_OPTIONS = ["待准备", "待投递", "已投递", "笔试中", "一面中", "二面中", "HR 面中", "Offer", "拒信", "已终止"];
+      const IMPORTANCE_OPTIONS = ["高", "中", "低"];
+      const OPTIMIZE_OPTIONS = [
+        { key: "resume", label: "简历优化" },
+        { key: "interview", label: "面试优化" },
+        { key: "home", label: "投递管理" },
+      ];
+
+      const seedJobs = [
+        {
+          id: "job-1",
+          selected: false,
+          jdText: "负责产品策略分析、增长洞察、用户研究与跨团队协作，要求具备数据分析能力、结构化表达能力和业务敏感度。",
+          jdLink: "https://jobs.example.com/bytedance-product-strategy",
+          company: "字节跳动",
+          position: "产品策略实习生",
+          location: "北京",
+          sourceChannel: "官网",
+          applyLink: "https://jobs.bytedance.com",
+          importance: "高",
+          tags: ["急招", "已沟通"],
+          status: "一面中",
+          applyDate: "2026-03-27",
+          nextStepDeadline: "2026-04-02T10:30",
+          updatedAt: "2026-03-31T09:00:00",
+          notes: "补充实验设计案例，准备二次追问。",
+        },
+        {
+          id: "job-2",
+          selected: true,
+          jdText: "商业分析培训生岗位，聚焦策略拆解、数据洞察、业务沟通与增长分析。",
+          jdLink: "",
+          company: "小红书",
+          position: "商业分析培训生",
+          location: "上海",
+          sourceChannel: "Boss",
+          applyLink: "",
+          importance: "高",
+          tags: ["内推"],
+          status: "待投递",
+          applyDate: "",
+          nextStepDeadline: "2026-04-03T18:00",
+          updatedAt: "2026-03-30T20:30:00",
+          notes: "完成岗位定制简历后投递。",
+        },
+      ];
+
+      const defaultState = {
+        currentUser: "陈默",
+        activeView: "home",
+        selectedJobId: "job-1",
+        optimizeJobId: "job-1",
+        filters: {
+          status: "all",
+          importance: "all",
+          keyword: "",
+        },
+        users: {
+          陈默: { jobs: structuredClone(seedJobs) },
+        },
+      };
+
+      let state = loadState();
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return structuredClone(defaultState);
+          const parsed = JSON.parse(raw);
+          return {
+            ...structuredClone(defaultState),
+            ...parsed,
+            users: parsed.users && Object.keys(parsed.users).length ? parsed.users : structuredClone(defaultState.users),
+          };
+        } catch (error) {
+          return structuredClone(defaultState);
+        }
+      }
+
+      function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      function ensureCurrentUser() {
+        if (!state.users[state.currentUser]) {
+          state.users[state.currentUser] = { jobs: [] };
+        }
+      }
+
+      function currentJobs() {
+        ensureCurrentUser();
+        return state.users[state.currentUser].jobs;
+      }
+
+      function selectedJob() {
+        const jobs = currentJobs();
+        return jobs.find((job) => job.id === state.selectedJobId) || jobs[0] || null;
+      }
+
+      function optimizeJob() {
+        const jobs = currentJobs();
+        return jobs.find((job) => job.id === state.optimizeJobId) || selectedJob();
+      }
+
+      function formatDateTime(value) {
+        if (!value) return "未填写";
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return value;
+        return new Intl.DateTimeFormat("zh-CN", {
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }).format(date);
+      }
+
+      function formatDate(value) {
+        if (!value) return "未填写";
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return value;
+        return new Intl.DateTimeFormat("zh-CN", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        }).format(date);
+      }
+
+      function escapeHtml(value) {
+        return String(value || "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+
+      function statusPill(status) {
+        const styles = {
+          待准备: "bg-slate-100 text-slate-700",
+          待投递: "bg-amber-100 text-amber-700",
+          已投递: "bg-sky-100 text-sky-700",
+          笔试中: "bg-purple-100 text-purple-700",
+          一面中: "bg-accentSoft text-accent",
+          二面中: "bg-cyan-100 text-cyan-700",
+          "HR 面中": "bg-emerald-100 text-emerald-700",
+          Offer: "bg-green-100 text-green-700",
+          拒信: "bg-rose-100 text-rose-700",
+          已终止: "bg-stone-200 text-stone-600",
+        };
+        return `<span class="pill ${styles[status] || "bg-slate-100 text-slate-700"}">${escapeHtml(status)}</span>`;
+      }
+
+      function filteredJobs() {
+        const jobs = currentJobs();
+        const keyword = state.filters.keyword.trim().toLowerCase();
+        return [...jobs]
+          .filter((job) => (state.filters.status === "all" ? true : job.status === state.filters.status))
+          .filter((job) => (state.filters.importance === "all" ? true : job.importance === state.filters.importance))
+          .filter((job) => {
+            if (!keyword) return true;
+            return [job.company, job.position, job.location, job.sourceChannel, job.tags.join(" "), job.jdText]
+              .join(" ")
+              .toLowerCase()
+              .includes(keyword);
+          })
+          .sort((a, b) => {
+            const aTime = a.nextStepDeadline ? new Date(a.nextStepDeadline).getTime() : Number.MAX_SAFE_INTEGER;
+            const bTime = b.nextStepDeadline ? new Date(b.nextStepDeadline).getTime() : Number.MAX_SAFE_INTEGER;
+            return aTime - bTime;
+          });
+      }
+
+      function summarizeJD(job) {
+        if (!job) return "未选择岗位";
+        const value = job.jdLink || job.jdText || "未填写";
+        return value.length > 36 ? `${value.slice(0, 36)}...` : value;
+      }
+
+      function renderTabs() {
+        document.querySelectorAll("[data-view-target]").forEach((button) => {
+          button.classList.toggle("active", button.dataset.viewTarget === state.activeView);
+        });
+        document.querySelectorAll(".view").forEach((view) => {
+          view.classList.toggle("active", view.id === `view-${state.activeView}`);
+        });
+      }
+
+      function renderHeader() {
+        const job = optimizeJob();
+        document.getElementById("switch-user").textContent = `${state.currentUser} · 切换用户`;
+        document.getElementById("header-job-name").textContent = job ? `${job.company} / ${job.position}` : "未选择岗位";
+      }
+
+      function renderFilters() {
+        const statusSelect = document.getElementById("filter-status");
+        statusSelect.innerHTML = `<option value="all">全部状态</option>${STATUS_OPTIONS.map((item) => `<option value="${item}">${item}</option>`).join("")}`;
+        statusSelect.value = state.filters.status;
+        document.getElementById("filter-importance").value = state.filters.importance;
+        document.getElementById("filter-search").value = state.filters.keyword;
+      }
+
+      function renderSummary() {
+        const jobs = currentJobs();
+        document.getElementById("summary-user-count").textContent = `${jobs.length} 个岗位`;
+        document.getElementById("summary-active-count").textContent = `${jobs.filter((job) => !["Offer", "拒信", "已终止"].includes(job.status)).length} 条`;
+        document.getElementById("summary-priority-count").textContent = `${jobs.filter((job) => job.importance === "高").length} 条`;
+      }
+
+      function renderTable() {
+        const tbody = document.getElementById("jobs-table-body");
+        const jobs = filteredJobs();
+
+        if (!jobs.length) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="16" class="px-4 py-10 text-center text-sm text-slate-500">当前筛选条件下没有岗位记录。</td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = jobs
+          .map((job) => {
+            const tagsText = job.tags.join(", ");
+            return `
+              <tr class="border-b border-line/60 align-top ${job.id === state.optimizeJobId ? "bg-accentSoft/30" : ""}">
+                <td class="px-3 py-3">
+                  <input type="checkbox" data-job-select="${job.id}" ${job.selected ? "checked" : ""} />
+                </td>
+                <td class="relative px-3 py-3">
+                  <button class="btn border border-line bg-white px-3 py-2 text-xs text-slate-700" data-open-menu="${job.id}">进入优化</button>
+                  <div class="menu-hidden absolute left-3 top-14 z-20 min-w-[140px] rounded-2xl border border-line bg-white p-2 shadow-card" data-optimize-menu="${job.id}">
+                    ${OPTIMIZE_OPTIONS.map(
+                      (item) => `
+                        <button class="flex w-full rounded-xl px-3 py-2 text-left text-sm font-semibold text-slate-700 hover:bg-shell" data-optimize-action="${item.key}" data-job-id="${job.id}">
+                          ${item.label}
+                        </button>
+                      `
+                    ).join("")}
+                  </div>
+                </td>
+                <td class="px-3 py-3">
+                  <div class="max-w-[280px]">
+                    <div class="font-semibold text-ink">${escapeHtml(summarizeJD(job))}</div>
+                    ${
+                      job.jdLink
+                        ? `<a class="mt-1 inline-block text-xs font-semibold text-accent underline" href="${escapeHtml(job.jdLink)}" target="_blank" rel="noreferrer">打开链接</a>`
+                        : ""
+                    }
+                  </div>
+                </td>
+                <td class="px-3 py-3" data-edit-cell data-field="company" data-job-id="${job.id}">${escapeHtml(job.company)}</td>
+                <td class="px-3 py-3" data-edit-cell data-field="position" data-job-id="${job.id}">${escapeHtml(job.position)}</td>
+                <td class="px-3 py-3" data-edit-cell data-field="location" data-job-id="${job.id}">${escapeHtml(job.location)}</td>
+                <td class="px-3 py-3" data-edit-cell data-field="sourceChannel" data-job-id="${job.id}">${escapeHtml(job.sourceChannel)}</td>
+                <td class="px-3 py-3" data-edit-cell data-field="applyLink" data-job-id="${job.id}">
+                  ${job.applyLink ? `<a class="text-accent underline" href="${escapeHtml(job.applyLink)}" target="_blank" rel="noreferrer">投递链接</a>` : "未填写"}
+                </td>
+                <td class="px-3 py-3" data-edit-cell data-field="importance" data-job-id="${job.id}">${escapeHtml(job.importance)}</td>
+                <td class="px-3 py-3" data-edit-cell data-field="tags" data-job-id="${job.id}">${escapeHtml(tagsText || "未填写")}</td>
+                <td class="px-3 py-3" data-edit-cell data-field="status" data-job-id="${job.id}">${statusPill(job.status)}</td>
+                <td class="px-3 py-3" data-edit-cell data-field="applyDate" data-job-id="${job.id}">${escapeHtml(job.applyDate || "未填写")}</td>
+                <td class="px-3 py-3" data-edit-cell data-field="nextStepDeadline" data-job-id="${job.id}">${escapeHtml(job.nextStepDeadline || "未填写")}</td>
+                <td class="px-3 py-3 text-slate-500">${formatDateTime(job.updatedAt)}</td>
+                <td class="px-3 py-3 max-w-[220px]" data-edit-cell data-field="notes" data-job-id="${job.id}">${escapeHtml(job.notes || "未填写")}</td>
+                <td class="px-3 py-3">
+                  <button class="btn bg-ember px-3 py-2 text-xs text-white" data-delete-job="${job.id}">删除</button>
+                </td>
+              </tr>
+            `;
+          })
+          .join("");
+      }
+
+      function renderOptimizeCards() {
+        const job = optimizeJob();
+        const fallback = '<p class="text-slate-500">尚未选择岗位，请先从首页表格进入。</p>';
+        const html = job
+          ? `
+              <p><span class="font-semibold text-slate-800">公司：</span>${escapeHtml(job.company)}</p>
+              <p><span class="font-semibold text-slate-800">职位：</span>${escapeHtml(job.position)}</p>
+              <p><span class="font-semibold text-slate-800">地点：</span>${escapeHtml(job.location)}</p>
+              <p><span class="font-semibold text-slate-800">状态：</span>${escapeHtml(job.status)}</p>
+              <p><span class="font-semibold text-slate-800">JD：</span>${escapeHtml(summarizeJD(job))}</p>
+            `
+          : fallback;
+        document.getElementById("resume-job-card").innerHTML = html;
+        document.getElementById("interview-job-card").innerHTML = html;
+      }
+
+      function renderAll() {
+        ensureCurrentUser();
+        saveState();
+        renderTabs();
+        renderHeader();
+        renderFilters();
+        renderSummary();
+        renderTable();
+        renderOptimizeCards();
+      }
+
+      function setActiveView(viewName) {
+        state.activeView = viewName;
+        renderAll();
+      }
+
+      function updateJob(jobId, updater) {
+        state.users[state.currentUser].jobs = currentJobs().map((job) => {
+          if (job.id !== jobId) return job;
+          const updated = updater({ ...job, tags: [...job.tags] });
+          updated.updatedAt = new Date().toISOString();
+          return updated;
+        });
+        renderAll();
+      }
+
+      function closeMenus() {
+        document.querySelectorAll("[data-optimize-menu]").forEach((menu) => menu.classList.add("menu-hidden"));
+      }
+
+      function guessFieldFromJD(text, link) {
+        const source = `${text} ${link}`.toLowerCase();
+        return {
+          company: source.includes("字节") ? "字节跳动" : source.includes("小红书") ? "小红书" : "",
+          position: source.includes("产品") ? "产品岗位" : source.includes("运营") ? "运营岗位" : "",
+          location: source.includes("北京") ? "北京" : source.includes("上海") ? "上海" : "",
+        };
+      }
+
+      function createJob() {
+        const jdText = document.getElementById("job-jd-text").value.trim();
+        const jdLink = document.getElementById("job-jd-link").value.trim();
+        const typedCompany = document.getElementById("job-company").value.trim();
+        const typedPosition = document.getElementById("job-position").value.trim();
+        const typedLocation = document.getElementById("job-location").value.trim();
+        const sourceChannel = document.getElementById("job-channel").value.trim() || "手动录入";
+
+        if (!jdText && !jdLink) {
+          alert("请至少粘贴岗位文本或岗位链接。");
+          return;
+        }
+
+        const guessed = guessFieldFromJD(jdText, jdLink);
+        const now = new Date().toISOString();
+        const newJob = {
+          id: `job-${Date.now()}`,
+          selected: false,
+          jdText: jdText || "已录入岗位链接，等待补充 JD 文本。",
+          jdLink,
+          company: typedCompany || guessed.company || "待补充公司",
+          position: typedPosition || guessed.position || "待补充职位",
+          location: typedLocation || guessed.location || "待补充地点",
+          sourceChannel,
+          applyLink: "",
+          importance: "中",
+          tags: [],
+          status: "待准备",
+          applyDate: "",
+          nextStepDeadline: "",
+          updatedAt: now,
+          notes: "新岗位已创建，可双击表格继续补充字段。",
+        };
+
+        state.users[state.currentUser].jobs.unshift(newJob);
+        state.selectedJobId = newJob.id;
+        state.optimizeJobId = newJob.id;
+
+        ["job-jd-text", "job-jd-link", "job-company", "job-position", "job-location", "job-channel"].forEach((id) => {
+          document.getElementById(id).value = "";
+        });
+
+        renderAll();
+      }
+
+      function startCellEdit(cell) {
+        if (cell.dataset.editing === "1") return;
+        const jobId = cell.dataset.jobId;
+        const field = cell.dataset.field;
+        const job = currentJobs().find((item) => item.id === jobId);
+        if (!job) return;
+
+        cell.dataset.editing = "1";
+        const rawValue = field === "tags" ? job.tags.join(", ") : job[field] || "";
+
+        if (field === "importance") {
+          cell.innerHTML = `<select class="select edit-control">${IMPORTANCE_OPTIONS.map((item) => `<option value="${item}" ${item === rawValue ? "selected" : ""}>${item}</option>`).join("")}</select>`;
+        } else if (field === "status") {
+          cell.innerHTML = `<select class="select edit-control">${STATUS_OPTIONS.map((item) => `<option value="${item}" ${item === rawValue ? "selected" : ""}>${item}</option>`).join("")}</select>`;
+        } else if (field === "notes" || field === "applyLink") {
+          cell.innerHTML = `<textarea class="textarea edit-control min-h-[96px]">${escapeHtml(rawValue)}</textarea>`;
+        } else if (field === "nextStepDeadline") {
+          cell.innerHTML = `<input class="input edit-control" type="datetime-local" value="${escapeHtml(rawValue)}" />`;
+        } else if (field === "applyDate") {
+          cell.innerHTML = `<input class="input edit-control" type="date" value="${escapeHtml(rawValue)}" />`;
+        } else {
+          cell.innerHTML = `<input class="input edit-control" type="text" value="${escapeHtml(rawValue)}" />`;
+        }
+
+        const control = cell.querySelector(".edit-control");
+        control.focus();
+        if (control.select) control.select();
+
+        const commit = () => {
+          const value = control.value.trim();
+          updateJob(jobId, (current) => {
+            current[field] = field === "tags" ? value.split(",").map((item) => item.trim()).filter(Boolean) : value;
+            return current;
+          });
+        };
+
+        control.addEventListener("blur", commit, { once: true });
+        control.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" && field !== "notes") {
+            event.preventDefault();
+            control.blur();
+          }
+          if (event.key === "Escape") {
+            renderAll();
+          }
+        });
+      }
+
+      function switchUser() {
+        const input = window.prompt("请输入用户名。不同用户名会分别保存自己的岗位数据。", state.currentUser);
+        const nextUser = input ? input.trim() : "";
+        if (!nextUser) return;
+        if (!state.users[nextUser]) {
+          state.users[nextUser] = { jobs: [] };
+        }
+        state.currentUser = nextUser;
+        const firstJob = currentJobs()[0];
+        state.selectedJobId = firstJob ? firstJob.id : "";
+        state.optimizeJobId = firstJob ? firstJob.id : "";
+        renderAll();
+      }
+
+      function bindEvents() {
+        document.querySelectorAll("[data-view-target]").forEach((button) => {
+          button.addEventListener("click", () => setActiveView(button.dataset.viewTarget));
+        });
+
+        document.querySelectorAll("[data-back-home]").forEach((button) => {
+          button.addEventListener("click", () => setActiveView("home"));
+        });
+
+        document.getElementById("switch-user").addEventListener("click", switchUser);
+        document.getElementById("create-job").addEventListener("click", createJob);
+
+        document.getElementById("filter-search").addEventListener("input", (event) => {
+          state.filters.keyword = event.target.value;
+          renderAll();
+        });
+        document.getElementById("filter-status").addEventListener("change", (event) => {
+          state.filters.status = event.target.value;
+          renderAll();
+        });
+        document.getElementById("filter-importance").addEventListener("change", (event) => {
+          state.filters.importance = event.target.value;
+          renderAll();
+        });
+
+        document.getElementById("jobs-table-body").addEventListener("change", (event) => {
+          const checkbox = event.target.closest("[data-job-select]");
+          if (!checkbox) return;
+          updateJob(checkbox.dataset.jobSelect, (job) => {
+            job.selected = checkbox.checked;
+            return job;
+          });
+        });
+
+        document.getElementById("jobs-table-body").addEventListener("click", (event) => {
+          const menuButton = event.target.closest("[data-open-menu]");
+          const optimizeAction = event.target.closest("[data-optimize-action]");
+          const deleteButton = event.target.closest("[data-delete-job]");
+
+          if (menuButton) {
+            const targetMenu = document.querySelector(`[data-optimize-menu="${menuButton.dataset.openMenu}"]`);
+            const isHidden = targetMenu.classList.contains("menu-hidden");
+            closeMenus();
+            if (isHidden) targetMenu.classList.remove("menu-hidden");
+            return;
+          }
+
+          if (optimizeAction) {
+            const nextView = optimizeAction.dataset.optimizeAction;
+            const jobId = optimizeAction.dataset.jobId;
+            state.selectedJobId = jobId;
+            state.optimizeJobId = jobId;
+            closeMenus();
+            setActiveView(nextView);
+            return;
+          }
+
+          if (deleteButton) {
+            const confirmed = window.confirm("确定删除吗？确定即删除这一条及其岗位空间内容。");
+            if (!confirmed) return;
+            state.users[state.currentUser].jobs = currentJobs().filter((job) => job.id !== deleteButton.dataset.deleteJob);
+            const firstJob = currentJobs()[0];
+            state.selectedJobId = firstJob ? firstJob.id : "";
+            state.optimizeJobId = firstJob ? firstJob.id : "";
+            renderAll();
+          }
+        });
+
+        document.getElementById("jobs-table-body").addEventListener("dblclick", (event) => {
+          const cell = event.target.closest("[data-edit-cell]");
+          if (!cell) return;
+          startCellEdit(cell);
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!event.target.closest("[data-open-menu]") && !event.target.closest("[data-optimize-menu]")) {
+            closeMenus();
+          }
+        });
+      }
+
+      renderAll();
+      bindEvents();
+    </script>
   </body>
 </html>
