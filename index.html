@@ -419,8 +419,8 @@
         <div class="mt-5 grid min-h-0 flex-1 gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
           <aside class="panel-scroll min-h-0 overflow-y-auto rounded-[1.5rem] border border-line/80 bg-white p-4">
             <p class="text-sm font-semibold text-slate-500">资料列表</p>
+            <p class="mt-2 text-sm leading-7 text-slate-500">点击资料可进行查看、编辑、下载、删除等操作</p>
             <div id="materials-list" class="mt-4 space-y-2"></div>
-            <p class="mt-4 text-sm leading-7 text-slate-500">点击资料可对相应资料进行查看与编辑。</p>
           </aside>
 
           <section class="panel-scroll min-h-0 overflow-y-auto rounded-[1.5rem] border border-line/80 bg-white p-4">
@@ -468,24 +468,22 @@
                   </select>
                 </div>
               </div>
-              <div id="material-detail-text-block" class="hidden">
-                <label class="text-sm font-semibold text-slate-600">资料内容</label>
-                <textarea id="material-detail-content-input" class="textarea mt-2 min-h-[220px]" placeholder="请输入资料内容"></textarea>
-              </div>
               <div class="rounded-[1.2rem] bg-shell px-4 py-4 text-sm leading-7 text-slate-700">
                 <p class="font-semibold text-slate-800">资料说明</p>
                 <div id="material-detail-meta" class="mt-2"></div>
                 <div class="mt-3 flex flex-wrap gap-3">
                   <button id="material-open-button" class="btn border border-line bg-white text-slate-700">查看</button>
-                  <button id="material-edit-button" class="hidden btn border border-line bg-white text-slate-700">编辑</button>
+                  <button id="material-edit-button" class="hidden btn border border-line bg-white text-slate-700">查看/编辑</button>
                   <a id="material-download-link" class="btn border border-line bg-white text-slate-700" href="#" target="_blank" rel="noreferrer">下载</a>
+                  <button id="save-material-meta" class="btn bg-accent text-white">保存</button>
+                  <button id="delete-material-meta" class="btn bg-ember text-white">删除</button>
                 </div>
               </div>
-              <div id="material-preview" class="hidden rounded-[1.2rem] border border-line/80 bg-white px-4 py-4"></div>
-              <div class="flex flex-wrap gap-3">
-                <button id="save-material-meta" class="hidden btn bg-accent text-white">保存</button>
-                <button id="delete-material-meta" class="btn bg-ember text-white">删除</button>
+              <div id="material-detail-text-block" class="hidden">
+                <label class="text-sm font-semibold text-slate-600">资料内容</label>
+                <textarea id="material-detail-content-input" class="textarea mt-2 min-h-[220px]" placeholder="请输入资料内容"></textarea>
               </div>
+              <div id="material-preview" class="hidden rounded-[1.2rem] border border-line/80 bg-white px-4 py-4"></div>
             </div>
 
             <div id="materials-upload-view" class="hidden rounded-[1.2rem] border border-dashed border-line bg-shell/70 px-4 py-4">
@@ -1041,6 +1039,10 @@
         return materialsState.items.find((item) => item.id === materialsState.selectedId) || null;
       }
 
+      function normalizeMaterialCategory(category) {
+        return category === "面试" ? "面经" : (category || "其他");
+      }
+
       function allMaterialCategories() {
         return ["面经", "行业动态", "其他"];
       }
@@ -1057,33 +1059,32 @@
 
       function setCategoryControl(selectId, category) {
         const select = document.getElementById(selectId);
-        const value = category || "其他";
+        const value = normalizeMaterialCategory(category);
         select.value = ["面经", "行业动态", "其他"].includes(value) ? value : "其他";
       }
 
       function renderCategoryOptions(selectId) {
         const select = document.getElementById(selectId);
         const currentValue = select.value;
-        select.innerHTML = [
-          `<option value="面经">面经</option>`,
-          `<option value="行业动态">行业动态</option>`,
-          `<option value="其他">其他</option>`,
-        ].join("");
+        select.innerHTML = materialCategoryOptionsHtml();
         if (currentValue && [...select.options].some((option) => option.value === currentValue)) {
           select.value = currentValue;
         }
       }
 
+      function materialCategoryOptionsHtml(selectedValue = "") {
+        return [
+          "面经",
+          "行业动态",
+          "其他",
+        ].map((value) => `<option value="${value}"${value === selectedValue ? " selected" : ""}>${value}</option>`).join("");
+      }
+
       function renderMaterialsList() {
         const list = document.getElementById("materials-list");
-        if (!materialsState.items.length) {
-          list.innerHTML = `<div class="rounded-[1rem] bg-shell px-3 py-4 text-sm leading-7 text-slate-500">暂无资料。</div>`;
-          return;
-        }
-
         const grouped = allMaterialCategories().map((category) => ({
           category,
-          items: materialsState.items.filter((item) => (item.category || "其他") === category),
+          items: materialsState.items.filter((item) => normalizeMaterialCategory(item.category) === category),
         }));
 
         list.innerHTML = grouped
@@ -1121,6 +1122,7 @@
         const uploadView = document.getElementById("materials-upload-view");
         const preview = document.getElementById("material-preview");
         const detailTextBlock = document.getElementById("material-detail-text-block");
+        const openButton = document.getElementById("material-open-button");
         const editButton = document.getElementById("material-edit-button");
         const saveMetaButton = document.getElementById("save-material-meta");
 
@@ -1130,8 +1132,11 @@
         uploadView.classList.add("hidden");
         preview.classList.add("hidden");
         preview.innerHTML = "";
+        openButton.classList.add("hidden");
         editButton.classList.add("hidden");
         saveMetaButton.classList.add("hidden");
+        detailTextBlock.classList.add("hidden");
+        document.getElementById("material-detail-content-input").value = "";
 
         if (materialsState.view === "create") {
           createView.classList.remove("hidden");
@@ -1152,14 +1157,15 @@
           renderCategoryOptions("material-detail-category-select");
           document.getElementById("material-detail-name-input").value = material.name || "";
           setCategoryControl("material-detail-category-select", material.category || "其他");
+          saveMetaButton.classList.remove("hidden");
           if (material.type === "text") {
-            detailTextBlock.classList.remove("hidden");
-            document.getElementById("material-detail-content-input").value = materialsState.previewMode === "edit" ? material.content || "" : "";
             editButton.classList.remove("hidden");
-            if (materialsState.previewMode === "edit") saveMetaButton.classList.remove("hidden");
+            if (materialsState.previewMode === "edit") {
+              detailTextBlock.classList.remove("hidden");
+              document.getElementById("material-detail-content-input").value = material.content || "";
+            }
           } else {
-            detailTextBlock.classList.add("hidden");
-            document.getElementById("material-detail-content-input").value = "";
+            openButton.classList.remove("hidden");
           }
           document.getElementById("material-detail-meta").innerHTML = material.type === "text"
             ? `
@@ -1183,13 +1189,70 @@
         emptyState.classList.remove("hidden");
       }
 
+      function hasUnsavedMaterialChanges() {
+        if (materialsState.view === "create" && materialsState.draftTextMaterial) {
+          const name = document.getElementById("material-name-input")?.value.trim() || "";
+          const category = getCategoryValue("material-category-select").trim();
+          const content = document.getElementById("material-content-input")?.value || "";
+          return Boolean(name || content || category !== (materialsState.draftTextMaterial.category || "其他"));
+        }
+
+        if (materialsState.view !== "detail") return false;
+        const material = selectedMaterial();
+        if (!material) return false;
+
+        const currentName = document.getElementById("material-detail-name-input")?.value.trim() || "";
+        const currentCategory = getCategoryValue("material-detail-category-select").trim();
+        if (currentName !== (material.name || "")) return true;
+        if (currentCategory !== normalizeMaterialCategory(material.category)) return true;
+
+        if (material.type === "text" && materialsState.previewMode === "edit") {
+          const currentContent = document.getElementById("material-detail-content-input")?.value || "";
+          return currentContent !== (material.content || "");
+        }
+
+        return false;
+      }
+
+      async function proceedAfterUnsavedCheck(action) {
+        if (!hasUnsavedMaterialChanges()) {
+          await action();
+          return;
+        }
+
+        const shouldSave = window.confirm("当前资料有未保存修改。点击“确定”先保存，点击“取消”放弃修改并继续。");
+        if (shouldSave) {
+          const saved = await saveCurrentMaterial();
+          if (!saved) return;
+        } else {
+          materialsState.previewMode = "";
+          materialsState.draftTextMaterial = null;
+        }
+
+        await action();
+      }
+
       function renderSelectedFiles() {
         const element = document.getElementById("materials-file-selection");
         if (!materialsState.pendingFiles.length) {
           element.textContent = "未选择文件。";
           return;
         }
-        element.textContent = materialsState.pendingFiles.map((file) => file.name).join("；");
+        element.innerHTML = materialsState.pendingFiles.map((entry, index) => `
+          <div class="rounded-[1rem] border border-line/80 bg-white px-3 py-3">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="min-w-0 flex-1">
+                <p class="truncate font-semibold text-slate-700">${escapeHtml(entry.file.name)}</p>
+                <p class="mt-1 text-xs text-slate-500">请为该文件单独选择资料类别</p>
+              </div>
+              <div class="w-full sm:w-[180px]">
+                <select class="select" data-pending-file-category="${index}">
+                  ${materialCategoryOptionsHtml(entry.category || "其他")}
+                </select>
+              </div>
+            </div>
+          </div>
+        `).join("");
       }
 
       function renderMaterialsModal() {
@@ -1261,21 +1324,25 @@
 
       async function saveCurrentMaterial() {
         const material = materialsState.view === "create" ? materialsState.draftTextMaterial : selectedMaterial();
-        if (!material || !materialsState.jobId) return;
+        if (!material || !materialsState.jobId) return false;
         const isCreateView = materialsState.view === "create";
         const name = document.getElementById(isCreateView ? "material-name-input" : "material-detail-name-input").value.trim();
         if (!name) {
           alert("请先填写资料名称。");
-          return;
+          return false;
         }
         const category = getCategoryValue(isCreateView ? "material-category-select" : "material-detail-category-select").trim();
         if (!category) {
           alert("请先填写资料类别。");
-          return;
+          return false;
         }
 
         if (material.type === "text") {
-          const content = document.getElementById(isCreateView ? "material-content-input" : "material-detail-content-input").value;
+          const content = isCreateView
+            ? document.getElementById("material-content-input").value
+            : (materialsState.previewMode === "edit"
+                ? document.getElementById("material-detail-content-input").value
+                : (material.content || ""));
           const payload = await fetchJson("/api/job-materials/text", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -1304,12 +1371,15 @@
           materialsState.items = payload.materials || [];
         }
 
-        const target = materialsState.items.find((item) => item.name === name && item.category === category && item.type === material.type) || materialsState.items[0] || null;
+        const target = isCreateView
+          ? (materialsState.items.find((item) => item.name === name && item.category === category && item.type === material.type) || materialsState.items[0] || null)
+          : (materialsState.items.find((item) => item.id === material.id) || null);
         materialsState.selectedId = target?.id || "";
         materialsState.view = target ? "detail" : "empty";
         materialsState.draftTextMaterial = null;
         materialsState.previewMode = "";
         renderMaterialsModal();
+        return true;
       }
 
       async function deleteCurrentMaterial() {
@@ -1351,13 +1421,15 @@
         }
 
         const files = await Promise.all(
-          materialsState.pendingFiles.map(async (file) => {
+          materialsState.pendingFiles.map(async (entry) => {
+            const file = entry.file;
             if (file.size > 20 * 1024 * 1024) {
               throw new Error(`单文件不能超过 20MB：${file.name}`);
             }
             return {
               fileName: file.name,
               displayName: file.name,
+              category: entry.category || "其他",
               mimeType: file.type || "application/octet-stream",
               contentBase64: await fileToBase64(file),
             };
@@ -1750,12 +1822,22 @@
         });
         document.getElementById("close-jd-detail").addEventListener("click", closeJDDetail);
         document.getElementById("save-jd-detail").addEventListener("click", saveJDDetail);
-        document.getElementById("close-materials-modal").addEventListener("click", closeMaterialsModal);
-        document.getElementById("create-text-material").addEventListener("click", createTextMaterialDraft);
+        document.getElementById("close-materials-modal").addEventListener("click", () => {
+          void proceedAfterUnsavedCheck(async () => {
+            closeMaterialsModal();
+          });
+        });
+        document.getElementById("create-text-material").addEventListener("click", () => {
+          void proceedAfterUnsavedCheck(async () => {
+            createTextMaterialDraft();
+          });
+        });
         document.getElementById("show-upload-panel").addEventListener("click", () => {
-          materialsState.selectedId = "";
-          materialsState.view = "upload";
-          renderMaterialsModal();
+          void proceedAfterUnsavedCheck(async () => {
+            materialsState.selectedId = "";
+            materialsState.view = "upload";
+            renderMaterialsModal();
+          });
         });
         document.getElementById("save-material").addEventListener("click", () => {
           void saveCurrentMaterial();
@@ -1780,8 +1862,18 @@
           void uploadSelectedMaterialFiles();
         });
         document.getElementById("materials-file-input").addEventListener("change", (event) => {
-          materialsState.pendingFiles = Array.from(event.target.files || []);
+          materialsState.pendingFiles = Array.from(event.target.files || []).map((file) => ({
+            file,
+            category: "其他",
+          }));
           renderSelectedFiles();
+        });
+        document.getElementById("materials-file-selection").addEventListener("change", (event) => {
+          const select = event.target.closest("[data-pending-file-category]");
+          if (!select) return;
+          const index = Number(select.dataset.pendingFileCategory);
+          if (!Number.isInteger(index) || !materialsState.pendingFiles[index]) return;
+          materialsState.pendingFiles[index].category = select.value;
         });
 
         document.getElementById("filter-search").addEventListener("input", (event) => {
@@ -1854,7 +1946,11 @@
           if (event.target.id === "jd-detail-modal") closeJDDetail();
         });
         document.getElementById("materials-modal").addEventListener("click", (event) => {
-          if (event.target.id === "materials-modal") closeMaterialsModal();
+          if (event.target.id === "materials-modal") {
+            void proceedAfterUnsavedCheck(async () => {
+              closeMaterialsModal();
+            });
+          }
         });
         document.getElementById("jd-detail-content").addEventListener("keydown", (event) => {
           if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
@@ -1872,10 +1968,12 @@
           }
           const button = event.target.closest("[data-material-select]");
           if (!button) return;
-          materialsState.selectedId = button.dataset.materialSelect;
-          materialsState.view = "detail";
-          materialsState.previewMode = "";
-          renderMaterialsModal();
+          void proceedAfterUnsavedCheck(async () => {
+            materialsState.selectedId = button.dataset.materialSelect;
+            materialsState.view = "detail";
+            materialsState.previewMode = "";
+            renderMaterialsModal();
+          });
         });
       }
 
