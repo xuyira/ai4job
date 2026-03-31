@@ -184,7 +184,7 @@
         <header class="flex flex-col gap-4 border-b border-line/70 pb-4 lg:flex-row lg:items-center lg:justify-between">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-center">
             <div>
-              <h1 class="text-3xl font-black tracking-wide text-ink">求职任务空间</h1>
+              <h1 class="text-3xl font-black tracking-wide text-ink">AI4JOB</h1>
             </div>
             <nav class="flex flex-wrap gap-2">
               <button class="tab-btn border border-line bg-white text-slate-700" data-view-target="home">首页</button>
@@ -198,11 +198,11 @@
         <main class="mt-4 min-h-0 flex-1">
           <section id="view-home" class="view active h-full">
             <div class="grid h-full gap-4 lg:grid-cols-[340px_minmax(0,1fr)]">
-              <aside class="min-h-0 rounded-[1.8rem] border border-line/70 bg-white/70 p-5">
+              <aside class="min-h-0 overflow-y-auto overflow-x-hidden rounded-[1.8rem] border border-line/70 bg-white/70 p-5">
                 <div class="rounded-[1.5rem] bg-ink p-5 text-white">
                   <h2 class="text-2xl font-bold">首页工作台</h2>
                   <p class="mt-3 text-sm leading-7 text-slate-200">
-                    左侧为统一岗位上传入口，右侧为投递管理。首页保持满屏展示，不再使用中间留白版心。
+                    左侧为岗位JD上传入口，右侧为岗位投递管理。
                   </p>
                 </div>
 
@@ -212,7 +212,7 @@
                       <p class="text-sm font-semibold text-slate-500">岗位上传入口</p>
                       <h3 class="mt-1 text-xl font-bold text-ink">新增岗位</h3>
                     </div>
-                    <span class="pill bg-emberSoft text-ember">文本或链接自动识别</span>
+                    <span class="pill bg-emberSoft text-ember">仅支持智联 / Boss / 国聘链接</span>
                   </div>
 
                   <div class="mt-4 space-y-4">
@@ -221,12 +221,15 @@
                       <textarea
                         id="job-source-input"
                         class="textarea mt-2 min-h-[240px]"
-                        placeholder="在这个输入框里粘贴岗位文本或岗位链接。若是链接则自动按链接识别，若是文本则自动按 JD 文本识别。"
+                        placeholder="在这个输入框里粘贴岗位文本，或粘贴智联 / Boss / 国聘链接。其他网站目前只支持粘贴岗位文本。"
                       ></textarea>
                     </div>
                     <button id="create-job" class="btn w-full bg-accent text-white">创建并加入投递管理</button>
+                    <div id="parser-status" class="rounded-[1.2rem] bg-white px-4 py-4 text-sm leading-7 text-slate-600">
+                      解析服务状态检查中。
+                    </div>
                     <div class="rounded-[1.2rem] bg-white px-4 py-4 text-sm leading-7 text-slate-600">
-                      录入后公司、职位、地点、来源渠道由系统自动补充；若补充不准，可在右侧表格中双击对应单元格修改。
+                      目前链接仅支持智联招聘、Boss直聘、国聘；其他网站请直接粘贴岗位文本。若文本里同时带有链接，会自动识别为投递链接与岗位JD链接。Boss 部分链接可能触发站点安全校验，此时请改为粘贴岗位文本。
                     </div>
                   </div>
                 </div>
@@ -235,7 +238,6 @@
               <section class="flex min-h-0 flex-col rounded-[1.8rem] border border-line/70 bg-white/70 p-5">
                 <div class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
                   <div>
-                    <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Application Table</p>
                     <h2 class="mt-1 text-2xl font-bold text-ink">投递管理</h2>
                     <p class="mt-2 text-sm leading-7 text-slate-600">
                       双击单元格可直接修改。表头支持升序 / 降序排序，岗位 JD 在首页通过“详情”弹层查看。
@@ -563,7 +565,7 @@
 
       function summarizeJD(job) {
         if (!job) return "未选择岗位";
-        const value = job.jdLink || job.jdText || "未填写";
+        const value = job.jdText && job.jdText !== "-" ? job.jdText : job.jdLink && job.jdLink !== "-" ? job.jdLink : "-";
         return value.length > 36 ? `${value.slice(0, 36)}...` : value;
       }
 
@@ -578,6 +580,18 @@
 
       function renderHeader() {
         document.getElementById("switch-user").textContent = `${state.currentUser} · 切换用户`;
+      }
+
+      function setParserStatus(message, tone = "neutral") {
+        const element = document.getElementById("parser-status");
+        const tones = {
+          neutral: "bg-white text-slate-600",
+          success: "bg-accentSoft text-accent",
+          warning: "bg-amber-100 text-amber-700",
+          danger: "bg-rose-100 text-rose-700",
+        };
+        element.className = `rounded-[1.2rem] px-4 py-4 text-sm leading-7 ${tones[tone] || tones.neutral}`;
+        element.textContent = message;
       }
 
       function renderFilters() {
@@ -626,7 +640,7 @@
                 <td class="table-cell px-3 py-3" data-edit-cell data-field="location" data-job-id="${job.id}">${escapeHtml(job.location)}</td>
                 <td class="table-cell px-3 py-3" data-edit-cell data-field="sourceChannel" data-job-id="${job.id}">${escapeHtml(job.sourceChannel)}</td>
                 <td class="table-cell px-3 py-3" data-edit-cell data-field="applyLink" data-job-id="${job.id}">
-                  ${job.applyLink ? `<a class="text-accent underline" href="${escapeHtml(job.applyLink)}" target="_blank" rel="noreferrer">投递链接</a>` : "未填写"}
+                  ${job.applyLink && job.applyLink !== "-" ? `<a class="text-accent underline" href="${escapeHtml(job.applyLink)}" target="_blank" rel="noreferrer">投递链接</a>` : "-"}
                 </td>
                 <td class="table-cell px-3 py-3">
                   <button class="font-semibold text-accent underline" data-open-detail="${job.id}">详情</button>
@@ -687,17 +701,22 @@
         renderAll();
       }
 
-      function guessFieldFromInput(sourceInput) {
-        const source = sourceInput.toLowerCase();
-        return {
-          company: source.includes("字节") ? "字节跳动" : source.includes("小红书") ? "小红书" : source.includes("阿里") ? "阿里巴巴" : "AI 自动补充中",
-          position: source.includes("产品") ? "产品岗位" : source.includes("运营") ? "运营岗位" : source.includes("分析") ? "分析岗位" : "AI 自动补充中",
-          location: source.includes("北京") ? "北京" : source.includes("上海") ? "上海" : source.includes("杭州") ? "杭州" : "AI 自动补充中",
-          sourceChannel: source.startsWith("http://") || source.startsWith("https://") ? "链接识别" : "文本识别",
-        };
+      async function checkParserHealth() {
+        try {
+          const response = await fetch("/api/health");
+          if (!response.ok) throw new Error("health_failed");
+          const payload = await response.json();
+          if (payload.openaiConfigured) {
+            setParserStatus(`解析服务已连接，当前启用 OpenAI 模型：${payload.model}。`, "success");
+          } else {
+            setParserStatus("解析服务已连接，但未配置 OpenAI API Key，当前会回退到规则解析。", "warning");
+          }
+        } catch (error) {
+          setParserStatus("解析服务不可用。请通过本地 Node 服务打开页面，而不是直接双击 HTML。", "danger");
+        }
       }
 
-      function createJob() {
+      async function createJob() {
         const sourceInput = document.getElementById("job-source-input").value.trim();
 
         if (!sourceInput) {
@@ -705,26 +724,54 @@
           return;
         }
 
-        const isLink = /^https?:\/\//i.test(sourceInput);
-        const guessed = guessFieldFromInput(sourceInput);
+        const createButton = document.getElementById("create-job");
+        createButton.disabled = true;
+        createButton.textContent = "解析中...";
+        setParserStatus("正在调用本地解析接口，请稍候。", "neutral");
+
+        let parsed;
+        let parser = "heuristic";
+        let fetchStatus = "unknown";
+
+        try {
+          const response = await fetch("/api/parse-job", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ input: sourceInput }),
+          });
+          const payload = await response.json();
+          if (!response.ok || !payload.ok) {
+            throw new Error(payload.error || "解析失败");
+          }
+          parsed = payload.result;
+          parser = payload.result.parser || "heuristic";
+          fetchStatus = payload.result.fetchStatus || "unknown";
+        } catch (error) {
+          createButton.disabled = false;
+          createButton.textContent = "创建并加入投递管理";
+          setParserStatus(`解析失败：${error.message}`, "danger");
+          alert(`岗位解析失败：${error.message}`);
+          return;
+        }
+
         const now = new Date().toISOString();
         const newJob = {
           id: `job-${Date.now()}`,
           selected: false,
-          jdText: isLink ? "已通过链接识别岗位信息，详情待查看原始链接内容。" : sourceInput,
-          jdLink: isLink ? sourceInput : "",
-          company: guessed.company,
-          position: guessed.position,
-          location: guessed.location,
-          sourceChannel: guessed.sourceChannel,
-          applyLink: "",
+          jdText: parsed.jdText,
+          jdLink: parsed.jdLink,
+          company: parsed.company,
+          position: parsed.position,
+          location: parsed.location,
+          sourceChannel: parsed.sourceChannel,
+          applyLink: parsed.applyLink || (parsed.jdLink && parsed.jdLink !== "-" ? parsed.jdLink : "-"),
           importance: "中",
           tags: [],
           status: "待准备",
-          applyDate: "",
-          nextStepDeadline: "",
+          applyDate: "-",
+          nextStepDeadline: "-",
           updatedAt: now,
-          notes: "新岗位已创建，可双击表格继续补充字段。",
+          notes: "-",
         };
 
         state.users[state.currentUser].jobs.unshift(newJob);
@@ -732,6 +779,16 @@
         state.optimizeJobId = newJob.id;
 
         document.getElementById("job-source-input").value = "";
+        createButton.disabled = false;
+        createButton.textContent = "创建并加入投递管理";
+
+        if (parser === "openai") {
+          setParserStatus("岗位解析完成：已通过 OpenAI 抽取并回填字段。", "success");
+        } else if (String(fetchStatus).startsWith("ok")) {
+          setParserStatus("岗位解析完成：页面已抓取成功，但当前字段来自规则解析回退。", "warning");
+        } else {
+          setParserStatus(`岗位解析完成：未抓到页面正文，已回退为基础规则解析。${fetchStatus}`, "warning");
+        }
 
         renderAll();
       }
@@ -804,10 +861,10 @@
         state.selectedJobId = jobId;
         state.optimizeJobId = jobId;
         document.getElementById("jd-detail-title").textContent = `${job.company} · ${job.position}`;
-        document.getElementById("jd-detail-link").innerHTML = job.jdLink
+        document.getElementById("jd-detail-link").innerHTML = job.jdLink && job.jdLink !== "-"
           ? `<a class="text-accent underline" href="${escapeHtml(job.jdLink)}" target="_blank" rel="noreferrer">${escapeHtml(job.jdLink)}</a>`
-          : `<span class="text-slate-500">无链接，仅录入文本。</span>`;
-        document.getElementById("jd-detail-content").textContent = job.jdText || "暂无岗位描述。";
+          : `<span class="text-slate-500">-</span>`;
+        document.getElementById("jd-detail-content").textContent = job.jdText && job.jdText !== "-" ? job.jdText : "-";
         document.getElementById("jd-detail-modal").classList.remove("hidden");
         document.getElementById("jd-detail-modal").classList.add("flex");
       }
@@ -842,7 +899,9 @@
         });
 
         document.getElementById("switch-user").addEventListener("click", switchUser);
-        document.getElementById("create-job").addEventListener("click", createJob);
+        document.getElementById("create-job").addEventListener("click", () => {
+          void createJob();
+        });
         document.getElementById("bulk-delete").addEventListener("click", bulkDeleteJobs);
         document.getElementById("close-jd-detail").addEventListener("click", closeJDDetail);
 
@@ -903,6 +962,7 @@
 
       renderAll();
       bindEvents();
+      void checkParserHealth();
     </script>
   </body>
 </html>
