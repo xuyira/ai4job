@@ -24,18 +24,12 @@
               card: "0 18px 40px rgba(20, 33, 50, 0.08)",
             },
             fontFamily: {
-              sans: ["IBM Plex Sans", "ui-sans-serif", "system-ui", "sans-serif"],
+              sans: ["Times New Roman", "Microsoft YaHei", "serif"],
             },
           },
         },
       };
     </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
     <style>
       :root {
         color-scheme: light;
@@ -46,6 +40,15 @@
           radial-gradient(circle at 0% 0%, rgba(15, 118, 110, 0.16), transparent 24%),
           radial-gradient(circle at 100% 0%, rgba(194, 65, 12, 0.12), transparent 24%),
           linear-gradient(180deg, #fbf7f0 0%, #f2ede3 100%);
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        font-family: "Times New Roman", "Microsoft YaHei", serif;
       }
 
       .surface {
@@ -154,16 +157,34 @@
       .menu-hidden {
         display: none;
       }
+
+      .table-cell {
+        max-width: 180px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .sort-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-weight: 700;
+      }
+
+      .sort-icon {
+        color: #9ca3af;
+        font-size: 0.72rem;
+      }
     </style>
   </head>
-  <body class="font-sans text-slate-800">
-    <div class="app-shell p-4 sm:p-6">
-      <div class="surface mx-auto flex h-full max-w-[1600px] flex-col rounded-[2rem] border border-white/70 p-4 shadow-card sm:p-6">
+  <body class="text-slate-800">
+    <div class="app-shell p-0">
+      <div class="surface flex h-full w-full flex-col rounded-none border-0 p-4 shadow-none sm:p-5">
         <header class="flex flex-col gap-4 border-b border-line/70 pb-4 lg:flex-row lg:items-center lg:justify-between">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-center">
             <div>
-              <p class="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">AI4JOB</p>
-              <h1 class="mt-1 text-2xl font-bold text-ink">求职任务空间</h1>
+              <h1 class="text-3xl font-black tracking-wide text-ink">求职任务空间</h1>
             </div>
             <nav class="flex flex-wrap gap-2">
               <button class="tab-btn border border-line bg-white text-slate-700" data-view-target="home">首页</button>
@@ -171,23 +192,17 @@
               <button class="tab-btn border border-line bg-white text-slate-700" data-view-target="interview">面试优化</button>
             </nav>
           </div>
-          <div class="flex flex-wrap items-center gap-3">
-            <div class="rounded-full bg-accentSoft px-4 py-2 text-sm font-semibold text-accent">
-              当前任务 <span id="header-job-name">未选择岗位</span>
-            </div>
-            <button id="switch-user" class="btn border border-line bg-white text-slate-700"></button>
-          </div>
+          <button id="switch-user" class="btn border border-line bg-white text-slate-700"></button>
         </header>
 
         <main class="mt-4 min-h-0 flex-1">
           <section id="view-home" class="view active h-full">
-            <div class="grid h-full gap-4 lg:grid-cols-[360px_minmax(0,1fr)]">
-              <aside class="panel-scroll min-h-0 overflow-y-auto rounded-[1.8rem] border border-line/70 bg-white/70 p-5">
+            <div class="grid h-full gap-4 lg:grid-cols-[340px_minmax(0,1fr)]">
+              <aside class="min-h-0 rounded-[1.8rem] border border-line/70 bg-white/70 p-5">
                 <div class="rounded-[1.5rem] bg-ink p-5 text-white">
-                  <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-300">Workspace</p>
-                  <h2 class="mt-3 text-2xl font-bold">首页工作台</h2>
+                  <h2 class="text-2xl font-bold">首页工作台</h2>
                   <p class="mt-3 text-sm leading-7 text-slate-200">
-                    左侧录入岗位 JD，右侧管理当前用户的全部投递记录。页面固定在一屏内，内部区域独立滚动。
+                    左侧为统一岗位上传入口，右侧为投递管理。首页保持满屏展示，不再使用中间留白版心。
                   </p>
                 </div>
 
@@ -197,57 +212,22 @@
                       <p class="text-sm font-semibold text-slate-500">岗位上传入口</p>
                       <h3 class="mt-1 text-xl font-bold text-ink">新增岗位</h3>
                     </div>
-                    <span class="pill bg-emberSoft text-ember">支持文本 / 链接</span>
+                    <span class="pill bg-emberSoft text-ember">文本或链接自动识别</span>
                   </div>
 
                   <div class="mt-4 space-y-4">
                     <div>
-                      <label class="text-sm font-semibold text-slate-600">岗位 JD 文本</label>
+                      <label class="text-sm font-semibold text-slate-600">岗位内容</label>
                       <textarea
-                        id="job-jd-text"
-                        class="textarea mt-2 min-h-[180px]"
-                        placeholder="粘贴岗位职责、任职要求或招聘描述"
+                        id="job-source-input"
+                        class="textarea mt-2 min-h-[240px]"
+                        placeholder="在这个输入框里粘贴岗位文本或岗位链接。若是链接则自动按链接识别，若是文本则自动按 JD 文本识别。"
                       ></textarea>
                     </div>
-                    <div>
-                      <label class="text-sm font-semibold text-slate-600">岗位链接</label>
-                      <input id="job-jd-link" class="input mt-2" type="url" placeholder="https://example.com/job" />
-                    </div>
-                    <div class="grid gap-4 md:grid-cols-2">
-                      <div>
-                        <label class="text-sm font-semibold text-slate-600">公司</label>
-                        <input id="job-company" class="input mt-2" type="text" placeholder="可留空等待补全" />
-                      </div>
-                      <div>
-                        <label class="text-sm font-semibold text-slate-600">职位</label>
-                        <input id="job-position" class="input mt-2" type="text" placeholder="可留空等待补全" />
-                      </div>
-                      <div>
-                        <label class="text-sm font-semibold text-slate-600">地点</label>
-                        <input id="job-location" class="input mt-2" type="text" placeholder="如：上海 / Remote" />
-                      </div>
-                      <div>
-                        <label class="text-sm font-semibold text-slate-600">来源渠道</label>
-                        <input id="job-channel" class="input mt-2" type="text" placeholder="官网 / Boss / 内推" />
-                      </div>
-                    </div>
                     <button id="create-job" class="btn w-full bg-accent text-white">创建并加入投递管理</button>
-                  </div>
-                </div>
-
-                <div class="mt-4 rounded-[1.5rem] border border-line/80 bg-white p-5">
-                  <p class="text-sm font-semibold text-slate-500">快速筛选</p>
-                  <div class="mt-4 space-y-3">
-                    <input id="filter-search" class="input" type="text" placeholder="搜索公司 / 职位 / 标签 / 地点" />
-                    <select id="filter-status" class="select">
-                      <option value="all">全部状态</option>
-                    </select>
-                    <select id="filter-importance" class="select">
-                      <option value="all">全部重视度</option>
-                      <option value="高">高</option>
-                      <option value="中">中</option>
-                      <option value="低">低</option>
-                    </select>
+                    <div class="rounded-[1.2rem] bg-white px-4 py-4 text-sm leading-7 text-slate-600">
+                      录入后公司、职位、地点、来源渠道由系统自动补充；若补充不准，可在右侧表格中双击对应单元格修改。
+                    </div>
                   </div>
                 </div>
               </aside>
@@ -258,45 +238,53 @@
                     <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Application Table</p>
                     <h2 class="mt-1 text-2xl font-bold text-ink">投递管理</h2>
                     <p class="mt-2 text-sm leading-7 text-slate-600">
-                      双击单元格可直接修改。点击“进入优化”可跳到简历优化、面试优化或回到投递管理。
+                      双击单元格可直接修改。表头支持升序 / 降序排序，岗位 JD 在首页通过“详情”弹层查看。
                     </p>
                   </div>
-                  <div class="grid gap-3 sm:grid-cols-3">
-                    <div class="rounded-[1.2rem] bg-shell px-4 py-3">
-                      <p class="text-xs text-slate-500">当前用户</p>
-                      <p id="summary-user-count" class="mt-1 text-xl font-bold text-ink"></p>
-                    </div>
-                    <div class="rounded-[1.2rem] bg-accentSoft px-4 py-3">
-                      <p class="text-xs text-accent">进行中</p>
-                      <p id="summary-active-count" class="mt-1 text-xl font-bold text-accent"></p>
-                    </div>
-                    <div class="rounded-[1.2rem] bg-emberSoft px-4 py-3">
-                      <p class="text-xs text-ember">高重视度</p>
-                      <p id="summary-priority-count" class="mt-1 text-xl font-bold text-ember"></p>
-                    </div>
+                  <div class="flex flex-wrap items-center gap-3">
+                    <button id="bulk-delete" class="btn bg-ember text-white">删除已勾选</button>
+                  </div>
+                </div>
+
+                <div class="mt-4 grid gap-3 xl:grid-cols-[1fr_220px_220px_150px_150px]">
+                  <input id="filter-search" class="input" type="text" placeholder="搜索公司 / 职位 / 标签 / 地点" />
+                  <select id="filter-status" class="select">
+                    <option value="all">全部状态</option>
+                  </select>
+                  <select id="filter-importance" class="select">
+                    <option value="all">全部重视度</option>
+                    <option value="高">高</option>
+                    <option value="中">中</option>
+                    <option value="低">低</option>
+                  </select>
+                  <div class="rounded-[1.2rem] bg-shell px-4 py-3">
+                    <p class="text-xs text-slate-500">岗位数</p>
+                    <p id="summary-user-count" class="mt-1 text-xl font-bold text-ink"></p>
+                  </div>
+                  <div class="rounded-[1.2rem] bg-accentSoft px-4 py-3">
+                    <p class="text-xs text-accent">已勾选</p>
+                    <p id="summary-selected-count" class="mt-1 text-xl font-bold text-accent"></p>
                   </div>
                 </div>
 
                 <div class="table-wrap mt-5 min-h-0 flex-1 overflow-auto rounded-[1.4rem] border border-line/80">
-                  <table class="min-w-[1550px] w-full border-collapse text-left text-sm">
+                  <table class="min-w-[1600px] w-full border-collapse text-left text-sm">
                     <thead class="sticky top-0 z-10 bg-[#f7f2ea] text-slate-600">
                       <tr>
-                        <th class="border-b border-line px-3 py-3 font-semibold">选择框</th>
-                        <th class="border-b border-line px-3 py-3 font-semibold">进入优化</th>
-                        <th class="border-b border-line px-3 py-3 font-semibold">岗位 JD</th>
-                        <th class="border-b border-line px-3 py-3 font-semibold">公司</th>
-                        <th class="border-b border-line px-3 py-3 font-semibold">职位</th>
-                        <th class="border-b border-line px-3 py-3 font-semibold">地点</th>
-                        <th class="border-b border-line px-3 py-3 font-semibold">来源渠道</th>
-                        <th class="border-b border-line px-3 py-3 font-semibold">投递链接</th>
-                        <th class="border-b border-line px-3 py-3 font-semibold">重视度</th>
-                        <th class="border-b border-line px-3 py-3 font-semibold">标签</th>
-                        <th class="border-b border-line px-3 py-3 font-semibold">进展状态</th>
-                        <th class="border-b border-line px-3 py-3 font-semibold">投递日期</th>
-                        <th class="border-b border-line px-3 py-3 font-semibold">下一节点 DDL</th>
-                        <th class="border-b border-line px-3 py-3 font-semibold">最后更新时间</th>
-                        <th class="border-b border-line px-3 py-3 font-semibold">备注</th>
-                        <th class="border-b border-line px-3 py-3 font-semibold">删除</th>
+                        <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="selected">选择框 <span class="sort-icon" data-sort-icon="selected">↕</span></button></th>
+                        <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="company">公司 <span class="sort-icon" data-sort-icon="company">↕</span></button></th>
+                        <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="position">职位 <span class="sort-icon" data-sort-icon="position">↕</span></button></th>
+                        <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="location">地点 <span class="sort-icon" data-sort-icon="location">↕</span></button></th>
+                        <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="sourceChannel">来源渠道 <span class="sort-icon" data-sort-icon="sourceChannel">↕</span></button></th>
+                        <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="applyLink">投递链接 <span class="sort-icon" data-sort-icon="applyLink">↕</span></button></th>
+                        <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="jdText">岗位 JD <span class="sort-icon" data-sort-icon="jdText">↕</span></button></th>
+                        <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="importance">重视度 <span class="sort-icon" data-sort-icon="importance">↕</span></button></th>
+                        <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="tags">标签 <span class="sort-icon" data-sort-icon="tags">↕</span></button></th>
+                        <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="status">进展状态 <span class="sort-icon" data-sort-icon="status">↕</span></button></th>
+                        <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="applyDate">投递日期 <span class="sort-icon" data-sort-icon="applyDate">↕</span></button></th>
+                        <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="nextStepDeadline">下一节点 DDL <span class="sort-icon" data-sort-icon="nextStepDeadline">↕</span></button></th>
+                        <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="updatedAt">最后更新时间 <span class="sort-icon" data-sort-icon="updatedAt">↕</span></button></th>
+                        <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="notes">备注 <span class="sort-icon" data-sort-icon="notes">↕</span></button></th>
                       </tr>
                     </thead>
                     <tbody id="jobs-table-body" class="bg-white"></tbody>
@@ -308,13 +296,11 @@
 
           <section id="view-resume" class="view h-full">
             <div class="grid h-full gap-4 lg:grid-cols-[360px_minmax(0,1fr)]">
-              <aside class="panel-scroll min-h-0 overflow-y-auto rounded-[1.8rem] border border-line/70 bg-white/70 p-5">
+              <aside class="rounded-[1.8rem] border border-line/70 bg-white/70 p-5">
                 <div class="rounded-[1.5rem] bg-accent p-5 text-white">
                   <p class="text-xs font-bold uppercase tracking-[0.24em] text-white/70">Resume Optimization</p>
                   <h2 class="mt-2 text-2xl font-bold">简历优化入口</h2>
-                  <p class="mt-3 text-sm leading-7 text-white/80">
-                    本页先保留接口。可通过顶部导航进入，也可从首页表格中某一行的“进入优化”跳转过来。
-                  </p>
+                  <p class="mt-3 text-sm leading-7 text-white/80">本页先保留接口。当前通过顶部导航进入，并读取首页当前选中的岗位上下文。</p>
                 </div>
                 <div class="mt-4 rounded-[1.5rem] border border-line/80 bg-white p-5">
                   <p class="text-sm font-semibold text-slate-500">当前选中岗位</p>
@@ -337,13 +323,11 @@
 
           <section id="view-interview" class="view h-full">
             <div class="grid h-full gap-4 lg:grid-cols-[360px_minmax(0,1fr)]">
-              <aside class="panel-scroll min-h-0 overflow-y-auto rounded-[1.8rem] border border-line/70 bg-white/70 p-5">
+              <aside class="rounded-[1.8rem] border border-line/70 bg-white/70 p-5">
                 <div class="rounded-[1.5rem] bg-plum p-5 text-white">
                   <p class="text-xs font-bold uppercase tracking-[0.24em] text-white/70">Interview Optimization</p>
                   <h2 class="mt-2 text-2xl font-bold">面试优化入口</h2>
-                  <p class="mt-3 text-sm leading-7 text-white/80">
-                    本页同样先保留接口。导航入口与表格入口都已接好，后续可直接扩展具体交互。
-                  </p>
+                  <p class="mt-3 text-sm leading-7 text-white/80">本页同样先保留接口。当前通过顶部导航进入，并读取首页当前选中的岗位上下文。</p>
                 </div>
                 <div class="mt-4 rounded-[1.5rem] border border-line/80 bg-white p-5">
                   <p class="text-sm font-semibold text-slate-500">当前选中岗位</p>
@@ -367,15 +351,32 @@
       </div>
     </div>
 
+    <div id="jd-detail-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/45 p-4">
+      <div class="surface w-full max-w-4xl rounded-[2rem] border border-white/70 p-6 shadow-card">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="text-sm font-semibold text-slate-500">岗位 JD 详情</p>
+            <h3 id="jd-detail-title" class="mt-1 text-2xl font-bold text-ink"></h3>
+          </div>
+          <button id="close-jd-detail" class="btn border border-line bg-white text-slate-700">关闭</button>
+        </div>
+        <div class="mt-5 space-y-4 text-sm leading-8 text-slate-700">
+          <div>
+            <p class="font-semibold text-slate-800">岗位链接</p>
+            <div id="jd-detail-link" class="mt-2"></div>
+          </div>
+          <div>
+            <p class="font-semibold text-slate-800">岗位描述</p>
+            <div id="jd-detail-content" class="mt-2 rounded-[1.2rem] bg-shell p-4"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script>
       const STORAGE_KEY = "ai4job-revise1-state";
       const STATUS_OPTIONS = ["待准备", "待投递", "已投递", "笔试中", "一面中", "二面中", "HR 面中", "Offer", "拒信", "已终止"];
       const IMPORTANCE_OPTIONS = ["高", "中", "低"];
-      const OPTIMIZE_OPTIONS = [
-        { key: "resume", label: "简历优化" },
-        { key: "interview", label: "面试优化" },
-        { key: "home", label: "投递管理" },
-      ];
 
       const seedJobs = [
         {
@@ -425,6 +426,10 @@
           status: "all",
           importance: "all",
           keyword: "",
+        },
+        sort: {
+          field: "updatedAt",
+          direction: "desc",
         },
         users: {
           陈默: { jobs: structuredClone(seedJobs) },
@@ -522,6 +527,12 @@
         return `<span class="pill ${styles[status] || "bg-slate-100 text-slate-700"}">${escapeHtml(status)}</span>`;
       }
 
+      function compareValue(field, job) {
+        if (field === "selected") return job.selected ? 1 : 0;
+        if (field === "tags") return job.tags.join(", ");
+        return job[field] || "";
+      }
+
       function filteredJobs() {
         const jobs = currentJobs();
         const keyword = state.filters.keyword.trim().toLowerCase();
@@ -536,9 +547,17 @@
               .includes(keyword);
           })
           .sort((a, b) => {
-            const aTime = a.nextStepDeadline ? new Date(a.nextStepDeadline).getTime() : Number.MAX_SAFE_INTEGER;
-            const bTime = b.nextStepDeadline ? new Date(b.nextStepDeadline).getTime() : Number.MAX_SAFE_INTEGER;
-            return aTime - bTime;
+            const { field, direction } = state.sort;
+            const order = direction === "asc" ? 1 : -1;
+            const aValue = compareValue(field, a);
+            const bValue = compareValue(field, b);
+            const aDate = Date.parse(aValue);
+            const bDate = Date.parse(bValue);
+
+            if (!Number.isNaN(aDate) && !Number.isNaN(bDate)) {
+              return (aDate - bDate) * order;
+            }
+            return String(aValue).localeCompare(String(bValue), "zh-CN", { numeric: true }) * order;
           });
       }
 
@@ -558,9 +577,7 @@
       }
 
       function renderHeader() {
-        const job = optimizeJob();
         document.getElementById("switch-user").textContent = `${state.currentUser} · 切换用户`;
-        document.getElementById("header-job-name").textContent = job ? `${job.company} / ${job.position}` : "未选择岗位";
       }
 
       function renderFilters() {
@@ -574,8 +591,13 @@
       function renderSummary() {
         const jobs = currentJobs();
         document.getElementById("summary-user-count").textContent = `${jobs.length} 个岗位`;
-        document.getElementById("summary-active-count").textContent = `${jobs.filter((job) => !["Offer", "拒信", "已终止"].includes(job.status)).length} 条`;
-        document.getElementById("summary-priority-count").textContent = `${jobs.filter((job) => job.importance === "高").length} 条`;
+        document.getElementById("summary-selected-count").textContent = `${jobs.filter((job) => job.selected).length} 条`;
+      }
+
+      function renderSortIcons() {
+        document.querySelectorAll("[data-sort-icon]").forEach((icon) => {
+          icon.textContent = icon.dataset.sortIcon === state.sort.field ? (state.sort.direction === "asc" ? "↑" : "↓") : "↕";
+        });
       }
 
       function renderTable() {
@@ -585,7 +607,7 @@
         if (!jobs.length) {
           tbody.innerHTML = `
             <tr>
-              <td colspan="16" class="px-4 py-10 text-center text-sm text-slate-500">当前筛选条件下没有岗位记录。</td>
+              <td colspan="14" class="px-4 py-10 text-center text-sm text-slate-500">当前筛选条件下没有岗位记录。</td>
             </tr>
           `;
           return;
@@ -595,49 +617,27 @@
           .map((job) => {
             const tagsText = job.tags.join(", ");
             return `
-              <tr class="border-b border-line/60 align-top ${job.id === state.optimizeJobId ? "bg-accentSoft/30" : ""}">
-                <td class="px-3 py-3">
+              <tr class="border-b border-line/60 ${job.id === state.optimizeJobId ? "bg-accentSoft/30" : ""}">
+                <td class="table-cell px-3 py-3">
                   <input type="checkbox" data-job-select="${job.id}" ${job.selected ? "checked" : ""} />
                 </td>
-                <td class="relative px-3 py-3">
-                  <button class="btn border border-line bg-white px-3 py-2 text-xs text-slate-700" data-open-menu="${job.id}">进入优化</button>
-                  <div class="menu-hidden absolute left-3 top-14 z-20 min-w-[140px] rounded-2xl border border-line bg-white p-2 shadow-card" data-optimize-menu="${job.id}">
-                    ${OPTIMIZE_OPTIONS.map(
-                      (item) => `
-                        <button class="flex w-full rounded-xl px-3 py-2 text-left text-sm font-semibold text-slate-700 hover:bg-shell" data-optimize-action="${item.key}" data-job-id="${job.id}">
-                          ${item.label}
-                        </button>
-                      `
-                    ).join("")}
-                  </div>
-                </td>
-                <td class="px-3 py-3">
-                  <div class="max-w-[280px]">
-                    <div class="font-semibold text-ink">${escapeHtml(summarizeJD(job))}</div>
-                    ${
-                      job.jdLink
-                        ? `<a class="mt-1 inline-block text-xs font-semibold text-accent underline" href="${escapeHtml(job.jdLink)}" target="_blank" rel="noreferrer">打开链接</a>`
-                        : ""
-                    }
-                  </div>
-                </td>
-                <td class="px-3 py-3" data-edit-cell data-field="company" data-job-id="${job.id}">${escapeHtml(job.company)}</td>
-                <td class="px-3 py-3" data-edit-cell data-field="position" data-job-id="${job.id}">${escapeHtml(job.position)}</td>
-                <td class="px-3 py-3" data-edit-cell data-field="location" data-job-id="${job.id}">${escapeHtml(job.location)}</td>
-                <td class="px-3 py-3" data-edit-cell data-field="sourceChannel" data-job-id="${job.id}">${escapeHtml(job.sourceChannel)}</td>
-                <td class="px-3 py-3" data-edit-cell data-field="applyLink" data-job-id="${job.id}">
+                <td class="table-cell px-3 py-3" data-edit-cell data-field="company" data-job-id="${job.id}">${escapeHtml(job.company)}</td>
+                <td class="table-cell px-3 py-3" data-edit-cell data-field="position" data-job-id="${job.id}">${escapeHtml(job.position)}</td>
+                <td class="table-cell px-3 py-3" data-edit-cell data-field="location" data-job-id="${job.id}">${escapeHtml(job.location)}</td>
+                <td class="table-cell px-3 py-3" data-edit-cell data-field="sourceChannel" data-job-id="${job.id}">${escapeHtml(job.sourceChannel)}</td>
+                <td class="table-cell px-3 py-3" data-edit-cell data-field="applyLink" data-job-id="${job.id}">
                   ${job.applyLink ? `<a class="text-accent underline" href="${escapeHtml(job.applyLink)}" target="_blank" rel="noreferrer">投递链接</a>` : "未填写"}
                 </td>
-                <td class="px-3 py-3" data-edit-cell data-field="importance" data-job-id="${job.id}">${escapeHtml(job.importance)}</td>
-                <td class="px-3 py-3" data-edit-cell data-field="tags" data-job-id="${job.id}">${escapeHtml(tagsText || "未填写")}</td>
-                <td class="px-3 py-3" data-edit-cell data-field="status" data-job-id="${job.id}">${statusPill(job.status)}</td>
-                <td class="px-3 py-3" data-edit-cell data-field="applyDate" data-job-id="${job.id}">${escapeHtml(job.applyDate || "未填写")}</td>
-                <td class="px-3 py-3" data-edit-cell data-field="nextStepDeadline" data-job-id="${job.id}">${escapeHtml(job.nextStepDeadline || "未填写")}</td>
-                <td class="px-3 py-3 text-slate-500">${formatDateTime(job.updatedAt)}</td>
-                <td class="px-3 py-3 max-w-[220px]" data-edit-cell data-field="notes" data-job-id="${job.id}">${escapeHtml(job.notes || "未填写")}</td>
-                <td class="px-3 py-3">
-                  <button class="btn bg-ember px-3 py-2 text-xs text-white" data-delete-job="${job.id}">删除</button>
+                <td class="table-cell px-3 py-3">
+                  <button class="font-semibold text-accent underline" data-open-detail="${job.id}">详情</button>
                 </td>
+                <td class="table-cell px-3 py-3" data-edit-cell data-field="importance" data-job-id="${job.id}">${escapeHtml(job.importance)}</td>
+                <td class="table-cell px-3 py-3" data-edit-cell data-field="tags" data-job-id="${job.id}">${escapeHtml(tagsText || "未填写")}</td>
+                <td class="table-cell px-3 py-3" data-edit-cell data-field="status" data-job-id="${job.id}">${statusPill(job.status)}</td>
+                <td class="table-cell px-3 py-3" data-edit-cell data-field="applyDate" data-job-id="${job.id}">${escapeHtml(job.applyDate || "未填写")}</td>
+                <td class="table-cell px-3 py-3" data-edit-cell data-field="nextStepDeadline" data-job-id="${job.id}">${escapeHtml(job.nextStepDeadline || "未填写")}</td>
+                <td class="table-cell px-3 py-3 text-slate-500">${formatDateTime(job.updatedAt)}</td>
+                <td class="table-cell px-3 py-3" data-edit-cell data-field="notes" data-job-id="${job.id}">${escapeHtml(job.notes || "未填写")}</td>
               </tr>
             `;
           })
@@ -667,6 +667,7 @@
         renderHeader();
         renderFilters();
         renderSummary();
+        renderSortIcons();
         renderTable();
         renderOptimizeCards();
       }
@@ -686,43 +687,36 @@
         renderAll();
       }
 
-      function closeMenus() {
-        document.querySelectorAll("[data-optimize-menu]").forEach((menu) => menu.classList.add("menu-hidden"));
-      }
-
-      function guessFieldFromJD(text, link) {
-        const source = `${text} ${link}`.toLowerCase();
+      function guessFieldFromInput(sourceInput) {
+        const source = sourceInput.toLowerCase();
         return {
-          company: source.includes("字节") ? "字节跳动" : source.includes("小红书") ? "小红书" : "",
-          position: source.includes("产品") ? "产品岗位" : source.includes("运营") ? "运营岗位" : "",
-          location: source.includes("北京") ? "北京" : source.includes("上海") ? "上海" : "",
+          company: source.includes("字节") ? "字节跳动" : source.includes("小红书") ? "小红书" : source.includes("阿里") ? "阿里巴巴" : "AI 自动补充中",
+          position: source.includes("产品") ? "产品岗位" : source.includes("运营") ? "运营岗位" : source.includes("分析") ? "分析岗位" : "AI 自动补充中",
+          location: source.includes("北京") ? "北京" : source.includes("上海") ? "上海" : source.includes("杭州") ? "杭州" : "AI 自动补充中",
+          sourceChannel: source.startsWith("http://") || source.startsWith("https://") ? "链接识别" : "文本识别",
         };
       }
 
       function createJob() {
-        const jdText = document.getElementById("job-jd-text").value.trim();
-        const jdLink = document.getElementById("job-jd-link").value.trim();
-        const typedCompany = document.getElementById("job-company").value.trim();
-        const typedPosition = document.getElementById("job-position").value.trim();
-        const typedLocation = document.getElementById("job-location").value.trim();
-        const sourceChannel = document.getElementById("job-channel").value.trim() || "手动录入";
+        const sourceInput = document.getElementById("job-source-input").value.trim();
 
-        if (!jdText && !jdLink) {
-          alert("请至少粘贴岗位文本或岗位链接。");
+        if (!sourceInput) {
+          alert("请先粘贴岗位文本或岗位链接。");
           return;
         }
 
-        const guessed = guessFieldFromJD(jdText, jdLink);
+        const isLink = /^https?:\/\//i.test(sourceInput);
+        const guessed = guessFieldFromInput(sourceInput);
         const now = new Date().toISOString();
         const newJob = {
           id: `job-${Date.now()}`,
           selected: false,
-          jdText: jdText || "已录入岗位链接，等待补充 JD 文本。",
-          jdLink,
-          company: typedCompany || guessed.company || "待补充公司",
-          position: typedPosition || guessed.position || "待补充职位",
-          location: typedLocation || guessed.location || "待补充地点",
-          sourceChannel,
+          jdText: isLink ? "已通过链接识别岗位信息，详情待查看原始链接内容。" : sourceInput,
+          jdLink: isLink ? sourceInput : "",
+          company: guessed.company,
+          position: guessed.position,
+          location: guessed.location,
+          sourceChannel: guessed.sourceChannel,
           applyLink: "",
           importance: "中",
           tags: [],
@@ -737,9 +731,7 @@
         state.selectedJobId = newJob.id;
         state.optimizeJobId = newJob.id;
 
-        ["job-jd-text", "job-jd-link", "job-company", "job-position", "job-location", "job-channel"].forEach((id) => {
-          document.getElementById(id).value = "";
-        });
+        document.getElementById("job-source-input").value = "";
 
         renderAll();
       }
@@ -806,6 +798,40 @@
         renderAll();
       }
 
+      function openJDDetail(jobId) {
+        const job = currentJobs().find((item) => item.id === jobId);
+        if (!job) return;
+        state.selectedJobId = jobId;
+        state.optimizeJobId = jobId;
+        document.getElementById("jd-detail-title").textContent = `${job.company} · ${job.position}`;
+        document.getElementById("jd-detail-link").innerHTML = job.jdLink
+          ? `<a class="text-accent underline" href="${escapeHtml(job.jdLink)}" target="_blank" rel="noreferrer">${escapeHtml(job.jdLink)}</a>`
+          : `<span class="text-slate-500">无链接，仅录入文本。</span>`;
+        document.getElementById("jd-detail-content").textContent = job.jdText || "暂无岗位描述。";
+        document.getElementById("jd-detail-modal").classList.remove("hidden");
+        document.getElementById("jd-detail-modal").classList.add("flex");
+      }
+
+      function closeJDDetail() {
+        document.getElementById("jd-detail-modal").classList.add("hidden");
+        document.getElementById("jd-detail-modal").classList.remove("flex");
+      }
+
+      function bulkDeleteJobs() {
+        const selectedIds = currentJobs().filter((job) => job.selected).map((job) => job.id);
+        if (!selectedIds.length) {
+          alert("请先勾选至少一条岗位记录。");
+          return;
+        }
+        const confirmed = window.confirm("确定删除已勾选的岗位及其岗位空间内容吗？");
+        if (!confirmed) return;
+        state.users[state.currentUser].jobs = currentJobs().filter((job) => !selectedIds.includes(job.id));
+        const firstJob = currentJobs()[0];
+        state.selectedJobId = firstJob ? firstJob.id : "";
+        state.optimizeJobId = firstJob ? firstJob.id : "";
+        renderAll();
+      }
+
       function bindEvents() {
         document.querySelectorAll("[data-view-target]").forEach((button) => {
           button.addEventListener("click", () => setActiveView(button.dataset.viewTarget));
@@ -817,6 +843,8 @@
 
         document.getElementById("switch-user").addEventListener("click", switchUser);
         document.getElementById("create-job").addEventListener("click", createJob);
+        document.getElementById("bulk-delete").addEventListener("click", bulkDeleteJobs);
+        document.getElementById("close-jd-detail").addEventListener("click", closeJDDetail);
 
         document.getElementById("filter-search").addEventListener("input", (event) => {
           state.filters.keyword = event.target.value;
@@ -834,6 +862,10 @@
         document.getElementById("jobs-table-body").addEventListener("change", (event) => {
           const checkbox = event.target.closest("[data-job-select]");
           if (!checkbox) return;
+          if (checkbox.checked) {
+            state.selectedJobId = checkbox.dataset.jobSelect;
+            state.optimizeJobId = checkbox.dataset.jobSelect;
+          }
           updateJob(checkbox.dataset.jobSelect, (job) => {
             job.selected = checkbox.checked;
             return job;
@@ -841,37 +873,8 @@
         });
 
         document.getElementById("jobs-table-body").addEventListener("click", (event) => {
-          const menuButton = event.target.closest("[data-open-menu]");
-          const optimizeAction = event.target.closest("[data-optimize-action]");
-          const deleteButton = event.target.closest("[data-delete-job]");
-
-          if (menuButton) {
-            const targetMenu = document.querySelector(`[data-optimize-menu="${menuButton.dataset.openMenu}"]`);
-            const isHidden = targetMenu.classList.contains("menu-hidden");
-            closeMenus();
-            if (isHidden) targetMenu.classList.remove("menu-hidden");
-            return;
-          }
-
-          if (optimizeAction) {
-            const nextView = optimizeAction.dataset.optimizeAction;
-            const jobId = optimizeAction.dataset.jobId;
-            state.selectedJobId = jobId;
-            state.optimizeJobId = jobId;
-            closeMenus();
-            setActiveView(nextView);
-            return;
-          }
-
-          if (deleteButton) {
-            const confirmed = window.confirm("确定删除吗？确定即删除这一条及其岗位空间内容。");
-            if (!confirmed) return;
-            state.users[state.currentUser].jobs = currentJobs().filter((job) => job.id !== deleteButton.dataset.deleteJob);
-            const firstJob = currentJobs()[0];
-            state.selectedJobId = firstJob ? firstJob.id : "";
-            state.optimizeJobId = firstJob ? firstJob.id : "";
-            renderAll();
-          }
+          const detailButton = event.target.closest("[data-open-detail]");
+          if (detailButton) openJDDetail(detailButton.dataset.openDetail);
         });
 
         document.getElementById("jobs-table-body").addEventListener("dblclick", (event) => {
@@ -880,10 +883,21 @@
           startCellEdit(cell);
         });
 
-        document.addEventListener("click", (event) => {
-          if (!event.target.closest("[data-open-menu]") && !event.target.closest("[data-optimize-menu]")) {
-            closeMenus();
-          }
+        document.querySelectorAll("[data-sort-field]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const field = button.dataset.sortField;
+            if (state.sort.field === field) {
+              state.sort.direction = state.sort.direction === "asc" ? "desc" : "asc";
+            } else {
+              state.sort.field = field;
+              state.sort.direction = "asc";
+            }
+            renderAll();
+          });
+        });
+
+        document.getElementById("jd-detail-modal").addEventListener("click", (event) => {
+          if (event.target.id === "jd-detail-modal") closeJDDetail();
         });
       }
 
