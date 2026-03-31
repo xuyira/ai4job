@@ -3,6 +3,7 @@ import { execFile } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
@@ -21,7 +22,12 @@ const MAX_FETCH_CHARS = 20000;
 const SUPPORTED_LINK_HOSTS = ["zhipin.com", "zhaopin.com", "iguopin.com"];
 const MATERIALS_ROOT = path.join(__dirname, "storage");
 const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
-const ALLOWED_UPLOAD_EXTENSIONS = new Set([".pdf", ".doc", ".docx", ".txt", ".md"]);
+const ALLOWED_UPLOAD_EXTENSIONS = new Set([
+  ".pdf", ".doc", ".docx", ".txt", ".md",
+  ".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".svg",
+  ".ppt", ".pptx",
+]);
+const PPT_EXTENSIONS = new Set([".ppt", ".pptx"]);
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -33,6 +39,15 @@ const MIME_TYPES = {
   ".pdf": "application/pdf",
   ".doc": "application/msword",
   ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".gif": "image/gif",
+  ".webp": "image/webp",
+  ".bmp": "image/bmp",
+  ".svg": "image/svg+xml",
+  ".ppt": "application/vnd.ms-powerpoint",
+  ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
 };
 
 function loadDotenv(filePath) {
@@ -298,7 +313,50 @@ async function readMaterialFile({ user, jobId, id }) {
     buffer,
     fileName: target.fileName || `${target.name}${path.extname(filePath)}`,
     mimeType: target.mimeType || MIME_TYPES[path.extname(filePath).toLowerCase()] || "application/octet-stream",
+    filePath,
   };
+}
+
+async function findOfficeBinary() {
+  for (const command of ["soffice", "libreoffice"]) {
+    try {
+      await execFileAsync(command, ["--version"]);
+      return command;
+    } catch {
+      continue;
+    }
+  }
+  return "";
+}
+
+async function convertPresentationToPdf(filePath) {
+  const officeBinary = await findOfficeBinary();
+  if (!officeBinary) return null;
+
+  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "ai4job-ppt-preview-"));
+  try {
+    await execFileAsync(officeBinary, [
+      "--headless",
+      "--convert-to",
+      "pdf",
+      "--outdir",
+      tempDir,
+      filePath,
+    ]);
+
+    const pdfName = `${path.basename(filePath, path.extname(filePath))}.pdf`;
+    const pdfPath = path.join(tempDir, pdfName);
+    const buffer = await fs.promises.readFile(pdfPath);
+    return {
+      buffer,
+      fileName: pdfName,
+      mimeType: "application/pdf",
+    };
+  } catch {
+    return null;
+  } finally {
+    await fs.promises.rm(tempDir, { recursive: true, force: true });
+  }
 }
 
 function keepMeaningful(value) {
@@ -955,12 +1013,17 @@ async function handleApi(req, res) {
   if (req.method === "GET" && req.url.startsWith("/api/job-materials/file")) {
     try {
       const requestUrl = new URL(req.url, `http://${req.headers.host}`);
-      const file = await readMaterialFile({
+      let file = await readMaterialFile({
         user: requestUrl.searchParams.get("user") || "",
         jobId: requestUrl.searchParams.get("jobId") || "",
         id: requestUrl.searchParams.get("id") || "",
       });
       const download = requestUrl.searchParams.get("download") === "1";
+      const ext = path.extname(file.fileName).toLowerCase();
+      if (!download && PPT_EXTENSIONS.has(ext)) {
+        const converted = await convertPresentationToPdf(file.filePath);
+        if (converted) file = { ...file, ...converted };
+      }
       sendBinary(
         res,
         200,
