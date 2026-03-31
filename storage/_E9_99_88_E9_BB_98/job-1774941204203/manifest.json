@@ -1,0 +1,15 @@
+{
+  "materials": [
+    {
+      "id": "c0ca60f5-c965-4897-ad64-f56fe09d015f",
+      "name": "123",
+      "type": "text",
+      "content": "123",
+      "fileName": "",
+      "filePath": "",
+      "mimeType": "text/plain",
+      "createdAt": "2026-03-31T12:03:57.548Z",
+      "updatedAt": "2026-03-31T12:04:08.437Z"
+    }
+  ]
+}

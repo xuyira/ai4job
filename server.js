@@ -1,5 +1,6 @@
 import { createServer } from "node:http";
 import { execFile } from "node:child_process";
+import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import fs from "node:fs";
 import path from "node:path";
@@ -18,6 +19,9 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4.1-mini";
 const MAX_FETCH_CHARS = 20000;
 const SUPPORTED_LINK_HOSTS = ["zhipin.com", "zhaopin.com", "iguopin.com"];
+const MATERIALS_ROOT = path.join(__dirname, "storage");
+const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
+const ALLOWED_UPLOAD_EXTENSIONS = new Set([".pdf", ".doc", ".docx", ".txt", ".md"]);
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -25,6 +29,10 @@ const MIME_TYPES = {
   ".css": "text/css; charset=utf-8",
   ".json": "application/json; charset=utf-8",
   ".md": "text/markdown; charset=utf-8",
+  ".txt": "text/plain; charset=utf-8",
+  ".pdf": "application/pdf",
+  ".doc": "application/msword",
+  ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 };
 
 function loadDotenv(filePath) {
@@ -58,6 +66,15 @@ function sendText(res, statusCode, text, contentType = "text/plain; charset=utf-
   res.end(text);
 }
 
+function sendBinary(res, statusCode, buffer, contentType, disposition = "inline") {
+  res.writeHead(statusCode, {
+    "Content-Type": contentType,
+    "Content-Length": Buffer.byteLength(buffer),
+    "Content-Disposition": disposition,
+  });
+  res.end(buffer);
+}
+
 function normalizeValue(value) {
   const cleaned = String(value || "").replace(/\s+/g, " ").trim();
   return cleaned || "-";
@@ -66,6 +83,222 @@ function normalizeValue(value) {
 function preserveValue(value) {
   const cleaned = String(value || "").replace(/\r\n/g, "\n").trim();
   return cleaned || "-";
+}
+
+function nullableValue(value) {
+  const cleaned = String(value || "").trim();
+  return cleaned;
+}
+
+function safeSegment(value) {
+  return encodeURIComponent(String(value || "").trim() || "unknown").replace(/%/g, "_");
+}
+
+function materialsDirFor(user, jobId) {
+  return path.join(MATERIALS_ROOT, safeSegment(user), safeSegment(jobId));
+}
+
+function materialFilesDirFor(user, jobId) {
+  return path.join(materialsDirFor(user, jobId), "files");
+}
+
+function materialsManifestPath(user, jobId) {
+  return path.join(materialsDirFor(user, jobId), "manifest.json");
+}
+
+async function ensureMaterialsDir(user, jobId) {
+  await fs.promises.mkdir(materialFilesDirFor(user, jobId), { recursive: true });
+}
+
+async function readMaterialsManifest(user, jobId) {
+  try {
+    const content = await fs.promises.readFile(materialsManifestPath(user, jobId), "utf8");
+    const parsed = JSON.parse(content);
+    return Array.isArray(parsed.materials) ? parsed : { materials: [] };
+  } catch {
+    return { materials: [] };
+  }
+}
+
+async function writeMaterialsManifest(user, jobId, manifest) {
+  await ensureMaterialsDir(user, jobId);
+  await fs.promises.writeFile(
+    materialsManifestPath(user, jobId),
+    JSON.stringify({ materials: manifest.materials || [] }, null, 2),
+    "utf8",
+  );
+}
+
+function serializeMaterial(material) {
+  return {
+    id: material.id,
+    name: material.name,
+    category: material.category || "其他",
+    type: material.type,
+    content: material.type === "text" ? material.content || "" : "",
+    fileName: material.fileName || "",
+    mimeType: material.mimeType || "",
+    createdAt: material.createdAt || "",
+    updatedAt: material.updatedAt || "",
+  };
+}
+
+function assertMaterialScope(user, jobId) {
+  if (!nullableValue(user) || !nullableValue(jobId)) {
+    throw new Error("缺少用户或岗位标识");
+  }
+}
+
+async function listJobMaterials(user, jobId) {
+  assertMaterialScope(user, jobId);
+  const manifest = await readMaterialsManifest(user, jobId);
+  return manifest.materials.map(serializeMaterial);
+}
+
+async function saveTextMaterial({ user, jobId, id, name, category, content }) {
+  assertMaterialScope(user, jobId);
+  const materialName = nullableValue(name);
+  if (!materialName) throw new Error("资料名称不能为空");
+
+  const manifest = await readMaterialsManifest(user, jobId);
+  const now = new Date().toISOString();
+  const textContent = String(content || "");
+  const existingIndex = manifest.materials.findIndex((item) => item.id === id);
+
+  if (existingIndex >= 0) {
+    if (manifest.materials[existingIndex].type !== "text") {
+      throw new Error("该资料不是文本资料");
+    }
+    manifest.materials[existingIndex] = {
+      ...manifest.materials[existingIndex],
+      name: materialName,
+      category: nullableValue(category) || manifest.materials[existingIndex].category || "其他",
+      content: textContent,
+      updatedAt: now,
+    };
+  } else {
+    manifest.materials.unshift({
+      id: randomUUID(),
+      name: materialName,
+      category: nullableValue(category) || "其他",
+      type: "text",
+      content: textContent,
+      fileName: "",
+      filePath: "",
+      mimeType: "text/plain",
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+
+  await writeMaterialsManifest(user, jobId, manifest);
+  return manifest.materials.map(serializeMaterial);
+}
+
+async function uploadJobMaterials({ user, jobId, files }) {
+  assertMaterialScope(user, jobId);
+  if (!Array.isArray(files) || !files.length) {
+    throw new Error("缺少上传文件");
+  }
+
+  const manifest = await readMaterialsManifest(user, jobId);
+  await ensureMaterialsDir(user, jobId);
+  const filesDir = materialFilesDirFor(user, jobId);
+  const now = new Date().toISOString();
+
+  for (const item of files) {
+    const fileName = path.basename(String(item.fileName || "").trim());
+    const ext = path.extname(fileName).toLowerCase();
+    if (!fileName || !ALLOWED_UPLOAD_EXTENSIONS.has(ext)) {
+      throw new Error(`不支持的文件类型：${fileName || "未知文件"}`);
+    }
+
+    const buffer = Buffer.from(String(item.contentBase64 || ""), "base64");
+    if (!buffer.length) {
+      throw new Error(`文件内容为空：${fileName}`);
+    }
+    if (buffer.byteLength > MAX_UPLOAD_BYTES) {
+      throw new Error(`单文件不能超过 20MB：${fileName}`);
+    }
+
+    const id = randomUUID();
+    const storedFileName = `${id}${ext}`;
+    await fs.promises.writeFile(path.join(filesDir, storedFileName), buffer);
+
+    manifest.materials.unshift({
+      id,
+      name: nullableValue(item.displayName) || fileName,
+      category: nullableValue(item.category) || "其他",
+      type: "file",
+      content: "",
+      fileName,
+      filePath: path.join("files", storedFileName),
+      mimeType: item.mimeType || MIME_TYPES[ext] || "application/octet-stream",
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+
+  await writeMaterialsManifest(user, jobId, manifest);
+  return manifest.materials.map(serializeMaterial);
+}
+
+async function updateMaterialMeta({ user, jobId, id, name, category }) {
+  assertMaterialScope(user, jobId);
+  const materialName = nullableValue(name);
+  if (!materialName) throw new Error("资料名称不能为空");
+
+  const manifest = await readMaterialsManifest(user, jobId);
+  const target = manifest.materials.find((item) => item.id === id);
+  if (!target) throw new Error("未找到资料");
+
+  target.name = materialName;
+  target.category = nullableValue(category) || target.category || "其他";
+  target.updatedAt = new Date().toISOString();
+  await writeMaterialsManifest(user, jobId, manifest);
+  return manifest.materials.map(serializeMaterial);
+}
+
+async function deleteMaterial({ user, jobId, id }) {
+  assertMaterialScope(user, jobId);
+  const manifest = await readMaterialsManifest(user, jobId);
+  const target = manifest.materials.find((item) => item.id === id);
+  if (!target) throw new Error("未找到资料");
+
+  if (target.type === "file" && target.filePath) {
+    await fs.promises.rm(path.join(materialsDirFor(user, jobId), target.filePath), { force: true });
+  }
+
+  manifest.materials = manifest.materials.filter((item) => item.id !== id);
+  await writeMaterialsManifest(user, jobId, manifest);
+  return manifest.materials.map(serializeMaterial);
+}
+
+async function purgeJobMaterials({ user, jobIds }) {
+  if (!nullableValue(user) || !Array.isArray(jobIds)) return;
+  await Promise.all(
+    jobIds
+      .map((jobId) => nullableValue(jobId))
+      .filter(Boolean)
+      .map((jobId) => fs.promises.rm(materialsDirFor(user, jobId), { recursive: true, force: true })),
+  );
+}
+
+async function readMaterialFile({ user, jobId, id }) {
+  assertMaterialScope(user, jobId);
+  const manifest = await readMaterialsManifest(user, jobId);
+  const target = manifest.materials.find((item) => item.id === id);
+  if (!target || target.type !== "file" || !target.filePath) {
+    throw new Error("未找到文件资料");
+  }
+
+  const filePath = path.join(materialsDirFor(user, jobId), target.filePath);
+  const buffer = await fs.promises.readFile(filePath);
+  return {
+    buffer,
+    fileName: target.fileName || `${target.name}${path.extname(filePath)}`,
+    mimeType: target.mimeType || MIME_TYPES[path.extname(filePath).toLowerCase()] || "application/octet-stream",
+  };
 }
 
 function keepMeaningful(value) {
@@ -175,6 +408,7 @@ function isSupportedLinkHost(host) {
 
 function detectCompany(text, host = "") {
   const companyPatterns = [
+    /公司(?:名称)?[：:\s]+(.+?)(?=\s*(?:职位|岗位|地点|工作地点|职位描述|岗位描述|任职要求|投递链接|岗位职责|链接|https?:\/\/|$))/i,
     /公司(?:名称)?[：:\s]+([^\n，。,；;|]+)/i,
     /企业[：:\s]+([^\n，。,；;|]+)/i,
     /招聘单位[：:\s]+([^\n，。,；;|]+)/i,
@@ -209,6 +443,7 @@ function detectCompany(text, host = "") {
 
 function detectPosition(text) {
   const patterns = [
+    /(?:职位|岗位|招聘岗位|岗位名称|Job Title)[：:\s]+(.+?)(?=\s*(?:地点|工作地点|城市|Base|职位描述|岗位描述|任职要求|投递链接|岗位职责|链接|https?:\/\/|$))/i,
     /职位[：:\s]+([^\n]+?)(?:\s{2,}|$)/i,
     /岗位[：:\s]+([^\n]+?)(?:\s{2,}|$)/i,
     /招聘岗位[：:\s]+([^\n]+?)(?:\s{2,}|$)/i,
@@ -225,8 +460,20 @@ function detectPosition(text) {
   return titleLine ? normalizeValue(titleLine) : "-";
 }
 
+function detectSalary(text) {
+  const patterns = [
+    /(?:薪资|薪酬|工资|月薪|年薪|薪资范围)[：:\s]+([^\n，。；;|]+)/i,
+    /((?:\d{1,3}(?:\.\d+)?[kKＫ]\s*[-~至]\s*\d{1,3}(?:\.\d+)?[kKＫ])(?:\s*[·xX×＊*]\s*\d{1,2}(?:\.\d+)?)?)/,
+    /((?:\d{1,3}(?:,\d{3})+|\d{4,6})\s*[-~至]\s*(?:\d{1,3}(?:,\d{3})+|\d{4,6})\s*(?:元\/(?:月|年)|\/(?:月|年)))/,
+    /((?:面议|薪资面议))/,
+  ];
+  const byPattern = firstMatch(text, patterns);
+  return byPattern !== "-" ? byPattern : "-";
+}
+
 function detectLocation(text) {
   const patterns = [
+    /(?:地点|工作地点|城市|Base)[：:\s]+(.+?)(?=\s*(?:职位描述|岗位描述|任职要求|投递链接|岗位职责|链接|https?:\/\/|$))/i,
     /地点[：:\s]+([^\n，。,；;|]+)/i,
     /工作地点[：:\s]+([^\n，。,；;|]+)/i,
     /城市[：:\s]+([^\n，。,；;|]+)/i,
@@ -241,7 +488,7 @@ function detectLocation(text) {
 }
 
 function detectSourceChannel(rawInput, host = "") {
-  if (/^https?:\/\//i.test(rawInput)) {
+  if ((/^https?:\/\//i.test(rawInput) || host) && host) {
     const hostMap = [
       ["zhaopin.com", "智联招聘"],
       ["zhipin.com", "Boss直聘"],
@@ -282,9 +529,35 @@ function heuristicParse({ rawInput, sourceText, host }) {
   return {
     company: detectCompany(sourceText, host),
     position: detectPosition(sourceText),
+    salary: detectSalary(sourceText),
     location: detectLocation(sourceText),
     sourceChannel: detectSourceChannel(rawInput, host),
     jdText: detectJDText(rawInput, sourceText, /^https?:\/\//i.test(rawInput)),
+  };
+}
+
+function isBlankField(value) {
+  const trimmed = String(value ?? "").trim();
+  return !trimmed || trimmed === "-";
+}
+
+function extractBlankJobFields(form) {
+  const jdText = preserveValue(form.jdText);
+  if (jdText === "-") {
+    throw new Error("缺少岗位描述");
+  }
+
+  const embeddedUrl = extractFirstUrl(jdText);
+  const applyLink = isBlankField(form.applyLink) ? normalizeValue(embeddedUrl) : normalizeValue(form.applyLink);
+  const host = applyLink !== "-" ? hostFromUrl(applyLink) : "";
+
+  return {
+    company: isBlankField(form.company) ? detectCompany(jdText, host) : normalizeValue(form.company),
+    position: isBlankField(form.position) ? detectPosition(jdText) : normalizeValue(form.position),
+    salary: isBlankField(form.salary) ? detectSalary(jdText) : normalizeValue(form.salary),
+    location: isBlankField(form.location) ? detectLocation(jdText) : normalizeValue(form.location),
+    applyLink,
+    sourceChannel: detectSourceChannel(applyLink !== "-" ? applyLink : jdText, host),
   };
 }
 
@@ -377,6 +650,7 @@ async function fetchTencentJoinDetail(url) {
     structured: {
       company: "腾讯",
       position: normalizeValue(detail.title),
+      salary: "-",
       location:
         Array.isArray(detail.recruitCityList) && detail.recruitCityList.length
           ? normalizeValue(detail.recruitCityList.join("、"))
@@ -447,6 +721,7 @@ async function fetchZhilianDetail(url) {
     structured: {
       company: companyName,
       position: positionName,
+      salary: normalizeValue(position.salary60),
       location,
       sourceChannel: "智联招聘",
       jdText: structuredText,
@@ -534,6 +809,7 @@ async function fetchGuopinDetail(url) {
     structured: {
       company: normalizeValue(detail.company_name),
       position: normalizeValue(detail.job_name),
+      salary: detectSalary(structuredText),
       location,
       sourceChannel: "国聘",
       jdText: structuredText,
@@ -569,9 +845,9 @@ async function extractWithOpenAI({ rawInput, fetchedText, host }) {
 
   const prompt = [
     "你是岗位解析器。请从输入内容中提取岗位信息，并且只返回 JSON。",
-    "字段必须包含：company, position, location, sourceChannel, jdText。",
+    "字段必须包含：company, position, salary, location, sourceChannel, jdText。",
     "如果识别不出来，值必须是 '-'，不要编造。",
-    "sourceChannel 只允许输出：官网、Boss直聘、拉勾、猎聘、内推、-。",
+    "sourceChannel 只允许输出：官网、Boss直聘、智联招聘、国聘、拉勾、猎聘、内推、-。",
     `原始输入: ${rawInput}`,
     `域名: ${host || "-"}`,
     `网页正文: ${fetchedText || "-"}`,
@@ -610,6 +886,7 @@ async function extractWithOpenAI({ rawInput, fetchedText, host }) {
   return {
     company: normalizeValue(parsed.company),
     position: normalizeValue(parsed.position),
+    salary: normalizeValue(parsed.salary),
     location: normalizeValue(parsed.location),
     sourceChannel: ["官网", "Boss直聘", "智联招聘", "国聘", "拉勾", "猎聘", "内推"].includes(parsed.sourceChannel) ? parsed.sourceChannel : "-",
     jdText: preserveValue(parsed.jdText),
@@ -620,94 +897,36 @@ async function parseJobInput(rawInput) {
   const embeddedUrl = extractFirstUrl(rawInput);
   const rawTrimmed = String(rawInput || "").trim();
   const isPureLink = /^https?:\/\/[^\s]+$/i.test(rawTrimmed);
-  const isLink = Boolean(embeddedUrl) && isPureLink;
   const linkUrl = embeddedUrl || "";
-  let host = "";
-  let fetched = null;
-  let structuredResult = null;
+  const host = linkUrl ? hostFromUrl(linkUrl) : "";
 
-  if (isPureLink && linkUrl) {
-    host = hostFromUrl(linkUrl);
-    if (!isSupportedLinkHost(host)) {
-      throw new Error("当前仅支持智联招聘、Boss直聘、国聘链接，其他网站请粘贴岗位文本。");
-    }
+  if (isPureLink) {
+    throw new Error("岗位上传仅支持粘贴文本，不支持只粘贴链接。请把岗位描述文本一并粘贴进来。");
   }
 
-  if (isLink) {
-    try {
-      host = hostFromUrl(linkUrl);
-      if (host.includes("zhaopin.com")) {
-        fetched = await fetchZhilianDetail(linkUrl);
-        structuredResult = fetched?.structured || null;
-      } else if (host.includes("iguopin.com")) {
-        fetched = await fetchGuopinDetail(linkUrl);
-        structuredResult = fetched?.structured || null;
-      } else if (host.includes("zhipin.com")) {
-        fetched = await fetchBossDetail(linkUrl);
-        structuredResult = fetched?.structured || null;
-      } else if (host.includes("join.qq.com")) {
-        fetched = await fetchTencentJoinDetail(linkUrl);
-        structuredResult = fetched?.structured || null;
-      }
-      if (!fetched) {
-        fetched = await fetchPageContent(linkUrl);
-      }
-      host = new URL(fetched.finalUrl).host.toLowerCase();
-    } catch (error) {
-      const fallback = heuristicParse({ rawInput, sourceText: rawInput, host });
-      fallback.jdText = "-";
-      return {
-        ...fallback,
-        jdLink: linkUrl || "-",
-        applyLink: linkUrl || "-",
-        parser: "heuristic",
-        fetchStatus: error.message,
-      };
-    }
-  }
-
-  if (!isLink && linkUrl) {
-    host = hostFromUrl(linkUrl);
-    if (isSupportedLinkHost(host)) {
-      try {
-        fetched = await fetchPageContent(linkUrl);
-      } catch {
-        fetched = null;
-      }
-    }
-  }
-
-  const sourceText = isLink ? fetched?.text || "-" : rawInput;
-  const heuristic = structuredResult || heuristicParse({ rawInput, sourceText, host });
-
-  if (!isLink && linkUrl && fetched?.text) {
-    if (heuristic.company === "-") heuristic.company = detectCompany(fetched.text, host);
-    if (heuristic.position === "-") heuristic.position = detectPosition(fetched.text);
-    if (heuristic.location === "-") heuristic.location = detectLocation(fetched.text);
-    if (heuristic.sourceChannel === "-") heuristic.sourceChannel = detectSourceChannel(linkUrl, host);
-  }
+  const heuristic = heuristicParse({ rawInput, sourceText: rawInput, host });
 
   try {
     const llmResult = await extractWithOpenAI({
       rawInput,
-      fetchedText: isLink ? sourceText : fetched?.text || sourceText,
+      fetchedText: rawInput,
       host,
     });
     return {
       ...(llmResult || heuristic),
       jdLink: linkUrl || "-",
       applyLink: linkUrl || "-",
-      jdText: structuredResult?.jdText || heuristic.jdText || llmResult?.jdText || "-",
-      parser: llmResult ? "openai" : structuredResult ? "site_adapter" : "heuristic",
-      fetchStatus: isLink ? "ok" : fetched ? "embedded_link_detected" : "not_needed",
+      jdText: llmResult?.jdText || heuristic.jdText || "-",
+      parser: llmResult ? "openai" : "heuristic",
+      fetchStatus: linkUrl ? "embedded_link_detected" : "not_needed",
     };
   } catch (error) {
     return {
       ...heuristic,
       jdLink: linkUrl || "-",
       applyLink: linkUrl || "-",
-      parser: structuredResult ? "site_adapter" : "heuristic",
-      fetchStatus: isLink ? `ok_llm_failed:${error.message}` : fetched ? `embedded_link_detected_llm_failed:${error.message}` : "not_needed",
+      parser: "heuristic",
+      fetchStatus: linkUrl ? `embedded_link_detected_llm_failed:${error.message}` : "not_needed",
     };
   }
 }
@@ -733,6 +952,44 @@ async function handleApi(req, res) {
     return;
   }
 
+  if (req.method === "GET" && req.url.startsWith("/api/job-materials/file")) {
+    try {
+      const requestUrl = new URL(req.url, `http://${req.headers.host}`);
+      const file = await readMaterialFile({
+        user: requestUrl.searchParams.get("user") || "",
+        jobId: requestUrl.searchParams.get("jobId") || "",
+        id: requestUrl.searchParams.get("id") || "",
+      });
+      const download = requestUrl.searchParams.get("download") === "1";
+      sendBinary(
+        res,
+        200,
+        file.buffer,
+        file.mimeType,
+        `${download ? "attachment" : "inline"}; filename*=UTF-8''${encodeURIComponent(file.fileName)}`,
+      );
+      return;
+    } catch (error) {
+      sendJson(res, 404, { ok: false, error: error.message || "文件不存在" });
+      return;
+    }
+  }
+
+  if (req.method === "GET" && req.url.startsWith("/api/job-materials")) {
+    try {
+      const requestUrl = new URL(req.url, `http://${req.headers.host}`);
+      const materials = await listJobMaterials(
+        requestUrl.searchParams.get("user") || "",
+        requestUrl.searchParams.get("jobId") || "",
+      );
+      sendJson(res, 200, { ok: true, materials });
+      return;
+    } catch (error) {
+      sendJson(res, 400, { ok: false, error: error.message || "读取资料失败" });
+      return;
+    }
+  }
+
   if (req.method === "POST" && req.url === "/api/parse-job") {
     try {
       const body = await readRequestBody(req);
@@ -748,6 +1005,91 @@ async function handleApi(req, res) {
       return;
     } catch (error) {
       sendJson(res, 500, { ok: false, error: error.message || "解析失败" });
+      return;
+    }
+  }
+
+  if (req.method === "POST" && req.url === "/api/extract-job-fields") {
+    try {
+      const body = await readRequestBody(req);
+      const payload = JSON.parse(body || "{}");
+      const result = extractBlankJobFields({
+        company: payload.company,
+        position: payload.position,
+        salary: payload.salary,
+        location: payload.location,
+        jdText: payload.jdText,
+        applyLink: payload.applyLink,
+      });
+      sendJson(res, 200, { ok: true, result });
+      return;
+    } catch (error) {
+      sendJson(res, 400, { ok: false, error: error.message || "提取失败" });
+      return;
+    }
+  }
+
+  if (req.method === "POST" && req.url === "/api/job-materials/text") {
+    try {
+      const body = await readRequestBody(req);
+      const payload = JSON.parse(body || "{}");
+      const materials = await saveTextMaterial(payload);
+      sendJson(res, 200, { ok: true, materials });
+      return;
+    } catch (error) {
+      sendJson(res, 400, { ok: false, error: error.message || "保存资料失败" });
+      return;
+    }
+  }
+
+  if (req.method === "POST" && req.url === "/api/job-materials/file") {
+    try {
+      const body = await readRequestBody(req);
+      const payload = JSON.parse(body || "{}");
+      const materials = await uploadJobMaterials(payload);
+      sendJson(res, 200, { ok: true, materials });
+      return;
+    } catch (error) {
+      sendJson(res, 400, { ok: false, error: error.message || "上传资料失败" });
+      return;
+    }
+  }
+
+  if (req.method === "POST" && req.url === "/api/job-materials/meta") {
+    try {
+      const body = await readRequestBody(req);
+      const payload = JSON.parse(body || "{}");
+      const materials = await updateMaterialMeta(payload);
+      sendJson(res, 200, { ok: true, materials });
+      return;
+    } catch (error) {
+      sendJson(res, 400, { ok: false, error: error.message || "更新资料失败" });
+      return;
+    }
+  }
+
+  if (req.method === "POST" && req.url === "/api/job-materials/delete") {
+    try {
+      const body = await readRequestBody(req);
+      const payload = JSON.parse(body || "{}");
+      const materials = await deleteMaterial(payload);
+      sendJson(res, 200, { ok: true, materials });
+      return;
+    } catch (error) {
+      sendJson(res, 400, { ok: false, error: error.message || "删除资料失败" });
+      return;
+    }
+  }
+
+  if (req.method === "POST" && req.url === "/api/job-materials/purge") {
+    try {
+      const body = await readRequestBody(req);
+      const payload = JSON.parse(body || "{}");
+      await purgeJobMaterials(payload);
+      sendJson(res, 200, { ok: true });
+      return;
+    } catch (error) {
+      sendJson(res, 400, { ok: false, error: error.message || "清理资料失败" });
       return;
     }
   }

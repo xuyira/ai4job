@@ -93,7 +93,7 @@
 
       .textarea {
         padding: 1rem;
-        resize: none;
+        resize: vertical;
       }
 
       .input:focus,
@@ -165,6 +165,17 @@
         white-space: nowrap;
       }
 
+      .table-cell.is-editing {
+        overflow: visible;
+        text-overflow: clip;
+        white-space: normal;
+      }
+
+      .cell-prewrap {
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
       .sort-btn {
         display: inline-flex;
         align-items: center;
@@ -197,40 +208,45 @@
 
         <main class="mt-4 min-h-0 flex-1">
           <section id="view-home" class="view active h-full">
-            <div class="grid h-full gap-4 lg:grid-cols-[340px_minmax(0,1fr)]">
+            <div class="grid h-full gap-4 lg:grid-cols-[420px_minmax(0,1fr)]">
               <aside class="min-h-0 overflow-y-auto overflow-x-hidden rounded-[1.8rem] border border-line/70 bg-white/70 p-5">
                 <div class="rounded-[1.5rem] bg-ink p-5 text-white">
                   <h2 class="text-2xl font-bold">首页工作台</h2>
                   <p class="mt-3 text-sm leading-7 text-slate-200">
-                    左侧为岗位JD上传入口，右侧为岗位投递管理。
+                    左侧可新增岗位，右侧为岗位管理。
                   </p>
                 </div>
 
                 <div class="mt-4 rounded-[1.5rem] border border-line/80 bg-shell/70 p-5">
                   <div class="flex items-center justify-between gap-3">
                     <div>
-                      <p class="text-sm font-semibold text-slate-500">岗位上传入口</p>
                       <h3 class="mt-1 text-xl font-bold text-ink">新增岗位</h3>
                     </div>
-                    <span class="pill bg-emberSoft text-ember">仅支持智联 / Boss / 国聘链接</span>
                   </div>
 
                   <div class="mt-4 space-y-4">
-                    <div>
-                      <label class="text-sm font-semibold text-slate-600">岗位内容</label>
+                    <div class="rounded-[1.2rem] bg-white px-4 py-4">
+                      <p class="text-sm font-semibold text-slate-500">必填区</p>
                       <textarea
                         id="job-source-input"
-                        class="textarea mt-2 min-h-[240px]"
-                        placeholder="在这个输入框里粘贴岗位文本，或粘贴智联 / Boss / 国聘链接。其他网站目前只支持粘贴岗位文本。"
+                        class="textarea mt-3 min-h-[180px]"
+                        placeholder="岗位描述"
                       ></textarea>
                     </div>
-                    <button id="create-job" class="btn w-full bg-accent text-white">创建并加入投递管理</button>
-                    <div id="parser-status" class="rounded-[1.2rem] bg-white px-4 py-4 text-sm leading-7 text-slate-600">
-                      解析服务状态检查中。
+                    <div class="rounded-[1.2rem] bg-white px-4 py-3">
+                      <p class="text-sm font-semibold text-slate-500">选填区</p>
+                      <div class="mt-2 grid gap-2">
+                        <input id="job-company-input" class="input py-3" type="text" placeholder="公司" />
+                        <input id="job-position-input" class="input py-3" type="text" placeholder="职位" />
+                        <div class="grid grid-cols-2 gap-2">
+                          <input id="job-salary-input" class="input py-3" type="text" placeholder="薪资" />
+                          <input id="job-location-input" class="input py-3" type="text" placeholder="地点" />
+                        </div>
+                        <input id="job-apply-link-input" class="input py-3" type="text" placeholder="投递链接" />
+                      </div>
                     </div>
-                    <div class="rounded-[1.2rem] bg-white px-4 py-4 text-sm leading-7 text-slate-600">
-                      目前链接仅支持智联招聘、Boss直聘、国聘；其他网站请直接粘贴岗位文本。若文本里同时带有链接，会自动识别为投递链接与岗位JD链接。Boss 部分链接可能触发站点安全校验，此时请改为粘贴岗位文本。
-                    </div>
+                    <button id="extract-job-fields" class="btn w-full border border-line bg-white text-slate-700">依据岗位描述自动提取空白字段</button>
+                    <button id="create-job" class="btn w-full bg-accent text-white">创建并加入岗位管理</button>
                   </div>
                 </div>
               </aside>
@@ -238,12 +254,13 @@
               <section class="flex min-h-0 flex-col rounded-[1.8rem] border border-line/70 bg-white/70 p-5">
                 <div class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
                   <div>
-                    <h2 class="mt-1 text-2xl font-bold text-ink">投递管理</h2>
+                    <h2 class="mt-1 text-2xl font-bold text-ink">岗位管理</h2>
                     <p class="mt-2 text-sm leading-7 text-slate-600">
-                      双击单元格可直接修改。表头支持升序 / 降序排序，岗位 JD 在首页通过“详情”弹层查看。
+                      双击单元格可直接修改。点击“详情”可查看和编辑岗位描述，表头支持升序 / 降序排序。
                     </p>
                   </div>
                   <div class="flex flex-wrap items-center gap-3">
+                    <button id="clear-selection" class="btn border border-line bg-white text-slate-700">取消所有勾选</button>
                     <button id="bulk-delete" class="btn bg-ember text-white">删除已勾选</button>
                   </div>
                 </div>
@@ -273,13 +290,14 @@
                   <table class="min-w-[1600px] w-full border-collapse text-left text-sm">
                     <thead class="sticky top-0 z-10 bg-[#f7f2ea] text-slate-600">
                       <tr>
-                        <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="selected">选择框 <span class="sort-icon" data-sort-icon="selected">↕</span></button></th>
+                        <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="selected">勾选 <span class="sort-icon" data-sort-icon="selected">↕</span></button></th>
                         <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="company">公司 <span class="sort-icon" data-sort-icon="company">↕</span></button></th>
                         <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="position">职位 <span class="sort-icon" data-sort-icon="position">↕</span></button></th>
+                        <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="salary">薪资 <span class="sort-icon" data-sort-icon="salary">↕</span></button></th>
                         <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="location">地点 <span class="sort-icon" data-sort-icon="location">↕</span></button></th>
                         <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="sourceChannel">来源渠道 <span class="sort-icon" data-sort-icon="sourceChannel">↕</span></button></th>
                         <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="applyLink">投递链接 <span class="sort-icon" data-sort-icon="applyLink">↕</span></button></th>
-                        <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="jdText">岗位 JD <span class="sort-icon" data-sort-icon="jdText">↕</span></button></th>
+                        <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="jdText">岗位描述 <span class="sort-icon" data-sort-icon="jdText">↕</span></button></th>
                         <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="importance">重视度 <span class="sort-icon" data-sort-icon="importance">↕</span></button></th>
                         <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="tags">标签 <span class="sort-icon" data-sort-icon="tags">↕</span></button></th>
                         <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="status">进展状态 <span class="sort-icon" data-sort-icon="status">↕</span></button></th>
@@ -287,6 +305,7 @@
                         <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="nextStepDeadline">下一节点 DDL <span class="sort-icon" data-sort-icon="nextStepDeadline">↕</span></button></th>
                         <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="updatedAt">最后更新时间 <span class="sort-icon" data-sort-icon="updatedAt">↕</span></button></th>
                         <th class="border-b border-line px-3 py-3 font-semibold"><button class="sort-btn" data-sort-field="notes">备注 <span class="sort-icon" data-sort-icon="notes">↕</span></button></th>
+                        <th class="border-b border-line px-3 py-3 font-semibold">相关资料</th>
                       </tr>
                     </thead>
                     <tbody id="jobs-table-body" class="bg-white"></tbody>
@@ -308,7 +327,11 @@
                   <p class="text-sm font-semibold text-slate-500">当前选中岗位</p>
                   <div id="resume-job-card" class="mt-4 text-sm leading-7 text-slate-700"></div>
                 </div>
-                <button class="btn mt-4 w-full border border-line bg-white text-slate-700" data-back-home>返回首页投递管理</button>
+                <div class="mt-4 rounded-[1.5rem] border border-line/80 bg-white p-5 text-sm leading-7 text-slate-700">
+                  <p class="text-sm font-semibold text-slate-500">共享资料接口</p>
+                  <p class="mt-2">当前岗位的相关资料已预留共享入口，后续在本页接入读取与使用。</p>
+                </div>
+                <button class="btn mt-4 w-full border border-line bg-white text-slate-700" data-back-home>返回首页岗位管理</button>
               </aside>
 
               <section class="panel-scroll min-h-0 overflow-y-auto rounded-[1.8rem] border border-line/70 bg-white/70 p-5">
@@ -316,7 +339,7 @@
                   <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Placeholder</p>
                   <h3 class="mt-3 text-3xl font-bold text-ink">简历优化内容暂缓修改</h3>
                   <p class="mt-4 max-w-3xl text-sm leading-8 text-slate-600">
-                    当前版本仅保留入口、岗位上下文和后续接入位置。后续可以在这里挂接简历版本选择、JD 匹配分析、逐条改写建议和导出能力。
+                    当前版本仅保留入口、岗位上下文和后续接入位置。后续可以在这里挂接简历版本选择、岗位描述匹配分析、逐条改写建议和导出能力。
                   </p>
                 </div>
               </section>
@@ -335,7 +358,11 @@
                   <p class="text-sm font-semibold text-slate-500">当前选中岗位</p>
                   <div id="interview-job-card" class="mt-4 text-sm leading-7 text-slate-700"></div>
                 </div>
-                <button class="btn mt-4 w-full border border-line bg-white text-slate-700" data-back-home>返回首页投递管理</button>
+                <div class="mt-4 rounded-[1.5rem] border border-line/80 bg-white p-5 text-sm leading-7 text-slate-700">
+                  <p class="text-sm font-semibold text-slate-500">共享资料接口</p>
+                  <p class="mt-2">当前岗位的相关资料已预留共享入口，后续在本页接入读取与使用。</p>
+                </div>
+                <button class="btn mt-4 w-full border border-line bg-white text-slate-700" data-back-home>返回首页岗位管理</button>
               </aside>
 
               <section class="panel-scroll min-h-0 overflow-y-auto rounded-[1.8rem] border border-line/70 bg-white/70 p-5">
@@ -357,20 +384,121 @@
       <div class="surface w-full max-w-4xl rounded-[2rem] border border-white/70 p-6 shadow-card">
         <div class="flex items-start justify-between gap-4">
           <div>
-            <p class="text-sm font-semibold text-slate-500">岗位 JD 详情</p>
+            <p class="text-sm font-semibold text-slate-500">岗位描述详情</p>
             <h3 id="jd-detail-title" class="mt-1 text-2xl font-bold text-ink"></h3>
           </div>
-          <button id="close-jd-detail" class="btn border border-line bg-white text-slate-700">关闭</button>
+          <div class="flex items-center gap-3">
+            <button id="save-jd-detail" class="btn bg-accent text-white">保存描述</button>
+            <button id="close-jd-detail" class="btn border border-line bg-white text-slate-700">关闭</button>
+          </div>
         </div>
         <div class="mt-5 space-y-4 text-sm leading-8 text-slate-700">
           <div>
-            <p class="font-semibold text-slate-800">岗位链接</p>
-            <div id="jd-detail-link" class="mt-2"></div>
-          </div>
-          <div>
             <p class="font-semibold text-slate-800">岗位描述</p>
-            <div id="jd-detail-content" class="mt-2 rounded-[1.2rem] bg-shell p-4"></div>
+            <p class="mt-1 text-xs leading-6 text-slate-500">解析完成后可在这里直接人工修改，支持多行编辑。</p>
+            <textarea id="jd-detail-content" class="textarea mt-2 min-h-[320px] bg-shell"></textarea>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="materials-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/45 p-4">
+      <div class="surface flex h-[min(86vh,820px)] w-full max-w-6xl flex-col rounded-[2rem] border border-white/70 p-6 shadow-card">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="text-sm font-semibold text-slate-500">相关资料详情</p>
+            <h3 id="materials-modal-title" class="mt-1 text-2xl font-bold text-ink"></h3>
+          </div>
+          <div class="flex flex-wrap gap-3">
+            <button id="create-text-material" class="btn min-w-[132px] border border-line bg-white text-slate-700">新增文本资料</button>
+            <button id="show-upload-panel" class="btn min-w-[132px] border border-line bg-white text-slate-700">上传新资料</button>
+            <button id="close-materials-modal" class="btn border border-line bg-white text-slate-700">关闭</button>
+          </div>
+        </div>
+
+        <div class="mt-5 grid min-h-0 flex-1 gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
+          <aside class="panel-scroll min-h-0 overflow-y-auto rounded-[1.5rem] border border-line/80 bg-white p-4">
+            <p class="text-sm font-semibold text-slate-500">资料列表</p>
+            <div id="materials-list" class="mt-4 space-y-2"></div>
+            <p class="mt-4 text-sm leading-7 text-slate-500">点击资料可对相应资料进行查看与编辑。</p>
+          </aside>
+
+          <section class="panel-scroll min-h-0 overflow-y-auto rounded-[1.5rem] border border-line/80 bg-white p-4">
+            <div id="materials-empty-state" class="hidden min-h-full rounded-[1.2rem] px-4 py-6 text-sm leading-7 text-slate-600"></div>
+
+            <div id="materials-text-create-view" class="hidden space-y-4">
+              <p class="text-sm font-semibold text-slate-500">新增文本资料</p>
+              <div>
+                <label class="text-sm font-semibold text-slate-600">资料名称</label>
+                <input id="material-name-input" class="input mt-2" type="text" placeholder="请输入资料名称" />
+              </div>
+              <div>
+                <label class="text-sm font-semibold text-slate-600">资料类别</label>
+                <div class="mt-2">
+                  <select id="material-category-select" class="select">
+                    <option value="面经">面经</option>
+                    <option value="行业动态">行业动态</option>
+                    <option value="其他">其他</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label class="text-sm font-semibold text-slate-600">资料内容</label>
+                <textarea id="material-content-input" class="textarea mt-2 min-h-[260px]" placeholder="请输入资料内容"></textarea>
+              </div>
+              <div class="flex flex-wrap gap-3">
+                <button id="save-material" class="btn bg-accent text-white">保存</button>
+                <button id="delete-material" class="btn bg-ember text-white">删除</button>
+              </div>
+            </div>
+
+            <div id="materials-detail-view" class="hidden space-y-4">
+              <p class="text-sm font-semibold text-slate-500">资料详情</p>
+              <div>
+                <label class="text-sm font-semibold text-slate-600">资料名称</label>
+                <input id="material-detail-name-input" class="input mt-2" type="text" placeholder="请输入资料名称" />
+              </div>
+              <div>
+                <label class="text-sm font-semibold text-slate-600">资料类别</label>
+                <div class="mt-2">
+                  <select id="material-detail-category-select" class="select">
+                    <option value="面经">面经</option>
+                    <option value="行业动态">行业动态</option>
+                    <option value="其他">其他</option>
+                  </select>
+                </div>
+              </div>
+              <div id="material-detail-text-block" class="hidden">
+                <label class="text-sm font-semibold text-slate-600">资料内容</label>
+                <textarea id="material-detail-content-input" class="textarea mt-2 min-h-[220px]" placeholder="请输入资料内容"></textarea>
+              </div>
+              <div class="rounded-[1.2rem] bg-shell px-4 py-4 text-sm leading-7 text-slate-700">
+                <p class="font-semibold text-slate-800">资料说明</p>
+                <div id="material-detail-meta" class="mt-2"></div>
+                <div class="mt-3 flex flex-wrap gap-3">
+                  <button id="material-open-button" class="btn border border-line bg-white text-slate-700">查看</button>
+                  <button id="material-edit-button" class="hidden btn border border-line bg-white text-slate-700">编辑</button>
+                  <a id="material-download-link" class="btn border border-line bg-white text-slate-700" href="#" target="_blank" rel="noreferrer">下载</a>
+                </div>
+              </div>
+              <div id="material-preview" class="hidden rounded-[1.2rem] border border-line/80 bg-white px-4 py-4"></div>
+              <div class="flex flex-wrap gap-3">
+                <button id="save-material-meta" class="hidden btn bg-accent text-white">保存</button>
+                <button id="delete-material-meta" class="btn bg-ember text-white">删除</button>
+              </div>
+            </div>
+
+            <div id="materials-upload-view" class="hidden rounded-[1.2rem] border border-dashed border-line bg-shell/70 px-4 py-4">
+              <p class="text-sm font-semibold text-slate-600">上传新资料</p>
+              <p class="mt-2 text-sm leading-7 text-slate-500">支持 pdf、doc、docx、txt、md，单文件不超过 20MB。</p>
+              <div class="mt-3 flex flex-wrap gap-3">
+                <input id="materials-file-input" class="hidden" type="file" accept=".pdf,.doc,.docx,.txt,.md" multiple />
+                <button id="pick-material-files" class="btn border border-line bg-white text-slate-700">选择文件</button>
+                <button id="upload-material-files" class="btn border border-line bg-white text-slate-700">上传文件</button>
+              </div>
+              <div id="materials-file-selection" class="mt-3 text-sm leading-7 text-slate-600">未选择文件。</div>
+            </div>
+          </section>
         </div>
       </div>
     </div>
@@ -378,7 +506,7 @@
     <script>
       const STORAGE_KEY = "ai4job-revise1-state";
       const STATUS_OPTIONS = ["待准备", "待投递", "已投递", "笔试中", "一面中", "二面中", "HR 面中", "Offer", "拒信", "已终止"];
-      const IMPORTANCE_OPTIONS = ["高", "中", "低"];
+      const IMPORTANCE_OPTIONS = ["-", "高", "中", "低"];
 
       const seedJobs = [
         {
@@ -388,6 +516,7 @@
           jdLink: "https://jobs.example.com/bytedance-product-strategy",
           company: "字节跳动",
           position: "产品策略实习生",
+          salary: "4K-6K/月",
           location: "北京",
           sourceChannel: "官网",
           applyLink: "https://jobs.bytedance.com",
@@ -406,6 +535,7 @@
           jdLink: "",
           company: "小红书",
           position: "商业分析培训生",
+          salary: "-",
           location: "上海",
           sourceChannel: "Boss",
           applyLink: "",
@@ -439,6 +569,22 @@
       };
 
       let state = loadState();
+      const materialsState = {
+        jobId: "",
+        user: "",
+        jobTitle: "",
+        items: [],
+        selectedId: "",
+        pendingFiles: [],
+        view: "empty",
+        draftTextMaterial: null,
+        previewMode: "",
+        openCategories: {
+          面经: true,
+          行业动态: true,
+          其他: true,
+        },
+      };
 
       function loadState() {
         try {
@@ -504,6 +650,38 @@
         }).format(date);
       }
 
+      function materialFileUrl(jobId, materialId, download = false) {
+        const params = new URLSearchParams({
+          user: state.currentUser,
+          jobId,
+          id: materialId,
+        });
+        if (download) params.set("download", "1");
+        return `/api/job-materials/file?${params.toString()}`;
+      }
+
+      async function fetchJson(url, options = {}) {
+        const response = await fetch(url, options);
+        const payload = await response.json();
+        if (!response.ok || payload.ok === false) {
+          throw new Error(payload.error || "请求失败");
+        }
+        return payload;
+      }
+
+      function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const result = String(reader.result || "");
+            const base64 = result.includes(",") ? result.split(",")[1] : result;
+            resolve(base64);
+          };
+          reader.onerror = () => reject(new Error(`读取文件失败：${file.name}`));
+          reader.readAsDataURL(file);
+        });
+      }
+
       function escapeHtml(value) {
         return String(value || "")
           .replaceAll("&", "&amp;")
@@ -529,6 +707,17 @@
         return `<span class="pill ${styles[status] || "bg-slate-100 text-slate-700"}">${escapeHtml(status)}</span>`;
       }
 
+      function importancePill(importance) {
+        const styles = {
+          高: "bg-rose-100 text-rose-700",
+          中: "bg-orange-100 text-orange-700",
+          低: "bg-amber-100 text-amber-700",
+          "-": "bg-slate-100 text-slate-500",
+        };
+        const value = importance && importance.trim() ? importance : "-";
+        return `<span class="pill ${styles[value] || styles["-"]}">${escapeHtml(value)}</span>`;
+      }
+
       function compareValue(field, job) {
         if (field === "selected") return job.selected ? 1 : 0;
         if (field === "tags") return job.tags.join(", ");
@@ -543,7 +732,7 @@
           .filter((job) => (state.filters.importance === "all" ? true : job.importance === state.filters.importance))
           .filter((job) => {
             if (!keyword) return true;
-            return [job.company, job.position, job.location, job.sourceChannel, job.tags.join(" "), job.jdText]
+            return [job.company, job.position, job.salary, job.location, job.sourceChannel, job.tags.join(" "), job.jdText]
               .join(" ")
               .toLowerCase()
               .includes(keyword);
@@ -569,6 +758,669 @@
         return value.length > 36 ? `${value.slice(0, 36)}...` : value;
       }
 
+      function readJobForm() {
+        return {
+          company: document.getElementById("job-company-input").value.trim(),
+          position: document.getElementById("job-position-input").value.trim(),
+          salary: document.getElementById("job-salary-input").value.trim(),
+          location: document.getElementById("job-location-input").value.trim(),
+          jdText: document.getElementById("job-source-input").value.trim(),
+          applyLink: document.getElementById("job-apply-link-input").value.trim(),
+        };
+      }
+
+      function optionalFieldIds() {
+        return [
+          "job-company-input",
+          "job-position-input",
+          "job-salary-input",
+          "job-location-input",
+          "job-apply-link-input",
+        ];
+      }
+
+      function markFieldMode(input, mode) {
+        input.dataset.fillMode = mode;
+      }
+
+      function resetAutoFilledFieldsIfSourceChanged() {
+        const sourceInput = document.getElementById("job-source-input");
+        const currentText = sourceInput.value.trim();
+        const previousText = sourceInput.dataset.lastExtractSource || "";
+
+        if (!previousText || previousText === currentText) return;
+
+        optionalFieldIds().forEach((id) => {
+          const input = document.getElementById(id);
+          if (input.dataset.fillMode === "auto") {
+            input.value = "";
+            markFieldMode(input, "empty");
+          }
+        });
+      }
+
+      function setFieldValue(id, value, mode = "manual") {
+        const input = document.getElementById(id);
+        input.value = value || "";
+        markFieldMode(input, value ? mode : "empty");
+      }
+
+      function writeJobForm(values) {
+        setFieldValue("job-company-input", values.company || "", "manual");
+        setFieldValue("job-position-input", values.position || "", "manual");
+        setFieldValue("job-salary-input", values.salary || "", "manual");
+        setFieldValue("job-location-input", values.location || "", "manual");
+        document.getElementById("job-source-input").value = values.jdText || "";
+        document.getElementById("job-source-input").dataset.lastExtractSource = values.jdText || "";
+        setFieldValue("job-apply-link-input", values.applyLink || "", "manual");
+      }
+
+      function clearJobForm() {
+        writeJobForm({
+          company: "",
+          position: "",
+          salary: "",
+          location: "",
+          jdText: "",
+          applyLink: "",
+        });
+      }
+
+      function normalizedFieldValue(value) {
+        const trimmed = String(value || "").trim();
+        return trimmed || "-";
+      }
+
+      function displayValue(value) {
+        return normalizedFieldValue(value);
+      }
+
+      function inferSourceChannel(text, link) {
+        const source = `${text || ""}\n${link || ""}`.toLowerCase();
+        if (source.includes("zhipin.com") || source.includes("boss直聘") || source.includes("boss")) return "Boss直聘";
+        if (source.includes("zhaopin.com") || source.includes("智联")) return "智联招聘";
+        if (source.includes("iguopin.com") || source.includes("国聘")) return "国聘";
+        if (source.includes("lagou.com") || source.includes("拉勾")) return "拉勾";
+        if (source.includes("liepin.com") || source.includes("猎聘")) return "猎聘";
+        if (source.includes("内推")) return "内推";
+        if (source.includes("jobs.") || source.includes("careers.") || source.includes("join.qq.com") || source.includes("官网")) return "官网";
+        return "-";
+      }
+
+      function firstPatternMatch(text, patterns) {
+        for (const pattern of patterns) {
+          const match = String(text || "").match(pattern);
+          if (match?.[1]) return normalizedFieldValue(match[1]);
+        }
+        return "-";
+      }
+
+      function extractFirstUrl(text) {
+        const match = String(text || "").match(/https?:\/\/[^\s"'<>]+/i);
+        return match ? match[0] : "";
+      }
+
+      function detectCompanyFromText(text, link = "") {
+        const patterns = [
+          /公司(?:名称)?[：:\s]+(.+?)(?=\s*(?:职位|岗位|地点|工作地点|职位描述|岗位描述|任职要求|投递链接|岗位职责|链接|https?:\/\/|$))/i,
+          /代招公司[：:\s]+(.+?)(?=\s*(?:地点|工作地点|城市|经验|学历|职位描述|岗位描述|任职要求|工作职责|岗位职责|链接|https?:\/\/|$))/i,
+          /公司(?:名称)?[：:\s]+([^\n，。,；;|]+)/i,
+          /企业[：:\s]+([^\n，。,；;|]+)/i,
+          /招聘单位[：:\s]+([^\n，。,；;|]+)/i,
+        ];
+        const byPattern = firstPatternMatch(text, patterns);
+        if (byPattern !== "-") return byPattern;
+        const source = `${text} ${link}`.toLowerCase();
+        const map = [
+          ["zhaopin.com", "智联招聘"],
+          ["zhipin.com", "Boss直聘"],
+          ["iguopin.com", "国聘"],
+          ["bytedance", "字节跳动"],
+          ["xiaohongshu", "小红书"],
+          ["alibaba", "阿里巴巴"],
+          ["meituan", "美团"],
+          ["baidu", "百度"],
+          ["jd.com", "京东"],
+        ];
+        const hit = map.find(([key]) => source.includes(key));
+        return hit ? hit[1] : "-";
+      }
+
+      function splitLines(text) {
+        return String(text || "")
+          .replace(/\r/g, "")
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean);
+      }
+
+      function extractHeaderLines(text) {
+        const lines = splitLines(text);
+        const sectionMarkers = ["岗位职责", "工作职责", "任职要求", "职位要求", "岗位要求", "工作地点", "地点", "城市", "Base"];
+        const stopIndex = lines.findIndex((line) => sectionMarkers.some((marker) => line.includes(marker)));
+        const headerLines = stopIndex >= 0 ? lines.slice(0, stopIndex) : lines.slice(0, 6);
+        return headerLines.slice(0, 6);
+      }
+
+      function cleanPositionCandidate(line) {
+        return normalizedFieldValue(
+          String(line || "")
+            .replace(/^[【\[]?(职位描述|岗位描述|招聘信息|职位信息)[】\]]?$/i, "")
+            .replace(/^\d+[、.．)\]]\s*/, "")
+            .replace(/\s+(?:\d{1,3}(?:\.\d+)?[kKＫ].*)$/, "")
+            .replace(/\s+(?:\d{1,2}\s*[-~至]\s*\d{1,2}年.*)$/, "")
+            .replace(/\s+(?:本科|硕士|博士|大专|中专).*$/, "")
+            .trim(),
+        );
+      }
+
+      function scorePositionCandidate(line, index) {
+        const value = cleanPositionCandidate(line);
+        if (value === "-") return -Infinity;
+
+        let score = 0;
+        const negativeMarkers = [
+          "岗位职责", "工作职责", "任职要求", "职位要求", "岗位要求", "工作地点", "职位描述", "岗位描述", "学校/学历", "学历教育",
+        ];
+        const responsibilityWords = ["参与", "负责", "推动", "配合", "支撑", "熟悉", "具备", "善于", "优先", "能够", "完成"];
+
+        if (negativeMarkers.some((marker) => value.includes(marker))) score -= 8;
+        if (/^\d+[、.．)\]]/.test(line)) score -= 8;
+        if (/[；;。！？!?]/.test(value)) score -= 4;
+        if (responsibilityWords.some((word) => value.includes(word))) score -= 5;
+        if (/^(1|2|3|4|5|6|7|8|9)\s*$/.test(value)) score -= 6;
+
+        if (index === 0) score += 4;
+        if (index === 1) score += 3;
+        if (index === 2) score += 2;
+        if (value.length >= 2 && value.length <= 12) score += 5;
+        else if (value.length <= 20) score += 3;
+        else if (value.length <= 30) score += 1;
+        else score -= 3;
+
+        if (/^[A-Za-z][A-Za-z0-9\s/()+\-]+$/.test(value)) score += 2;
+        if (/[A-Za-z]/.test(value) && /[\u4e00-\u9fa5]/.test(value)) score += 2;
+        if (/(工程师|经理|分析师|实习生|培训生|运营|产品|设计|开发|算法|研究员|顾问|搭建)/.test(value)) score += 3;
+        if (/^(AI|Agent|AGENT|RAG|MCP|LLM|AIGC|Vibe)/i.test(value)) score += 3;
+
+        return score;
+      }
+
+      function detectPositionFromText(text) {
+        const patterns = [
+          /(?:职位|岗位|招聘岗位|岗位名称|Job Title)[：:\s]+(.+?)(?=\s*(?:地点|工作地点|城市|Base|职位描述|岗位描述|任职要求|投递链接|岗位职责|链接|https?:\/\/|$))/i,
+          /职位[：:\s]+([^\n]+?)(?:\s{2,}|$)/i,
+          /岗位[：:\s]+([^\n]+?)(?:\s{2,}|$)/i,
+          /招聘岗位[：:\s]+([^\n]+?)(?:\s{2,}|$)/i,
+          /岗位名称[：:\s]+([^\n]+?)(?:\s{2,}|$)/i,
+        ];
+        const byPattern = firstPatternMatch(text, patterns);
+        if (byPattern !== "-") return byPattern;
+
+        const headerLines = extractHeaderLines(text);
+        const scoredCandidates = headerLines
+          .map((line, index) => ({
+            raw: line,
+            value: cleanPositionCandidate(line),
+            score: scorePositionCandidate(line, index),
+          }))
+          .filter((item) => item.value !== "-" && Number.isFinite(item.score))
+          .sort((a, b) => b.score - a.score);
+
+        if (scoredCandidates.length && scoredCandidates[0].score > 0) {
+          return scoredCandidates[0].value;
+        }
+
+        return "-";
+      }
+
+      function detectSalaryFromText(text) {
+        const patterns = [
+          /(?:薪资|薪酬|工资|月薪|年薪|薪资范围)[：:\s]+([^\n，。；;|]+)/i,
+          /((?:\d{1,3}(?:\.\d+)?[kKＫ]\s*[-~至]\s*\d{1,3}(?:\.\d+)?[kKＫ])(?:\s*[·xX×＊*]\s*\d{1,2}(?:\.\d+)?)?)/,
+          /((?:\d{1,3}(?:,\d{3})+|\d{4,6})\s*[-~至]\s*(?:\d{1,3}(?:,\d{3})+|\d{4,6})\s*(?:元\/(?:月|年)|\/(?:月|年)))/,
+          /((?:面议|薪资面议))/,
+        ];
+        return firstPatternMatch(text, patterns);
+      }
+
+      function detectLocationFromText(text) {
+        const patterns = [
+          /(?:地点|工作地点|城市|Base)[：:\s]+(.+?)(?=\s*(?:职位描述|岗位描述|任职要求|投递链接|岗位职责|链接|https?:\/\/|$))/i,
+          /地点[：:\s]+([^\n，。,；;|]+)/i,
+          /工作地点[：:\s]+([^\n，。,；;|]+)/i,
+          /城市[：:\s]+([^\n，。,；;|]+)/i,
+          /Base[：:\s]+([^\n，。,；;|]+)/i,
+        ];
+        const byPattern = firstPatternMatch(text, patterns);
+        if (byPattern !== "-") return byPattern;
+        const cities = ["北京", "上海", "杭州", "深圳", "广州", "成都", "南京", "武汉", "苏州", "西安", "Remote", "远程"];
+        const hit = cities.find((item) => String(text || "").includes(item));
+        return hit || "-";
+      }
+
+      function extractBlankFieldsFromDescription(form) {
+        const jdText = form.jdText;
+        const embeddedUrl = extractFirstUrl(jdText);
+        return {
+          company: form.company ? form.company : detectCompanyFromText(jdText, form.applyLink || embeddedUrl),
+          position: form.position ? form.position : detectPositionFromText(jdText),
+          salary: form.salary ? form.salary : detectSalaryFromText(jdText),
+          location: form.location ? form.location : detectLocationFromText(jdText),
+          applyLink: form.applyLink ? form.applyLink : normalizedFieldValue(embeddedUrl),
+        };
+      }
+
+      function openJDDetail(jobId) {
+        const job = currentJobs().find((item) => item.id === jobId);
+        if (!job) return;
+        state.selectedJobId = jobId;
+        state.optimizeJobId = jobId;
+        const modal = document.getElementById("jd-detail-modal");
+        modal.dataset.jobId = jobId;
+        document.getElementById("jd-detail-title").textContent = `${displayValue(job.company)} · ${displayValue(job.position)}`;
+        document.getElementById("jd-detail-content").value = job.jdText && job.jdText !== "-" ? job.jdText : "";
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+      }
+
+      function saveJDDetail() {
+        const modal = document.getElementById("jd-detail-modal");
+        const jobId = modal.dataset.jobId;
+        if (!jobId) return;
+        const textarea = document.getElementById("jd-detail-content");
+        const nextValue = textarea.value.trim() || "-";
+        updateJob(jobId, (job) => {
+          job.jdText = nextValue;
+          return job;
+        });
+        openJDDetail(jobId);
+      }
+
+      function selectedMaterial() {
+        return materialsState.items.find((item) => item.id === materialsState.selectedId) || null;
+      }
+
+      function allMaterialCategories() {
+        return ["面经", "行业动态", "其他"];
+      }
+
+      function ensureOpenCategory(name) {
+        if (!(name in materialsState.openCategories)) {
+          materialsState.openCategories[name] = true;
+        }
+      }
+
+      function getCategoryValue(selectId) {
+        return document.getElementById(selectId).value;
+      }
+
+      function setCategoryControl(selectId, category) {
+        const select = document.getElementById(selectId);
+        const value = category || "其他";
+        select.value = ["面经", "行业动态", "其他"].includes(value) ? value : "其他";
+      }
+
+      function renderCategoryOptions(selectId) {
+        const select = document.getElementById(selectId);
+        const currentValue = select.value;
+        select.innerHTML = [
+          `<option value="面经">面经</option>`,
+          `<option value="行业动态">行业动态</option>`,
+          `<option value="其他">其他</option>`,
+        ].join("");
+        if (currentValue && [...select.options].some((option) => option.value === currentValue)) {
+          select.value = currentValue;
+        }
+      }
+
+      function renderMaterialsList() {
+        const list = document.getElementById("materials-list");
+        if (!materialsState.items.length) {
+          list.innerHTML = `<div class="rounded-[1rem] bg-shell px-3 py-4 text-sm leading-7 text-slate-500">暂无资料。</div>`;
+          return;
+        }
+
+        const grouped = allMaterialCategories().map((category) => ({
+          category,
+          items: materialsState.items.filter((item) => (item.category || "其他") === category),
+        }));
+
+        list.innerHTML = grouped
+          .map(({ category, items }) => {
+            ensureOpenCategory(category);
+            return `
+              <div class="rounded-[1rem] border border-line/80 bg-shell/30">
+                <button class="flex w-full items-center justify-between px-3 py-3 text-left" data-material-category-toggle="${escapeHtml(category)}">
+                  <span class="font-semibold text-slate-800">${escapeHtml(category)}（${items.length}）</span>
+                  <span class="text-xs text-slate-500">${materialsState.openCategories[category] ? "收起" : "展开"}</span>
+                </button>
+                <div class="${materialsState.openCategories[category] ? "block" : "hidden"} space-y-2 border-t border-line/70 px-3 py-3">
+                  ${items.length ? items.map((item) => `
+                    <button
+                      class="w-full rounded-[1rem] border px-3 py-3 text-left ${item.id === materialsState.selectedId && materialsState.view === "detail" ? "border-accent bg-accentSoft/40" : "border-line bg-white"}"
+                      data-material-select="${item.id}"
+                    >
+                      <p class="font-semibold text-slate-800">${escapeHtml(item.name || "-")}</p>
+                      <p class="mt-1 text-xs text-slate-500">${item.type === "text" ? "文本资料" : escapeHtml(item.fileName || "文件资料")}</p>
+                      <p class="mt-1 text-xs text-slate-400">${escapeHtml(formatDateTime(item.updatedAt || item.createdAt || ""))}</p>
+                    </button>
+                  `).join("") : `<div class="rounded-[1rem] bg-white px-3 py-3 text-sm text-slate-500">暂无资料。</div>`}
+                </div>
+              </div>
+            `;
+          })
+          .join("");
+      }
+
+      function renderMaterialsEditor() {
+        const material = selectedMaterial();
+        const emptyState = document.getElementById("materials-empty-state");
+        const createView = document.getElementById("materials-text-create-view");
+        const detailView = document.getElementById("materials-detail-view");
+        const uploadView = document.getElementById("materials-upload-view");
+        const preview = document.getElementById("material-preview");
+        const detailTextBlock = document.getElementById("material-detail-text-block");
+        const editButton = document.getElementById("material-edit-button");
+        const saveMetaButton = document.getElementById("save-material-meta");
+
+        emptyState.classList.add("hidden");
+        createView.classList.add("hidden");
+        detailView.classList.add("hidden");
+        uploadView.classList.add("hidden");
+        preview.classList.add("hidden");
+        preview.innerHTML = "";
+        editButton.classList.add("hidden");
+        saveMetaButton.classList.add("hidden");
+
+        if (materialsState.view === "create") {
+          createView.classList.remove("hidden");
+          renderCategoryOptions("material-category-select");
+          setCategoryControl("material-category-select", materialsState.draftTextMaterial?.category || "其他");
+          document.getElementById("material-name-input").value = materialsState.draftTextMaterial?.name || "";
+          document.getElementById("material-content-input").value = materialsState.draftTextMaterial?.content || "";
+          return;
+        }
+
+        if (materialsState.view === "upload") {
+          uploadView.classList.remove("hidden");
+          return;
+        }
+
+        if (materialsState.view === "detail" && material) {
+          detailView.classList.remove("hidden");
+          renderCategoryOptions("material-detail-category-select");
+          document.getElementById("material-detail-name-input").value = material.name || "";
+          setCategoryControl("material-detail-category-select", material.category || "其他");
+          if (material.type === "text") {
+            detailTextBlock.classList.remove("hidden");
+            document.getElementById("material-detail-content-input").value = materialsState.previewMode === "edit" ? material.content || "" : "";
+            editButton.classList.remove("hidden");
+            if (materialsState.previewMode === "edit") saveMetaButton.classList.remove("hidden");
+          } else {
+            detailTextBlock.classList.add("hidden");
+            document.getElementById("material-detail-content-input").value = "";
+          }
+          document.getElementById("material-detail-meta").innerHTML = material.type === "text"
+            ? `
+                <p>文件类型：网页新增文本资料</p>
+                <p>更新时间：${escapeHtml(formatDateTime(material.updatedAt || material.createdAt || ""))}</p>
+              `
+            : `
+                <p>原文件名：${escapeHtml(material.fileName || "-")}</p>
+                <p>文件类型：${escapeHtml(material.mimeType || "-")}</p>
+                <p>更新时间：${escapeHtml(formatDateTime(material.updatedAt || material.createdAt || ""))}</p>
+              `;
+          document.getElementById("material-download-link").href = material.type === "text"
+            ? `data:text/plain;charset=utf-8,${encodeURIComponent(material.content || "")}`
+            : materialFileUrl(materialsState.jobId, material.id, true);
+          document.getElementById("material-download-link").download = material.type === "text"
+            ? `${material.name || "资料"}.txt`
+            : "";
+          return;
+        }
+
+        emptyState.classList.remove("hidden");
+      }
+
+      function renderSelectedFiles() {
+        const element = document.getElementById("materials-file-selection");
+        if (!materialsState.pendingFiles.length) {
+          element.textContent = "未选择文件。";
+          return;
+        }
+        element.textContent = materialsState.pendingFiles.map((file) => file.name).join("；");
+      }
+
+      function renderMaterialsModal() {
+        renderMaterialsList();
+        renderMaterialsEditor();
+        renderSelectedFiles();
+      }
+
+      async function refreshMaterials(jobId = materialsState.jobId) {
+        if (!jobId) return;
+        const payload = await fetchJson(`/api/job-materials?${new URLSearchParams({ user: state.currentUser, jobId }).toString()}`);
+        materialsState.items = payload.materials || [];
+        if (!materialsState.items.find((item) => item.id === materialsState.selectedId)) {
+          materialsState.selectedId = "";
+          if (materialsState.view === "detail") materialsState.view = "empty";
+        }
+        renderMaterialsModal();
+      }
+
+      async function openMaterialsModal(jobId) {
+        const job = currentJobs().find((item) => item.id === jobId);
+        if (!job) return;
+        materialsState.jobId = jobId;
+        materialsState.user = state.currentUser;
+        materialsState.jobTitle = `${displayValue(job.company)} · ${displayValue(job.position)}`;
+        materialsState.items = [];
+        materialsState.selectedId = "";
+        materialsState.pendingFiles = [];
+        materialsState.view = "empty";
+        materialsState.draftTextMaterial = null;
+        materialsState.previewMode = "";
+        document.getElementById("materials-modal-title").textContent = materialsState.jobTitle;
+        document.getElementById("materials-modal").classList.remove("hidden");
+        document.getElementById("materials-modal").classList.add("flex");
+        try {
+          await refreshMaterials(jobId);
+        } catch (error) {
+          alert(`读取相关资料失败：${error.message}`);
+          closeMaterialsModal();
+        }
+      }
+
+      function closeMaterialsModal() {
+        document.getElementById("materials-modal").classList.add("hidden");
+        document.getElementById("materials-modal").classList.remove("flex");
+        materialsState.jobId = "";
+        materialsState.items = [];
+        materialsState.selectedId = "";
+        materialsState.pendingFiles = [];
+        materialsState.view = "empty";
+        materialsState.draftTextMaterial = null;
+        materialsState.previewMode = "";
+        document.getElementById("materials-file-input").value = "";
+      }
+
+      function createTextMaterialDraft() {
+        if (!materialsState.draftTextMaterial) {
+          materialsState.draftTextMaterial = {
+            name: "",
+            category: "其他",
+            content: "",
+            type: "text",
+          };
+        }
+        materialsState.selectedId = "";
+        materialsState.view = "create";
+        renderMaterialsModal();
+      }
+
+      async function saveCurrentMaterial() {
+        const material = materialsState.view === "create" ? materialsState.draftTextMaterial : selectedMaterial();
+        if (!material || !materialsState.jobId) return;
+        const isCreateView = materialsState.view === "create";
+        const name = document.getElementById(isCreateView ? "material-name-input" : "material-detail-name-input").value.trim();
+        if (!name) {
+          alert("请先填写资料名称。");
+          return;
+        }
+        const category = getCategoryValue(isCreateView ? "material-category-select" : "material-detail-category-select").trim();
+        if (!category) {
+          alert("请先填写资料类别。");
+          return;
+        }
+
+        if (material.type === "text") {
+          const content = document.getElementById(isCreateView ? "material-content-input" : "material-detail-content-input").value;
+          const payload = await fetchJson("/api/job-materials/text", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              user: state.currentUser,
+              jobId: materialsState.jobId,
+              id: isCreateView ? "" : material.id,
+              name,
+              category,
+              content,
+            }),
+          });
+          materialsState.items = payload.materials || [];
+        } else {
+          const payload = await fetchJson("/api/job-materials/meta", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              user: state.currentUser,
+              jobId: materialsState.jobId,
+              id: material.id,
+              name,
+              category,
+            }),
+          });
+          materialsState.items = payload.materials || [];
+        }
+
+        const target = materialsState.items.find((item) => item.name === name && item.category === category && item.type === material.type) || materialsState.items[0] || null;
+        materialsState.selectedId = target?.id || "";
+        materialsState.view = target ? "detail" : "empty";
+        materialsState.draftTextMaterial = null;
+        materialsState.previewMode = "";
+        renderMaterialsModal();
+      }
+
+      async function deleteCurrentMaterial() {
+        const material = materialsState.view === "create" ? materialsState.draftTextMaterial : selectedMaterial();
+        if (!material || !materialsState.jobId) return;
+        const confirmed = window.confirm(`确定删除资料“${material.name || material.fileName || "-"}”吗？`);
+        if (!confirmed) return;
+
+        if (materialsState.view === "create") {
+          materialsState.selectedId = "";
+          materialsState.view = "empty";
+          materialsState.draftTextMaterial = null;
+          materialsState.previewMode = "";
+          renderMaterialsModal();
+          return;
+        }
+
+        const payload = await fetchJson("/api/job-materials/delete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user: state.currentUser,
+            jobId: materialsState.jobId,
+            id: material.id,
+          }),
+        });
+        materialsState.items = payload.materials || [];
+        materialsState.selectedId = "";
+        materialsState.view = "empty";
+        materialsState.previewMode = "";
+        renderMaterialsModal();
+      }
+
+      async function uploadSelectedMaterialFiles() {
+        if (!materialsState.jobId) return;
+        if (!materialsState.pendingFiles.length) {
+          alert("请先选择要上传的文件。");
+          return;
+        }
+
+        const files = await Promise.all(
+          materialsState.pendingFiles.map(async (file) => {
+            if (file.size > 20 * 1024 * 1024) {
+              throw new Error(`单文件不能超过 20MB：${file.name}`);
+            }
+            return {
+              fileName: file.name,
+              displayName: file.name,
+              mimeType: file.type || "application/octet-stream",
+              contentBase64: await fileToBase64(file),
+            };
+          }),
+        );
+
+        const payload = await fetchJson("/api/job-materials/file", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user: state.currentUser,
+            jobId: materialsState.jobId,
+            files,
+          }),
+        });
+        materialsState.items = payload.materials || [];
+        materialsState.selectedId = materialsState.items[0]?.id || "";
+        materialsState.view = materialsState.selectedId ? "detail" : "empty";
+        materialsState.previewMode = "";
+        materialsState.pendingFiles = [];
+        document.getElementById("materials-file-input").value = "";
+        renderMaterialsModal();
+      }
+
+      async function openSelectedMaterialPreview() {
+        const material = selectedMaterial();
+        if (!material) return;
+        const preview = document.getElementById("material-preview");
+        preview.classList.remove("hidden");
+        materialsState.previewMode = "view";
+
+        if (material.type === "text") {
+          preview.innerHTML = `<div class="cell-prewrap text-sm leading-7 text-slate-700">${escapeHtml(material.content || "")}</div>`;
+          return;
+        }
+
+        const ext = (material.fileName || "").toLowerCase();
+        const fileUrl = materialFileUrl(materialsState.jobId, material.id, false);
+        if (ext.endsWith(".pdf")) {
+          preview.innerHTML = `<iframe class="h-[420px] w-full rounded-[1rem] border border-line/80" src="${fileUrl}"></iframe>`;
+          return;
+        }
+        if (ext.endsWith(".txt") || ext.endsWith(".md")) {
+          const response = await fetch(fileUrl);
+          const text = await response.text();
+          preview.innerHTML = `<div class="cell-prewrap text-sm leading-7 text-slate-700">${escapeHtml(text)}</div>`;
+          return;
+        }
+
+        preview.innerHTML = `
+          <div class="rounded-[1rem] bg-shell px-4 py-4 text-sm leading-7 text-slate-600">
+            当前浏览器不支持该文件类型的在线预览，请使用“下载”查看原文件。
+          </div>
+        `;
+      }
+
+      function enableTextMaterialEdit() {
+        const material = selectedMaterial();
+        if (!material || material.type !== "text") return;
+        materialsState.previewMode = "edit";
+        renderMaterialsModal();
+      }
+
       function renderTabs() {
         document.querySelectorAll("[data-view-target]").forEach((button) => {
           button.classList.toggle("active", button.dataset.viewTarget === state.activeView);
@@ -580,18 +1432,6 @@
 
       function renderHeader() {
         document.getElementById("switch-user").textContent = `${state.currentUser} · 切换用户`;
-      }
-
-      function setParserStatus(message, tone = "neutral") {
-        const element = document.getElementById("parser-status");
-        const tones = {
-          neutral: "bg-white text-slate-600",
-          success: "bg-accentSoft text-accent",
-          warning: "bg-amber-100 text-amber-700",
-          danger: "bg-rose-100 text-rose-700",
-        };
-        element.className = `rounded-[1.2rem] px-4 py-4 text-sm leading-7 ${tones[tone] || tones.neutral}`;
-        element.textContent = message;
       }
 
       function renderFilters() {
@@ -621,7 +1461,7 @@
         if (!jobs.length) {
           tbody.innerHTML = `
             <tr>
-              <td colspan="14" class="px-4 py-10 text-center text-sm text-slate-500">当前筛选条件下没有岗位记录。</td>
+              <td colspan="16" class="px-4 py-10 text-center text-sm text-slate-500">当前筛选条件下没有岗位记录。</td>
             </tr>
           `;
           return;
@@ -635,23 +1475,27 @@
                 <td class="table-cell px-3 py-3">
                   <input type="checkbox" data-job-select="${job.id}" ${job.selected ? "checked" : ""} />
                 </td>
-                <td class="table-cell px-3 py-3" data-edit-cell data-field="company" data-job-id="${job.id}">${escapeHtml(job.company)}</td>
-                <td class="table-cell px-3 py-3" data-edit-cell data-field="position" data-job-id="${job.id}">${escapeHtml(job.position)}</td>
-                <td class="table-cell px-3 py-3" data-edit-cell data-field="location" data-job-id="${job.id}">${escapeHtml(job.location)}</td>
-                <td class="table-cell px-3 py-3" data-edit-cell data-field="sourceChannel" data-job-id="${job.id}">${escapeHtml(job.sourceChannel)}</td>
+                <td class="table-cell px-3 py-3" data-edit-cell data-field="company" data-job-id="${job.id}">${escapeHtml(displayValue(job.company))}</td>
+                <td class="table-cell px-3 py-3" data-edit-cell data-field="position" data-job-id="${job.id}">${escapeHtml(displayValue(job.position))}</td>
+                <td class="table-cell px-3 py-3" data-edit-cell data-field="salary" data-job-id="${job.id}">${escapeHtml(displayValue(job.salary))}</td>
+                <td class="table-cell px-3 py-3" data-edit-cell data-field="location" data-job-id="${job.id}">${escapeHtml(displayValue(job.location))}</td>
+                <td class="table-cell px-3 py-3" data-edit-cell data-field="sourceChannel" data-job-id="${job.id}">${escapeHtml(displayValue(job.sourceChannel))}</td>
                 <td class="table-cell px-3 py-3" data-edit-cell data-field="applyLink" data-job-id="${job.id}">
                   ${job.applyLink && job.applyLink !== "-" ? `<a class="text-accent underline" href="${escapeHtml(job.applyLink)}" target="_blank" rel="noreferrer">投递链接</a>` : "-"}
                 </td>
-                <td class="table-cell px-3 py-3">
+                <td class="table-cell px-3 py-3" data-detail-cell data-job-id="${job.id}">
                   <button class="font-semibold text-accent underline" data-open-detail="${job.id}">详情</button>
                 </td>
-                <td class="table-cell px-3 py-3" data-edit-cell data-field="importance" data-job-id="${job.id}">${escapeHtml(job.importance)}</td>
-                <td class="table-cell px-3 py-3" data-edit-cell data-field="tags" data-job-id="${job.id}">${escapeHtml(tagsText || "未填写")}</td>
+                <td class="table-cell px-3 py-3" data-edit-cell data-field="importance" data-job-id="${job.id}">${importancePill(job.importance)}</td>
+                <td class="table-cell px-3 py-3" data-edit-cell data-field="tags" data-job-id="${job.id}">${escapeHtml(tagsText || "-")}</td>
                 <td class="table-cell px-3 py-3" data-edit-cell data-field="status" data-job-id="${job.id}">${statusPill(job.status)}</td>
-                <td class="table-cell px-3 py-3" data-edit-cell data-field="applyDate" data-job-id="${job.id}">${escapeHtml(job.applyDate || "未填写")}</td>
-                <td class="table-cell px-3 py-3" data-edit-cell data-field="nextStepDeadline" data-job-id="${job.id}">${escapeHtml(job.nextStepDeadline || "未填写")}</td>
+                <td class="table-cell px-3 py-3" data-edit-cell data-field="applyDate" data-job-id="${job.id}">${escapeHtml(displayValue(job.applyDate))}</td>
+                <td class="table-cell px-3 py-3" data-edit-cell data-field="nextStepDeadline" data-job-id="${job.id}">${escapeHtml(displayValue(job.nextStepDeadline))}</td>
                 <td class="table-cell px-3 py-3 text-slate-500">${formatDateTime(job.updatedAt)}</td>
-                <td class="table-cell px-3 py-3" data-edit-cell data-field="notes" data-job-id="${job.id}">${escapeHtml(job.notes || "未填写")}</td>
+                <td class="table-cell cell-prewrap px-3 py-3" data-edit-cell data-field="notes" data-job-id="${job.id}">${escapeHtml(displayValue(job.notes))}</td>
+                <td class="table-cell px-3 py-3" data-materials-cell data-job-id="${job.id}">
+                  <button class="font-semibold text-accent underline" data-open-materials="${job.id}">详情</button>
+                </td>
               </tr>
             `;
           })
@@ -663,11 +1507,12 @@
         const fallback = '<p class="text-slate-500">尚未选择岗位，请先从首页表格进入。</p>';
         const html = job
           ? `
-              <p><span class="font-semibold text-slate-800">公司：</span>${escapeHtml(job.company)}</p>
-              <p><span class="font-semibold text-slate-800">职位：</span>${escapeHtml(job.position)}</p>
-              <p><span class="font-semibold text-slate-800">地点：</span>${escapeHtml(job.location)}</p>
-              <p><span class="font-semibold text-slate-800">状态：</span>${escapeHtml(job.status)}</p>
-              <p><span class="font-semibold text-slate-800">JD：</span>${escapeHtml(summarizeJD(job))}</p>
+              <p><span class="font-semibold text-slate-800">公司：</span>${escapeHtml(displayValue(job.company))}</p>
+              <p><span class="font-semibold text-slate-800">职位：</span>${escapeHtml(displayValue(job.position))}</p>
+              <p><span class="font-semibold text-slate-800">薪资：</span>${escapeHtml(displayValue(job.salary))}</p>
+              <p><span class="font-semibold text-slate-800">地点：</span>${escapeHtml(displayValue(job.location))}</p>
+              <p><span class="font-semibold text-slate-800">状态：</span>${escapeHtml(displayValue(job.status))}</p>
+              <p><span class="font-semibold text-slate-800">描述：</span>${escapeHtml(summarizeJD(job))}</p>
             `
           : fallback;
         document.getElementById("resume-job-card").innerHTML = html;
@@ -701,96 +1546,79 @@
         renderAll();
       }
 
-      async function checkParserHealth() {
+      async function extractBlankFields() {
+        const form = readJobForm();
+        if (!form.jdText) {
+          alert("请先填写岗位描述，再自动提取空白字段。");
+          return;
+        }
+
+        const extractButton = document.getElementById("extract-job-fields");
+        extractButton.disabled = true;
+        extractButton.textContent = "提取中...";
+
         try {
-          const response = await fetch("/api/health");
-          if (!response.ok) throw new Error("health_failed");
-          const payload = await response.json();
-          if (payload.openaiConfigured) {
-            setParserStatus(`解析服务已连接，当前启用 OpenAI 模型：${payload.model}。`, "success");
-          } else {
-            setParserStatus("解析服务已连接，但未配置 OpenAI API Key，当前会回退到规则解析。", "warning");
-          }
+          resetAutoFilledFieldsIfSourceChanged();
+          const currentForm = readJobForm();
+          const payload = extractBlankFieldsFromDescription(currentForm);
+          if (!currentForm.company && payload.company !== "-") setFieldValue("job-company-input", payload.company, "auto");
+          if (!currentForm.position && payload.position !== "-") setFieldValue("job-position-input", payload.position, "auto");
+          if (!currentForm.salary && payload.salary !== "-") setFieldValue("job-salary-input", payload.salary, "auto");
+          if (!currentForm.location && payload.location !== "-") setFieldValue("job-location-input", payload.location, "auto");
+          if (!currentForm.applyLink && payload.applyLink !== "-") setFieldValue("job-apply-link-input", payload.applyLink, "auto");
+          document.getElementById("job-source-input").dataset.lastExtractSource = currentForm.jdText;
         } catch (error) {
-          setParserStatus("解析服务不可用。请通过本地 Node 服务打开页面，而不是直接双击 HTML。", "danger");
+          alert(`自动提取失败：${error.message}`);
+        } finally {
+          extractButton.disabled = false;
+          extractButton.textContent = "依据岗位描述自动提取空白字段";
         }
       }
 
       async function createJob() {
-        const sourceInput = document.getElementById("job-source-input").value.trim();
-
-        if (!sourceInput) {
-          alert("请先粘贴岗位文本或岗位链接。");
+        const form = readJobForm();
+        const hasAnyValue = Object.values(form).some((value) => String(value || "").trim());
+        if (!hasAnyValue) {
+          alert("请至少填写一项岗位信息。");
           return;
         }
 
         const createButton = document.getElementById("create-job");
         createButton.disabled = true;
-        createButton.textContent = "解析中...";
-        setParserStatus("正在调用本地解析接口，请稍候。", "neutral");
-
-        let parsed;
-        let parser = "heuristic";
-        let fetchStatus = "unknown";
+        createButton.textContent = "创建中...";
 
         try {
-          const response = await fetch("/api/parse-job", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ input: sourceInput }),
-          });
-          const payload = await response.json();
-          if (!response.ok || !payload.ok) {
-            throw new Error(payload.error || "解析失败");
-          }
-          parsed = payload.result;
-          parser = payload.result.parser || "heuristic";
-          fetchStatus = payload.result.fetchStatus || "unknown";
-        } catch (error) {
+          const now = new Date().toISOString();
+          const newJob = {
+            id: `job-${Date.now()}`,
+            selected: false,
+            jdText: normalizedFieldValue(form.jdText),
+            jdLink: "-",
+            company: normalizedFieldValue(form.company),
+            position: normalizedFieldValue(form.position),
+            salary: normalizedFieldValue(form.salary),
+            location: normalizedFieldValue(form.location),
+            sourceChannel: inferSourceChannel(form.jdText, form.applyLink),
+            applyLink: normalizedFieldValue(form.applyLink),
+            importance: "-",
+            tags: [],
+            status: "待准备",
+            applyDate: "-",
+            nextStepDeadline: "-",
+            updatedAt: now,
+            notes: "-",
+          };
+
+          state.users[state.currentUser].jobs.unshift(newJob);
+          state.selectedJobId = newJob.id;
+          state.optimizeJobId = newJob.id;
+
+          clearJobForm();
+          renderAll();
+        } finally {
           createButton.disabled = false;
-          createButton.textContent = "创建并加入投递管理";
-          setParserStatus(`解析失败：${error.message}`, "danger");
-          alert(`岗位解析失败：${error.message}`);
-          return;
+          createButton.textContent = "创建并加入岗位管理";
         }
-
-        const now = new Date().toISOString();
-        const newJob = {
-          id: `job-${Date.now()}`,
-          selected: false,
-          jdText: parsed.jdText,
-          jdLink: parsed.jdLink,
-          company: parsed.company,
-          position: parsed.position,
-          location: parsed.location,
-          sourceChannel: parsed.sourceChannel,
-          applyLink: parsed.applyLink || (parsed.jdLink && parsed.jdLink !== "-" ? parsed.jdLink : "-"),
-          importance: "中",
-          tags: [],
-          status: "待准备",
-          applyDate: "-",
-          nextStepDeadline: "-",
-          updatedAt: now,
-          notes: "-",
-        };
-
-        state.users[state.currentUser].jobs.unshift(newJob);
-        state.selectedJobId = newJob.id;
-        state.optimizeJobId = newJob.id;
-
-        document.getElementById("job-source-input").value = "";
-        createButton.disabled = false;
-        createButton.textContent = "创建并加入投递管理";
-
-        if (parser === "openai") {
-          setParserStatus("岗位解析完成：已通过 OpenAI 抽取并回填字段。", "success");
-        } else if (String(fetchStatus).startsWith("ok")) {
-          setParserStatus("岗位解析完成：页面已抓取成功，但当前字段来自规则解析回退。", "warning");
-        } else {
-          setParserStatus(`岗位解析完成：未抓到页面正文，已回退为基础规则解析。${fetchStatus}`, "warning");
-        }
-
-        renderAll();
       }
 
       function startCellEdit(cell) {
@@ -801,13 +1629,14 @@
         if (!job) return;
 
         cell.dataset.editing = "1";
+        cell.classList.add("is-editing");
         const rawValue = field === "tags" ? job.tags.join(", ") : job[field] || "";
 
         if (field === "importance") {
-          cell.innerHTML = `<select class="select edit-control">${IMPORTANCE_OPTIONS.map((item) => `<option value="${item}" ${item === rawValue ? "selected" : ""}>${item}</option>`).join("")}</select>`;
+          cell.innerHTML = `<select class="select edit-control">${IMPORTANCE_OPTIONS.map((item) => `<option value="${item}" ${item === (rawValue || "-") ? "selected" : ""}>${item}</option>`).join("")}</select>`;
         } else if (field === "status") {
           cell.innerHTML = `<select class="select edit-control">${STATUS_OPTIONS.map((item) => `<option value="${item}" ${item === rawValue ? "selected" : ""}>${item}</option>`).join("")}</select>`;
-        } else if (field === "notes" || field === "applyLink") {
+        } else if (field === "company" || field === "position" || field === "salary" || field === "location" || field === "sourceChannel" || field === "notes" || field === "applyLink" || field === "tags") {
           cell.innerHTML = `<textarea class="textarea edit-control min-h-[96px]">${escapeHtml(rawValue)}</textarea>`;
         } else if (field === "nextStepDeadline") {
           cell.innerHTML = `<input class="input edit-control" type="datetime-local" value="${escapeHtml(rawValue)}" />`;
@@ -820,6 +1649,7 @@
         const control = cell.querySelector(".edit-control");
         control.focus();
         if (control.select) control.select();
+        const isTextareaControl = control.tagName === "TEXTAREA";
 
         const commit = () => {
           const value = control.value.trim();
@@ -831,7 +1661,7 @@
 
         control.addEventListener("blur", commit, { once: true });
         control.addEventListener("keydown", (event) => {
-          if (event.key === "Enter" && field !== "notes") {
+          if (event.key === "Enter" && !isTextareaControl) {
             event.preventDefault();
             control.blur();
           }
@@ -852,21 +1682,8 @@
         const firstJob = currentJobs()[0];
         state.selectedJobId = firstJob ? firstJob.id : "";
         state.optimizeJobId = firstJob ? firstJob.id : "";
+        closeMaterialsModal();
         renderAll();
-      }
-
-      function openJDDetail(jobId) {
-        const job = currentJobs().find((item) => item.id === jobId);
-        if (!job) return;
-        state.selectedJobId = jobId;
-        state.optimizeJobId = jobId;
-        document.getElementById("jd-detail-title").textContent = `${job.company} · ${job.position}`;
-        document.getElementById("jd-detail-link").innerHTML = job.jdLink && job.jdLink !== "-"
-          ? `<a class="text-accent underline" href="${escapeHtml(job.jdLink)}" target="_blank" rel="noreferrer">${escapeHtml(job.jdLink)}</a>`
-          : `<span class="text-slate-500">-</span>`;
-        document.getElementById("jd-detail-content").textContent = job.jdText && job.jdText !== "-" ? job.jdText : "-";
-        document.getElementById("jd-detail-modal").classList.remove("hidden");
-        document.getElementById("jd-detail-modal").classList.add("flex");
       }
 
       function closeJDDetail() {
@@ -874,7 +1691,7 @@
         document.getElementById("jd-detail-modal").classList.remove("flex");
       }
 
-      function bulkDeleteJobs() {
+      async function bulkDeleteJobs() {
         const selectedIds = currentJobs().filter((job) => job.selected).map((job) => job.id);
         if (!selectedIds.length) {
           alert("请先勾选至少一条岗位记录。");
@@ -882,10 +1699,32 @@
         }
         const confirmed = window.confirm("确定删除已勾选的岗位及其岗位空间内容吗？");
         if (!confirmed) return;
+        try {
+          await fetchJson("/api/job-materials/purge", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              user: state.currentUser,
+              jobIds: selectedIds,
+            }),
+          });
+        } catch (error) {
+          alert(`清理相关资料失败：${error.message}`);
+          return;
+        }
         state.users[state.currentUser].jobs = currentJobs().filter((job) => !selectedIds.includes(job.id));
         const firstJob = currentJobs()[0];
         state.selectedJobId = firstJob ? firstJob.id : "";
         state.optimizeJobId = firstJob ? firstJob.id : "";
+        if (selectedIds.includes(materialsState.jobId)) closeMaterialsModal();
+        renderAll();
+      }
+
+      function clearAllSelections() {
+        state.users[state.currentUser].jobs = currentJobs().map((job) => ({
+          ...job,
+          selected: false,
+        }));
         renderAll();
       }
 
@@ -899,11 +1738,51 @@
         });
 
         document.getElementById("switch-user").addEventListener("click", switchUser);
+        document.getElementById("extract-job-fields").addEventListener("click", () => {
+          void extractBlankFields();
+        });
         document.getElementById("create-job").addEventListener("click", () => {
           void createJob();
         });
-        document.getElementById("bulk-delete").addEventListener("click", bulkDeleteJobs);
+        document.getElementById("clear-selection").addEventListener("click", clearAllSelections);
+        document.getElementById("bulk-delete").addEventListener("click", () => {
+          void bulkDeleteJobs();
+        });
         document.getElementById("close-jd-detail").addEventListener("click", closeJDDetail);
+        document.getElementById("save-jd-detail").addEventListener("click", saveJDDetail);
+        document.getElementById("close-materials-modal").addEventListener("click", closeMaterialsModal);
+        document.getElementById("create-text-material").addEventListener("click", createTextMaterialDraft);
+        document.getElementById("show-upload-panel").addEventListener("click", () => {
+          materialsState.selectedId = "";
+          materialsState.view = "upload";
+          renderMaterialsModal();
+        });
+        document.getElementById("save-material").addEventListener("click", () => {
+          void saveCurrentMaterial();
+        });
+        document.getElementById("delete-material").addEventListener("click", () => {
+          void deleteCurrentMaterial();
+        });
+        document.getElementById("save-material-meta").addEventListener("click", () => {
+          void saveCurrentMaterial();
+        });
+        document.getElementById("delete-material-meta").addEventListener("click", () => {
+          void deleteCurrentMaterial();
+        });
+        document.getElementById("material-open-button").addEventListener("click", () => {
+          void openSelectedMaterialPreview();
+        });
+        document.getElementById("material-edit-button").addEventListener("click", enableTextMaterialEdit);
+        document.getElementById("pick-material-files").addEventListener("click", () => {
+          document.getElementById("materials-file-input").click();
+        });
+        document.getElementById("upload-material-files").addEventListener("click", () => {
+          void uploadSelectedMaterialFiles();
+        });
+        document.getElementById("materials-file-input").addEventListener("change", (event) => {
+          materialsState.pendingFiles = Array.from(event.target.files || []);
+          renderSelectedFiles();
+        });
 
         document.getElementById("filter-search").addEventListener("input", (event) => {
           state.filters.keyword = event.target.value;
@@ -916,6 +1795,13 @@
         document.getElementById("filter-importance").addEventListener("change", (event) => {
           state.filters.importance = event.target.value;
           renderAll();
+        });
+
+        optionalFieldIds().forEach((id) => {
+          const input = document.getElementById(id);
+          input.addEventListener("input", () => {
+            markFieldMode(input, input.value.trim() ? "manual" : "empty");
+          });
         });
 
         document.getElementById("jobs-table-body").addEventListener("change", (event) => {
@@ -934,9 +1820,18 @@
         document.getElementById("jobs-table-body").addEventListener("click", (event) => {
           const detailButton = event.target.closest("[data-open-detail]");
           if (detailButton) openJDDetail(detailButton.dataset.openDetail);
+          const materialsButton = event.target.closest("[data-open-materials]");
+          if (materialsButton) {
+            void openMaterialsModal(materialsButton.dataset.openMaterials);
+          }
         });
 
         document.getElementById("jobs-table-body").addEventListener("dblclick", (event) => {
+          const detailCell = event.target.closest("[data-detail-cell]");
+          if (detailCell) {
+            openJDDetail(detailCell.dataset.jobId);
+            return;
+          }
           const cell = event.target.closest("[data-edit-cell]");
           if (!cell) return;
           startCellEdit(cell);
@@ -958,11 +1853,34 @@
         document.getElementById("jd-detail-modal").addEventListener("click", (event) => {
           if (event.target.id === "jd-detail-modal") closeJDDetail();
         });
+        document.getElementById("materials-modal").addEventListener("click", (event) => {
+          if (event.target.id === "materials-modal") closeMaterialsModal();
+        });
+        document.getElementById("jd-detail-content").addEventListener("keydown", (event) => {
+          if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+            event.preventDefault();
+            saveJDDetail();
+          }
+        });
+        document.getElementById("materials-list").addEventListener("click", (event) => {
+          const categoryToggle = event.target.closest("[data-material-category-toggle]");
+          if (categoryToggle) {
+            const category = categoryToggle.dataset.materialCategoryToggle;
+            materialsState.openCategories[category] = !materialsState.openCategories[category];
+            renderMaterialsModal();
+            return;
+          }
+          const button = event.target.closest("[data-material-select]");
+          if (!button) return;
+          materialsState.selectedId = button.dataset.materialSelect;
+          materialsState.view = "detail";
+          materialsState.previewMode = "";
+          renderMaterialsModal();
+        });
       }
 
       renderAll();
       bindEvents();
-      void checkParserHealth();
     </script>
   </body>
 </html>

@@ -1,0 +1,26 @@
+{
+  "materials": [
+    {
+      "id": "b4fcc2de-cc9f-4eb7-9f1c-2a811548ab03",
+      "name": "123",
+      "type": "text",
+      "content": "1234",
+      "fileName": "",
+      "filePath": "",
+      "mimeType": "text/plain",
+      "createdAt": "2026-03-31T12:17:52.807Z",
+      "updatedAt": "2026-03-31T12:17:52.807Z"
+    },
+    {
+      "id": "01a52aef-6bb0-473c-9908-e0d91c29b62a",
+      "name": "prd_revise.md",
+      "type": "file",
+      "content": "",
+      "fileName": "prd_revise.md",
+      "filePath": "files/01a52aef-6bb0-473c-9908-e0d91c29b62a.md",
+      "mimeType": "text/markdown",
+      "createdAt": "2026-03-31T12:16:53.783Z",
+      "updatedAt": "2026-03-31T12:16:53.783Z"
+    }
+  ]
+}
