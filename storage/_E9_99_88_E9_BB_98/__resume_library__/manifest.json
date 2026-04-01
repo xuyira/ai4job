@@ -1,0 +1,40 @@
+{
+  "materials": [
+    {
+      "id": "f20fc32b-2a40-4adf-88cf-0e6f6221c57c",
+      "name": "240730.docx",
+      "category": "其他",
+      "type": "file",
+      "content": "",
+      "fileName": "240730.docx",
+      "filePath": "files/f20fc32b-2a40-4adf-88cf-0e6f6221c57c.docx",
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "createdAt": "2026-03-31T15:09:53.333Z",
+      "updatedAt": "2026-03-31T15:09:53.333Z"
+    },
+    {
+      "id": "81ecfa40-5eb2-49b4-a497-176640a8d2d5",
+      "name": "241019汇报稿.docx",
+      "category": "其他",
+      "type": "file",
+      "content": "",
+      "fileName": "241019汇报稿.docx",
+      "filePath": "files/81ecfa40-5eb2-49b4-a497-176640a8d2d5.docx",
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "createdAt": "2026-03-31T14:27:33.289Z",
+      "updatedAt": "2026-03-31T14:27:33.289Z"
+    },
+    {
+      "id": "dd01a307-65aa-4a94-8395-689a93fe0ee3",
+      "name": "240730.docx",
+      "category": "其他",
+      "type": "file",
+      "content": "",
+      "fileName": "240730.docx",
+      "filePath": "files/dd01a307-65aa-4a94-8395-689a93fe0ee3.docx",
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "createdAt": "2026-03-31T14:27:13.134Z",
+      "updatedAt": "2026-03-31T14:27:13.134Z"
+    }
+  ]
+}

@@ -317,30 +317,45 @@
 
           <section id="view-resume" class="view h-full">
             <div class="grid h-full gap-4 lg:grid-cols-[360px_minmax(0,1fr)]">
-              <aside class="rounded-[1.8rem] border border-line/70 bg-white/70 p-5">
+              <aside class="panel-scroll min-h-0 overflow-y-auto rounded-[1.8rem] border border-line/70 bg-white/70 p-5">
                 <div class="rounded-[1.5rem] bg-accent p-5 text-white">
                   <p class="text-xs font-bold uppercase tracking-[0.24em] text-white/70">Resume Optimization</p>
-                  <h2 class="mt-2 text-2xl font-bold">简历优化入口</h2>
-                  <p class="mt-3 text-sm leading-7 text-white/80">本页先保留接口。当前通过顶部导航进入，并读取首页当前选中的岗位上下文。</p>
+                  <h2 class="mt-2 text-2xl font-bold">简历优化</h2>
+                  <p class="mt-3 text-sm leading-7 text-white/80">先完成岗位与简历两项必填，再启动右侧简历优化工作区。</p>
                 </div>
                 <div class="mt-4 rounded-[1.5rem] border border-line/80 bg-white p-5">
-                  <p class="text-sm font-semibold text-slate-500">当前选中岗位</p>
-                  <div id="resume-job-card" class="mt-4 text-sm leading-7 text-slate-700"></div>
+                  <p class="text-sm font-semibold text-slate-500">岗位信息</p>
+                  <p class="mt-2 text-sm leading-7 text-slate-600">必填：新增/ 选择岗位；选填：上传岗位相关资料</p>
+                  <button id="resume-job-entry" class="btn mt-4 w-full border border-line bg-white text-slate-700">新增/选择岗位</button>
+                  <div id="resume-job-card" class="mt-4 rounded-[1rem] bg-shell px-4 py-4 text-sm leading-7 text-slate-700"></div>
+                  <button id="resume-open-job-materials" class="btn mt-4 w-full border border-line bg-white text-slate-700">上传岗位相关资料</button>
                 </div>
-                <div class="mt-4 rounded-[1.5rem] border border-line/80 bg-white p-5 text-sm leading-7 text-slate-700">
-                  <p class="text-sm font-semibold text-slate-500">共享资料接口</p>
-                  <p class="mt-2">当前岗位的岗位相关资料已预留共享入口，后续在本页接入读取与使用。</p>
+                <div class="mt-4 rounded-[1.5rem] border border-line/80 bg-white p-5">
+                  <p class="text-sm font-semibold text-slate-500">个人信息</p>
+                  <p class="mt-2 text-sm leading-7 text-slate-600">必填：上传简历；选填：上传个人相关资料</p>
+                  <button id="resume-open-resume-library" class="btn mt-4 w-full border border-line bg-white text-slate-700">上传 / 选择简历</button>
+                  <div id="resume-selected-card" class="mt-4 rounded-[1rem] bg-shell px-4 py-4 text-sm leading-7 text-slate-700"></div>
+                  <button id="resume-open-personal-materials" class="btn mt-4 w-full border border-line bg-white text-slate-700">上传个人相关资料</button>
                 </div>
+                <button id="resume-start-button" class="btn mt-4 w-full bg-accent text-white">开始简历优化</button>
                 <button class="btn mt-4 w-full border border-line bg-white text-slate-700" data-back-home>返回首页岗位管理</button>
               </aside>
 
               <section class="panel-scroll min-h-0 overflow-y-auto rounded-[1.8rem] border border-line/70 bg-white/70 p-5">
-                <div class="rounded-[1.6rem] border border-dashed border-line bg-shell/70 p-8">
-                  <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Placeholder</p>
-                  <h3 class="mt-3 text-3xl font-bold text-ink">简历优化内容暂缓修改</h3>
+                <div id="resume-workspace-empty" class="rounded-[1.6rem] border border-dashed border-line bg-shell/70 p-8">
+                  <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Resume Workspace</p>
+                  <h3 class="mt-3 text-3xl font-bold text-ink">请先完成岗位与简历必填项</h3>
                   <p class="mt-4 max-w-3xl text-sm leading-8 text-slate-600">
-                    当前版本仅保留入口、岗位上下文和后续接入位置。后续可以在这里挂接简历版本选择、岗位描述匹配分析、逐条改写建议和导出能力。
+                    选定岗位，并上传或选择当前要优化的简历后，即可进入简历优化工作区。
                   </p>
+                </div>
+                <div id="resume-workspace" class="hidden">
+                  <div class="flex flex-wrap gap-3">
+                    <button class="tab-btn border border-line bg-white text-slate-700" data-resume-panel="job-analysis">岗位分析</button>
+                    <button class="tab-btn border border-line bg-white text-slate-700" data-resume-panel="resume-score">原简历打分</button>
+                    <button class="tab-btn border border-line bg-white text-slate-700" data-resume-panel="resume-rewrite">简历修改</button>
+                  </div>
+                  <div id="resume-panel-content" class="mt-5 rounded-[1.6rem] border border-dashed border-line bg-shell/70 p-8 text-sm leading-8 text-slate-600"></div>
                 </div>
               </section>
             </div>
@@ -403,10 +418,10 @@
     </div>
 
     <div id="materials-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/45 p-4">
-      <div class="surface flex h-[min(86vh,820px)] w-full max-w-6xl flex-col rounded-[2rem] border border-white/70 p-6 shadow-card">
+      <div id="materials-modal-surface" class="surface flex h-[min(86vh,820px)] w-full max-w-6xl flex-col rounded-[2rem] border border-white/70 p-6 shadow-card">
         <div class="flex items-start justify-between gap-4">
           <div>
-            <p class="text-sm font-semibold text-slate-500">岗位相关资料详情</p>
+            <p id="materials-modal-caption" class="text-sm font-semibold text-slate-500">岗位相关资料详情</p>
             <h3 id="materials-modal-title" class="mt-1 text-2xl font-bold text-ink"></h3>
           </div>
           <div class="flex flex-wrap gap-3">
@@ -416,10 +431,10 @@
           </div>
         </div>
 
-        <div class="mt-5 grid min-h-0 flex-1 gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
-          <aside class="panel-scroll min-h-0 overflow-y-auto rounded-[1.5rem] border border-line/80 bg-white p-4">
-            <p class="text-sm font-semibold text-slate-500">资料列表</p>
-            <p class="mt-2 text-sm leading-7 text-slate-500">点击资料可进行查看、编辑、下载、删除等操作</p>
+        <div id="materials-modal-layout" class="mt-5 grid min-h-0 flex-1 gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
+          <aside id="materials-list-aside" class="panel-scroll min-h-0 overflow-y-auto rounded-[1.5rem] border border-line/80 bg-white p-4">
+            <p id="materials-list-title" class="text-sm font-semibold text-slate-500">资料列表</p>
+            <p id="materials-list-help" class="mt-2 text-sm leading-7 text-slate-500">点击资料可进行查看、编辑、下载、删除等操作</p>
             <div id="materials-list" class="mt-4 space-y-2"></div>
           </aside>
 
@@ -427,7 +442,7 @@
             <div id="materials-empty-state" class="hidden min-h-full rounded-[1.2rem] px-4 py-6 text-sm leading-7 text-slate-600"></div>
 
             <div id="materials-text-create-view" class="hidden space-y-4">
-              <p class="text-sm font-semibold text-slate-500">新增文本资料</p>
+              <p id="materials-create-title" class="text-sm font-semibold text-slate-500">新增文本资料</p>
               <div>
                 <label class="text-sm font-semibold text-slate-600">资料名称</label>
                 <input id="material-name-input" class="input mt-2" type="text" placeholder="请输入资料名称" />
@@ -453,7 +468,7 @@
             </div>
 
             <div id="materials-detail-view" class="hidden space-y-4">
-              <p class="text-sm font-semibold text-slate-500">资料详情</p>
+              <p id="materials-detail-title" class="text-sm font-semibold text-slate-500">资料详情</p>
               <div>
                 <label class="text-sm font-semibold text-slate-600">资料名称</label>
                 <input id="material-detail-name-input" class="input mt-2" type="text" placeholder="请输入资料名称" />
@@ -487,8 +502,8 @@
             </div>
 
             <div id="materials-upload-view" class="hidden rounded-[1.2rem] border border-dashed border-line bg-shell/70 px-4 py-4">
-              <p class="text-sm font-semibold text-slate-600">上传新资料</p>
-              <p class="mt-2 text-sm leading-7 text-slate-500">支持 pdf、doc、docx、txt、md、png、jpg、jpeg、gif、webp、bmp、svg、ppt、pptx，单文件不超过 20MB。</p>
+              <p id="materials-upload-title" class="text-sm font-semibold text-slate-600">上传新资料</p>
+              <p id="materials-upload-help" class="mt-2 text-sm leading-7 text-slate-500">支持 pdf、doc、docx、txt、md、png、jpg、jpeg、gif、webp、bmp、svg、ppt、pptx，单文件不超过 20MB。</p>
               <div class="mt-3 flex flex-wrap gap-3">
                 <input id="materials-file-input" class="hidden" type="file" accept=".pdf,.doc,.docx,.txt,.md,.png,.jpg,.jpeg,.gif,.webp,.bmp,.svg,.ppt,.pptx" multiple />
                 <button id="pick-material-files" class="btn border border-line bg-white text-slate-700">选择文件</button>
@@ -497,6 +512,159 @@
               <div id="materials-file-selection" class="mt-3 text-sm leading-7 text-slate-600">未选择文件。</div>
             </div>
           </section>
+        </div>
+      </div>
+    </div>
+
+    <div id="resume-job-entry-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/45 p-4">
+      <div class="surface w-full max-w-md rounded-[2rem] border border-white/70 p-6 shadow-card">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="text-sm font-semibold text-slate-500">简历优化 · 岗位信息</p>
+            <h3 class="mt-1 text-2xl font-bold text-ink">新增/选择岗位</h3>
+          </div>
+          <button id="close-resume-job-entry-modal" class="btn border border-line bg-white text-slate-700">关闭</button>
+        </div>
+        <div class="mt-5 grid gap-3">
+          <button id="resume-job-entry-create" class="btn border border-line bg-white text-slate-700">新增岗位</button>
+          <button id="resume-job-entry-select" class="btn border border-line bg-white text-slate-700">选择原有岗位</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="resume-job-create-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/45 p-4">
+      <div class="surface w-full max-w-3xl rounded-[2rem] border border-white/70 p-6 shadow-card">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="text-sm font-semibold text-slate-500">简历优化 · 新增岗位</p>
+            <h3 class="mt-1 text-2xl font-bold text-ink">新增岗位</h3>
+          </div>
+          <button id="close-resume-job-create-modal" class="btn border border-line bg-white text-slate-700">关闭</button>
+        </div>
+        <div class="mt-5 grid gap-4">
+          <div>
+            <p class="text-sm font-semibold text-slate-500">必填区</p>
+            <textarea id="resume-job-source-input" class="textarea mt-2 min-h-[180px]" placeholder="请粘贴岗位描述文本"></textarea>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-slate-500">选填区</p>
+            <div class="mt-2 grid gap-3 md:grid-cols-2">
+              <input id="resume-job-company-input" class="input" type="text" placeholder="公司" />
+              <input id="resume-job-position-input" class="input" type="text" placeholder="职位" />
+              <input id="resume-job-salary-input" class="input" type="text" placeholder="薪资" />
+              <input id="resume-job-location-input" class="input" type="text" placeholder="地点" />
+            </div>
+            <input id="resume-job-apply-link-input" class="input mt-3" type="text" placeholder="投递链接" />
+          </div>
+          <div class="grid gap-3 md:grid-cols-2">
+            <button id="resume-extract-job-fields" class="btn w-full border border-line bg-white text-slate-700">依据岗位描述自动提取空白字段</button>
+            <button id="resume-create-job-confirm" class="btn w-full bg-accent text-white">创建并选定岗位</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="resume-job-select-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/45 p-4">
+      <div class="surface w-full max-w-5xl rounded-[2rem] border border-white/70 p-6 shadow-card">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="text-sm font-semibold text-slate-500">简历优化 · 选择岗位</p>
+            <h3 class="mt-1 text-2xl font-bold text-ink">从岗位管理中选择岗位</h3>
+          </div>
+          <button id="close-resume-job-select-modal" class="btn border border-line bg-white text-slate-700">关闭</button>
+        </div>
+        <input id="resume-job-select-search" class="input mt-5" type="text" placeholder="搜索公司 / 职位 / 地点 / 状态" />
+        <div id="resume-job-select-list" class="mt-5 max-h-[60vh] overflow-auto rounded-[1.4rem] border border-line/80 bg-white"></div>
+        <div class="mt-4 flex justify-end">
+          <button id="confirm-resume-job-select" class="btn bg-accent text-white">确定选定岗位</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="resume-entry-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/45 p-4">
+      <div class="surface w-full max-w-md rounded-[2rem] border border-white/70 p-6 shadow-card">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="text-sm font-semibold text-slate-500">简历优化 · 简历信息</p>
+            <h3 class="mt-1 text-2xl font-bold text-ink">上传/选择简历</h3>
+          </div>
+          <button id="close-resume-entry-modal" class="btn border border-line bg-white text-slate-700">关闭</button>
+        </div>
+        <div class="mt-5 grid gap-3">
+          <button id="resume-entry-upload" class="btn border border-line bg-white text-slate-700">新增简历</button>
+          <button id="resume-entry-select-existing" class="btn border border-line bg-white text-slate-700">选择已有简历</button>
+          <button id="resume-entry-no-resume" class="btn border border-line bg-white text-slate-700">无简历</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="resume-select-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/45 p-4">
+      <div class="surface w-full max-w-5xl rounded-[2rem] border border-white/70 p-6 shadow-card">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="text-sm font-semibold text-slate-500">简历优化 · 选择已有简历</p>
+            <h3 class="mt-1 text-2xl font-bold text-ink">从简历版本中选择简历</h3>
+          </div>
+          <button id="close-resume-select-modal" class="btn border border-line bg-white text-slate-700">关闭</button>
+        </div>
+        <input id="resume-select-search" class="input mt-5" type="text" placeholder="搜索简历名称 / 文件名" />
+        <div id="resume-select-list" class="mt-5 max-h-[60vh] overflow-auto rounded-[1.4rem] border border-line/80 bg-white"></div>
+        <div class="mt-4 flex justify-end">
+          <button id="confirm-resume-select" class="btn bg-accent text-white">确定选定简历</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="resume-no-resume-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/45 p-4">
+      <div class="surface max-h-[86vh] w-full max-w-3xl overflow-y-auto rounded-[2rem] border border-white/70 p-6 shadow-card">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="text-sm font-semibold text-slate-500">简历优化 · 无简历填写</p>
+            <h3 class="mt-1 text-2xl font-bold text-ink">填写基础简历信息</h3>
+          </div>
+          <button id="close-resume-no-resume-modal" class="btn border border-line bg-white text-slate-700">关闭</button>
+        </div>
+        <div class="mt-5 grid gap-4">
+          <div class="rounded-[1.2rem] border border-line/80 bg-white p-4">
+            <p class="text-sm font-semibold text-slate-500">基础信息</p>
+            <div class="mt-3 grid gap-3 md:grid-cols-2">
+              <input id="resume-form-name" class="input" type="text" placeholder="* 姓名" />
+              <input id="resume-form-phone" class="input" type="text" placeholder="* 电话" />
+              <input id="resume-form-email" class="input" type="text" placeholder="* 邮箱" />
+              <input id="resume-form-city" class="input" type="text" placeholder="现居城市（选填）" />
+            </div>
+          </div>
+          <div class="rounded-[1.2rem] border border-line/80 bg-white p-4">
+            <p class="text-sm font-semibold text-slate-500">教育经历</p>
+            <div class="mt-3 grid gap-3 md:grid-cols-2">
+              <input id="resume-form-school" class="input" type="text" placeholder="* 学校" />
+              <input id="resume-form-degree" class="input" type="text" placeholder="* 学历" />
+              <input id="resume-form-major" class="input" type="text" placeholder="专业（选填）" />
+              <input id="resume-form-edu-time" class="input" type="text" placeholder="* 时间段，如 2021.09-2025.06" />
+            </div>
+          </div>
+          <div class="rounded-[1.2rem] border border-line/80 bg-white p-4">
+            <p class="text-sm font-semibold text-slate-500">实习 / 工作经历</p>
+            <div class="mt-3 grid gap-3 md:grid-cols-2">
+              <input id="resume-form-company" class="input" type="text" placeholder="公司（选填）" />
+              <input id="resume-form-role" class="input" type="text" placeholder="岗位（选填）" />
+              <input id="resume-form-work-time" class="input" type="text" placeholder="时间段（选填）" />
+            </div>
+            <textarea id="resume-form-work-desc" class="textarea mt-3 min-h-[110px]" placeholder="经历描述（选填）"></textarea>
+          </div>
+          <div class="rounded-[1.2rem] border border-line/80 bg-white p-4">
+            <p class="text-sm font-semibold text-slate-500">项目 / 科研经历</p>
+            <input id="resume-form-project-name" class="input mt-3" type="text" placeholder="项目 / 科研名称（选填）" />
+            <textarea id="resume-form-project-desc" class="textarea mt-3 min-h-[110px]" placeholder="项目 / 科研描述（选填）"></textarea>
+          </div>
+          <div class="rounded-[1.2rem] border border-line/80 bg-white p-4">
+            <p class="text-sm font-semibold text-slate-500">技能 / 证书 / 荣誉</p>
+            <textarea id="resume-form-skills" class="textarea mt-3 min-h-[90px]" placeholder="技能 / 证书（选填）"></textarea>
+            <textarea id="resume-form-awards" class="textarea mt-3 min-h-[90px]" placeholder="成果 / 荣誉（选填）"></textarea>
+          </div>
+          <div class="flex justify-end">
+            <button id="save-no-resume-form" class="btn bg-accent text-white">生成基础简历并保存</button>
+          </div>
         </div>
       </div>
     </div>
@@ -547,6 +715,23 @@
         },
       ];
 
+      function defaultResumeOptimizationState() {
+        return {
+          jobId: "",
+          selectedResumeId: "",
+          selectedResumeName: "",
+          started: false,
+          activePanel: "job-analysis",
+        };
+      }
+
+      function defaultUserData(jobs = []) {
+        return {
+          jobs,
+          resumeOptimization: defaultResumeOptimizationState(),
+        };
+      }
+
       const defaultState = {
         currentUser: "陈默",
         activeView: "home",
@@ -562,13 +747,18 @@
           direction: "desc",
         },
         users: {
-          陈默: { jobs: structuredClone(seedJobs) },
+          陈默: defaultUserData(structuredClone(seedJobs)),
         },
       };
 
       let state = loadState();
+      const JOB_MATERIAL_CATEGORIES = ["面经", "行业动态", "其他"];
+      const PERSONAL_MATERIAL_CATEGORIES = ["教育经历", "实习/工作经历", "项目/科研经历", "志愿/社团经历", "技能/证书", "成果/荣誉", "简历版本", "其他"];
+      const RESUME_LIBRARY_SCOPE = "__resume_library__";
+      const PERSONAL_MATERIAL_SCOPE = "__personal_materials__";
       const materialsState = {
         jobId: "",
+        scopeType: "job",
         user: "",
         jobTitle: "",
         items: [],
@@ -577,11 +767,26 @@
         view: "empty",
         draftTextMaterial: null,
         previewMode: "",
+        categories: [...JOB_MATERIAL_CATEGORIES],
+        modalCaption: "岗位相关资料详情",
+        createTextLabel: "新增文本资料",
+        uploadLabel: "上传新资料",
+        uploadHelp: "支持 pdf、doc、docx、txt、md、png、jpg、jpeg、gif、webp、bmp、svg、ppt、pptx，单文件不超过 20MB。",
+        uploadAccept: ".pdf,.doc,.docx,.txt,.md,.png,.jpg,.jpeg,.gif,.webp,.bmp,.svg,.ppt,.pptx",
+        showList: true,
+        showCreateText: true,
+        showUploadButton: true,
+        uploadConfirmLabel: "上传文件",
         openCategories: {
           面经: true,
           行业动态: true,
           其他: true,
         },
+      };
+      const resumeUiState = {
+        jobSearch: "",
+        resumeSearch: "",
+        resumeItems: [],
       };
 
       function loadState() {
@@ -605,7 +810,13 @@
 
       function ensureCurrentUser() {
         if (!state.users[state.currentUser]) {
-          state.users[state.currentUser] = { jobs: [] };
+          state.users[state.currentUser] = defaultUserData([]);
+        }
+        if (!Array.isArray(state.users[state.currentUser].jobs)) {
+          state.users[state.currentUser].jobs = [];
+        }
+        if (!state.users[state.currentUser].resumeOptimization) {
+          state.users[state.currentUser].resumeOptimization = defaultResumeOptimizationState();
         }
       }
 
@@ -622,6 +833,11 @@
       function optimizeJob() {
         const jobs = currentJobs();
         return jobs.find((job) => job.id === state.optimizeJobId) || selectedJob();
+      }
+
+      function currentResumeOptimization() {
+        ensureCurrentUser();
+        return state.users[state.currentUser].resumeOptimization;
       }
 
       function formatDateTime(value) {
@@ -767,6 +983,17 @@
         };
       }
 
+      function readResumeJobForm() {
+        return {
+          company: document.getElementById("resume-job-company-input").value.trim(),
+          position: document.getElementById("resume-job-position-input").value.trim(),
+          salary: document.getElementById("resume-job-salary-input").value.trim(),
+          location: document.getElementById("resume-job-location-input").value.trim(),
+          jdText: document.getElementById("resume-job-source-input").value.trim(),
+          applyLink: document.getElementById("resume-job-apply-link-input").value.trim(),
+        };
+      }
+
       function optionalFieldIds() {
         return [
           "job-company-input",
@@ -815,6 +1042,26 @@
 
       function clearJobForm() {
         writeJobForm({
+          company: "",
+          position: "",
+          salary: "",
+          location: "",
+          jdText: "",
+          applyLink: "",
+        });
+      }
+
+      function writeResumeJobForm(values) {
+        document.getElementById("resume-job-company-input").value = values.company || "";
+        document.getElementById("resume-job-position-input").value = values.position || "";
+        document.getElementById("resume-job-salary-input").value = values.salary || "";
+        document.getElementById("resume-job-location-input").value = values.location || "";
+        document.getElementById("resume-job-source-input").value = values.jdText || "";
+        document.getElementById("resume-job-apply-link-input").value = values.applyLink || "";
+      }
+
+      function clearResumeJobForm() {
+        writeResumeJobForm({
           company: "",
           position: "",
           salary: "",
@@ -1009,6 +1256,29 @@
         };
       }
 
+      function buildJobRecord(form) {
+        const now = new Date().toISOString();
+        return {
+          id: `job-${Date.now()}`,
+          selected: false,
+          jdText: normalizedFieldValue(form.jdText),
+          jdLink: "-",
+          company: normalizedFieldValue(form.company),
+          position: normalizedFieldValue(form.position),
+          salary: normalizedFieldValue(form.salary),
+          location: normalizedFieldValue(form.location),
+          sourceChannel: inferSourceChannel(form.jdText, form.applyLink),
+          applyLink: normalizedFieldValue(form.applyLink),
+          importance: "-",
+          tags: [],
+          status: "待准备",
+          applyDate: "-",
+          nextStepDeadline: "-",
+          updatedAt: now,
+          notes: "-",
+        };
+      }
+
       function openJDDetail(jobId) {
         const job = currentJobs().find((item) => item.id === jobId);
         if (!job) return;
@@ -1040,11 +1310,13 @@
       }
 
       function normalizeMaterialCategory(category) {
-        return category === "面试" ? "面经" : (category || "其他");
+        if (category === "面试" && materialsState.categories.includes("面经")) return "面经";
+        const value = category || "其他";
+        return materialsState.categories.includes(value) ? value : (materialsState.categories[materialsState.categories.length - 1] || "其他");
       }
 
       function allMaterialCategories() {
-        return ["面经", "行业动态", "其他"];
+        return materialsState.categories;
       }
 
       function ensureOpenCategory(name) {
@@ -1060,7 +1332,7 @@
       function setCategoryControl(selectId, category) {
         const select = document.getElementById(selectId);
         const value = normalizeMaterialCategory(category);
-        select.value = ["面经", "行业动态", "其他"].includes(value) ? value : "其他";
+        select.value = [...materialsState.categories].includes(value) ? value : (materialsState.categories[materialsState.categories.length - 1] || "其他");
       }
 
       function renderCategoryOptions(selectId) {
@@ -1073,11 +1345,9 @@
       }
 
       function materialCategoryOptionsHtml(selectedValue = "") {
-        return [
-          "面经",
-          "行业动态",
-          "其他",
-        ].map((value) => `<option value="${value}"${value === selectedValue ? " selected" : ""}>${value}</option>`).join("");
+        return materialsState.categories
+          .map((value) => `<option value="${value}"${value === selectedValue ? " selected" : ""}>${value}</option>`)
+          .join("");
       }
 
       function renderMaterialsList() {
@@ -1125,6 +1395,26 @@
         const openButton = document.getElementById("material-open-button");
         const editButton = document.getElementById("material-edit-button");
         const saveMetaButton = document.getElementById("save-material-meta");
+        document.getElementById("materials-modal-caption").textContent = materialsState.modalCaption;
+        document.getElementById("create-text-material").textContent = materialsState.createTextLabel;
+        document.getElementById("show-upload-panel").textContent = materialsState.uploadLabel;
+        document.getElementById("upload-material-files").textContent = materialsState.uploadConfirmLabel;
+        document.getElementById("materials-list-title").textContent = "资料列表";
+        document.getElementById("materials-list-help").textContent = "点击资料可进行查看、编辑、下载、删除等操作";
+        document.getElementById("materials-create-title").textContent = materialsState.createTextLabel;
+        document.getElementById("materials-detail-title").textContent = "资料详情";
+        document.getElementById("materials-upload-title").textContent = materialsState.uploadLabel;
+        document.getElementById("materials-upload-help").textContent = materialsState.uploadHelp;
+        document.getElementById("materials-file-input").setAttribute("accept", materialsState.uploadAccept);
+        document.getElementById("create-text-material").classList.toggle("hidden", !materialsState.showCreateText);
+        document.getElementById("show-upload-panel").classList.toggle("hidden", !materialsState.showUploadButton);
+        document.getElementById("materials-list-aside").classList.toggle("hidden", !materialsState.showList);
+        document.getElementById("materials-modal-layout").className = materialsState.showList
+          ? "mt-5 grid min-h-0 flex-1 gap-4 lg:grid-cols-[280px_minmax(0,1fr)]"
+          : "mt-5 min-h-0 flex-1";
+        document.getElementById("materials-modal-surface").className = materialsState.showList
+          ? "surface flex h-[min(86vh,820px)] w-full max-w-6xl flex-col rounded-[2rem] border border-white/70 p-6 shadow-card"
+          : "surface flex h-[min(80vh,720px)] w-full max-w-3xl flex-col rounded-[2rem] border border-white/70 p-6 shadow-card";
 
         emptyState.classList.add("hidden");
         createView.classList.add("hidden");
@@ -1277,6 +1567,30 @@
         renderSelectedFiles();
       }
 
+      function resetMaterialScope(config) {
+        materialsState.jobId = config.scopeId;
+        materialsState.scopeType = config.scopeType || "job";
+        materialsState.user = state.currentUser;
+        materialsState.jobTitle = config.title;
+        materialsState.items = [];
+        materialsState.selectedId = config.selectedId || "";
+        materialsState.pendingFiles = [];
+        materialsState.view = config.initialView || "empty";
+        materialsState.draftTextMaterial = null;
+        materialsState.previewMode = "";
+        materialsState.categories = [...config.categories];
+        materialsState.modalCaption = config.modalCaption;
+        materialsState.createTextLabel = config.createTextLabel;
+        materialsState.uploadLabel = config.uploadLabel;
+        materialsState.uploadHelp = config.uploadHelp;
+        materialsState.uploadAccept = config.uploadAccept;
+        materialsState.showList = config.showList ?? true;
+        materialsState.showCreateText = config.showCreateText ?? true;
+        materialsState.showUploadButton = config.showUploadButton ?? true;
+        materialsState.uploadConfirmLabel = config.uploadConfirmLabel || "上传文件";
+        materialsState.openCategories = Object.fromEntries(config.categories.map((item) => [item, true]));
+      }
+
       async function refreshMaterials(jobId = materialsState.jobId) {
         if (!jobId) return;
         const payload = await fetchJson(`/api/job-materials?${new URLSearchParams({ user: state.currentUser, jobId }).toString()}`);
@@ -1291,15 +1605,17 @@
       async function openMaterialsModal(jobId) {
         const job = currentJobs().find((item) => item.id === jobId);
         if (!job) return;
-        materialsState.jobId = jobId;
-        materialsState.user = state.currentUser;
-        materialsState.jobTitle = `${displayValue(job.company)} · ${displayValue(job.position)}`;
-        materialsState.items = [];
-        materialsState.selectedId = "";
-        materialsState.pendingFiles = [];
-        materialsState.view = "empty";
-        materialsState.draftTextMaterial = null;
-        materialsState.previewMode = "";
+        resetMaterialScope({
+          scopeId: jobId,
+          scopeType: "job",
+          title: `${displayValue(job.company)} · ${displayValue(job.position)}`,
+          categories: JOB_MATERIAL_CATEGORIES,
+          modalCaption: "岗位相关资料详情",
+          createTextLabel: "新增文本资料",
+          uploadLabel: "上传新资料",
+          uploadHelp: "支持 pdf、doc、docx、txt、md、png、jpg、jpeg、gif、webp、bmp、svg、ppt、pptx，单文件不超过 20MB。",
+          uploadAccept: ".pdf,.doc,.docx,.txt,.md,.png,.jpg,.jpeg,.gif,.webp,.bmp,.svg,.ppt,.pptx",
+        });
         document.getElementById("materials-modal-title").textContent = materialsState.jobTitle;
         document.getElementById("materials-modal").classList.remove("hidden");
         document.getElementById("materials-modal").classList.add("flex");
@@ -1307,6 +1623,59 @@
           await refreshMaterials(jobId);
         } catch (error) {
           alert(`读取岗位相关资料失败：${error.message}`);
+          closeMaterialsModal();
+        }
+      }
+
+      async function openPersonalMaterialsModal() {
+        resetMaterialScope({
+          scopeId: PERSONAL_MATERIAL_SCOPE,
+          scopeType: "personal",
+          title: `${state.currentUser} · 个人相关资料`,
+          categories: PERSONAL_MATERIAL_CATEGORIES,
+          modalCaption: "个人相关资料详情",
+          createTextLabel: "新增文本资料",
+          uploadLabel: "上传个人资料",
+          uploadHelp: "支持 pdf、doc、docx、txt、md、png、jpg、jpeg、gif、webp、bmp、svg、ppt、pptx，单文件不超过 20MB。",
+          uploadAccept: ".pdf,.doc,.docx,.txt,.md,.png,.jpg,.jpeg,.gif,.webp,.bmp,.svg,.ppt,.pptx",
+        });
+        document.getElementById("materials-modal-title").textContent = materialsState.jobTitle;
+        document.getElementById("materials-modal").classList.remove("hidden");
+        document.getElementById("materials-modal").classList.add("flex");
+        try {
+          await refreshMaterials(PERSONAL_MATERIAL_SCOPE);
+        } catch (error) {
+          alert(`读取个人相关资料失败：${error.message}`);
+          closeMaterialsModal();
+        }
+      }
+
+      async function openResumeLibraryModal(initialView = "empty") {
+        const resumeState = currentResumeOptimization();
+        resetMaterialScope({
+          scopeId: RESUME_LIBRARY_SCOPE,
+          scopeType: "resume",
+          title: `${state.currentUser} · 简历库`,
+          categories: ["简历版本"],
+          modalCaption: "简历详情",
+          createTextLabel: "填写简历简化表单",
+          uploadLabel: "上传简历",
+          uploadHelp: "支持 pdf、doc、docx、md，单文件不超过 20MB。",
+          uploadAccept: ".pdf,.doc,.docx,.md",
+          selectedId: resumeState.selectedResumeId || "",
+          initialView,
+          showList: initialView !== "upload",
+          showCreateText: initialView !== "upload",
+          showUploadButton: true,
+          uploadConfirmLabel: initialView === "upload" ? "上传文件并选定简历" : "上传文件",
+        });
+        document.getElementById("materials-modal-title").textContent = materialsState.jobTitle;
+        document.getElementById("materials-modal").classList.remove("hidden");
+        document.getElementById("materials-modal").classList.add("flex");
+        try {
+          await refreshMaterials(RESUME_LIBRARY_SCOPE);
+        } catch (error) {
+          alert(`读取简历失败：${error.message}`);
           closeMaterialsModal();
         }
       }
@@ -1391,10 +1760,14 @@
           ? (materialsState.items.find((item) => item.name === name && item.category === category && item.type === material.type) || materialsState.items[0] || null)
           : (materialsState.items.find((item) => item.id === material.id) || null);
         materialsState.selectedId = target?.id || "";
+        if (materialsState.scopeType === "resume" && target) {
+          setResumeSelectedResume(target);
+        }
         materialsState.view = target ? "detail" : "empty";
         materialsState.draftTextMaterial = null;
         materialsState.previewMode = "";
         renderMaterialsModal();
+        renderAll();
         return true;
       }
 
@@ -1423,10 +1796,14 @@
           }),
         });
         materialsState.items = payload.materials || [];
+        if (materialsState.scopeType === "resume" && currentResumeOptimization().selectedResumeId === material.id) {
+          setResumeSelectedResume(null);
+        }
         materialsState.selectedId = "";
         materialsState.view = "empty";
         materialsState.previewMode = "";
         renderMaterialsModal();
+        renderAll();
       }
 
       async function uploadSelectedMaterialFiles() {
@@ -1463,11 +1840,15 @@
         });
         materialsState.items = payload.materials || [];
         materialsState.selectedId = materialsState.items[0]?.id || "";
+        if (materialsState.scopeType === "resume" && materialsState.items[0]) {
+          setResumeSelectedResume(materialsState.items[0]);
+        }
         materialsState.view = materialsState.selectedId ? "detail" : "empty";
         materialsState.previewMode = "";
         materialsState.pendingFiles = [];
         document.getElementById("materials-file-input").value = "";
         renderMaterialsModal();
+        renderAll();
       }
 
       async function openSelectedMaterialPreview() {
@@ -1615,8 +1996,171 @@
               <p><span class="font-semibold text-slate-800">描述：</span>${escapeHtml(summarizeJD(job))}</p>
             `
           : fallback;
-        document.getElementById("resume-job-card").innerHTML = html;
         document.getElementById("interview-job-card").innerHTML = html;
+      }
+
+      function resumeSelectedJob() {
+        const resumeState = currentResumeOptimization();
+        return currentJobs().find((item) => item.id === resumeState.jobId) || null;
+      }
+
+      function setResumeSelectedResume(material) {
+        const resumeState = currentResumeOptimization();
+        resumeState.selectedResumeId = material?.id || "";
+        resumeState.selectedResumeName = material?.name || material?.fileName || "";
+        if (!material) resumeState.started = false;
+      }
+
+      function renderResumeWorkspace() {
+        const resumeState = currentResumeOptimization();
+        const job = resumeSelectedJob();
+        const canStart = Boolean(job && resumeState.selectedResumeId);
+
+        document.getElementById("resume-job-card").innerHTML = job
+          ? `
+              <p><span class="font-semibold text-slate-800">公司：</span>${escapeHtml(displayValue(job.company))}</p>
+              <p><span class="font-semibold text-slate-800">职位：</span>${escapeHtml(displayValue(job.position))}</p>
+              <p><span class="font-semibold text-slate-800">地点：</span>${escapeHtml(displayValue(job.location))}</p>
+              <p><span class="font-semibold text-slate-800">岗位描述：</span>${escapeHtml(summarizeJD(job))}</p>
+            `
+          : `<p class="text-slate-500">尚未选定岗位。请先新增岗位或从岗位管理中选择岗位。</p>`;
+
+        document.getElementById("resume-selected-card").innerHTML = resumeState.selectedResumeId
+          ? `
+              <p><span class="font-semibold text-slate-800">当前选定简历：</span>${escapeHtml(resumeState.selectedResumeName || "未命名简历")}</p>
+              <p class="mt-1 text-xs text-slate-500">可再次打开“上传 / 选择简历”切换当前简历版本。</p>
+            `
+          : `<p class="text-slate-500">尚未选定简历。请上传简历文件或填写简历简化表单。</p>`;
+
+        const startButton = document.getElementById("resume-start-button");
+        startButton.disabled = !canStart;
+        startButton.classList.toggle("opacity-60", !canStart);
+        startButton.textContent = canStart ? "开始简历优化" : "开始简历优化（请先完成岗位与简历必填项）";
+
+        const empty = document.getElementById("resume-workspace-empty");
+        const workspace = document.getElementById("resume-workspace");
+        empty.classList.toggle("hidden", resumeState.started && canStart);
+        workspace.classList.toggle("hidden", !(resumeState.started && canStart));
+
+        document.querySelectorAll("[data-resume-panel]").forEach((button) => {
+          button.classList.toggle("active", button.dataset.resumePanel === resumeState.activePanel);
+        });
+
+        const panelCopy = {
+          "job-analysis": {
+            title: "岗位分析",
+            text: "岗位分析接口预留完成。后续在此接入 JD 拆解、关键词映射、能力要求提炼与简历对齐建议。",
+          },
+          "resume-score": {
+            title: "原简历打分",
+            text: "原简历打分接口预留完成。后续在此接入结构完整度、经历匹配度、表达清晰度和量化结果评分。",
+          },
+          "resume-rewrite": {
+            title: "简历修改",
+            text: "简历修改接口预留完成。后续在此接入逐段改写建议、简历版本对比和导出能力。",
+          },
+        };
+        const active = panelCopy[resumeState.activePanel] || panelCopy["job-analysis"];
+        document.getElementById("resume-panel-content").innerHTML = `
+          <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Placeholder</p>
+          <h3 class="mt-3 text-3xl font-bold text-ink">${active.title}</h3>
+          <p class="mt-4 max-w-3xl text-sm leading-8 text-slate-600">${active.text}</p>
+        `;
+      }
+
+      function renderResumeJobSelectModal() {
+        const list = document.getElementById("resume-job-select-list");
+        const resumeState = currentResumeOptimization();
+        const keyword = resumeUiState.jobSearch.trim().toLowerCase();
+        const jobs = currentJobs().filter((job) => {
+          if (!keyword) return true;
+          return [job.company, job.position, job.location, job.status, job.jdText].join(" ").toLowerCase().includes(keyword);
+        });
+        if (!jobs.length) {
+          list.innerHTML = `<div class="px-4 py-8 text-sm text-slate-500">${resumeUiState.jobSearch ? "没有匹配的岗位，请调整搜索关键词。" : "当前还没有岗位，请先新增岗位。"}</div>`;
+          return;
+        }
+
+        list.innerHTML = jobs.map((job) => `
+          <label class="flex cursor-pointer items-start gap-3 border-b border-line/60 px-4 py-4 last:border-b-0">
+            <input type="radio" name="resume-job-select" value="${job.id}" ${resumeState.jobId === job.id ? "checked" : ""} class="mt-1" />
+            <div class="min-w-0 flex-1 text-sm leading-7 text-slate-700">
+              <p><span class="font-semibold text-slate-800">${escapeHtml(displayValue(job.company))}</span> · ${escapeHtml(displayValue(job.position))}</p>
+              <p class="text-slate-500">${escapeHtml(displayValue(job.location))} · ${escapeHtml(displayValue(job.status))}</p>
+              <p class="truncate text-slate-500">${escapeHtml(summarizeJD(job))}</p>
+            </div>
+          </label>
+        `).join("");
+      }
+
+      function renderResumeSelectModal() {
+        const list = document.getElementById("resume-select-list");
+        const resumeState = currentResumeOptimization();
+        const keyword = resumeUiState.resumeSearch.trim().toLowerCase();
+        const items = resumeUiState.resumeItems.filter((item) => {
+          if (!keyword) return true;
+          return [item.name, item.fileName].join(" ").toLowerCase().includes(keyword);
+        });
+        if (!items.length) {
+          list.innerHTML = `<div class="px-4 py-8 text-sm text-slate-500">${resumeUiState.resumeSearch ? "没有匹配的简历版本，请调整搜索关键词。" : "当前还没有简历版本，请先新增简历或填写基础简历。"}</div>`;
+          return;
+        }
+        list.innerHTML = items.map((item) => `
+          <label class="flex cursor-pointer items-start gap-3 border-b border-line/60 px-4 py-4 last:border-b-0">
+            <input type="radio" name="resume-select-item" value="${item.id}" ${resumeState.selectedResumeId === item.id ? "checked" : ""} class="mt-1" />
+            <div class="min-w-0 flex-1 text-sm leading-7 text-slate-700">
+              <p><span class="font-semibold text-slate-800">${escapeHtml(item.name || "未命名简历")}</span></p>
+              <p class="text-slate-500">${escapeHtml(item.type === "text" ? "Markdown 简历版本" : (item.fileName || "文件简历"))}</p>
+              <p class="text-slate-500">${escapeHtml(formatDateTime(item.updatedAt || item.createdAt || ""))}</p>
+            </div>
+          </label>
+        `).join("");
+      }
+
+      async function loadResumeLibraryItems() {
+        const payload = await fetchJson(`/api/job-materials?${new URLSearchParams({ user: state.currentUser, jobId: RESUME_LIBRARY_SCOPE }).toString()}`);
+        resumeUiState.resumeItems = (payload.materials || []).filter((item) => normalizeMaterialCategory(item.category) === "简历版本");
+      }
+
+      function generateResumeMarkdown(form) {
+        return [
+          `# ${form.name}`,
+          "",
+          "## 基础信息",
+          `- 电话：${form.phone}`,
+          `- 邮箱：${form.email}`,
+          form.city ? `- 现居城市：${form.city}` : "",
+          "",
+          "## 教育经历",
+          `- 学校：${form.school}`,
+          `- 学历：${form.degree}`,
+          form.major ? `- 专业：${form.major}` : "",
+          `- 时间：${form.eduTime}`,
+          "",
+          "## 实习 / 工作经历",
+          form.workCompany || form.workRole || form.workTime || form.workDesc
+            ? [
+                form.workCompany ? `- 公司：${form.workCompany}` : "",
+                form.workRole ? `- 岗位：${form.workRole}` : "",
+                form.workTime ? `- 时间：${form.workTime}` : "",
+                form.workDesc ? `- 描述：${form.workDesc}` : "",
+              ].filter(Boolean).join("\n")
+            : "- 暂无",
+          "",
+          "## 项目 / 科研经历",
+          form.projectName || form.projectDesc
+            ? [
+                form.projectName ? `- 名称：${form.projectName}` : "",
+                form.projectDesc ? `- 描述：${form.projectDesc}` : "",
+              ].filter(Boolean).join("\n")
+            : "- 暂无",
+          "",
+          "## 技能 / 证书",
+          form.skills || "- 暂无",
+          "",
+          "## 成果 / 荣誉",
+          form.awards || "- 暂无",
+        ].filter(Boolean).join("\n");
       }
 
       function renderAll() {
@@ -1629,6 +2173,7 @@
         renderSortIcons();
         renderTable();
         renderOptimizeCards();
+        renderResumeWorkspace();
       }
 
       function setActiveView(viewName) {
@@ -1688,27 +2233,7 @@
         createButton.textContent = "创建中...";
 
         try {
-          const now = new Date().toISOString();
-          const newJob = {
-            id: `job-${Date.now()}`,
-            selected: false,
-            jdText: normalizedFieldValue(form.jdText),
-            jdLink: "-",
-            company: normalizedFieldValue(form.company),
-            position: normalizedFieldValue(form.position),
-            salary: normalizedFieldValue(form.salary),
-            location: normalizedFieldValue(form.location),
-            sourceChannel: inferSourceChannel(form.jdText, form.applyLink),
-            applyLink: normalizedFieldValue(form.applyLink),
-            importance: "-",
-            tags: [],
-            status: "待准备",
-            applyDate: "-",
-            nextStepDeadline: "-",
-            updatedAt: now,
-            notes: "-",
-          };
-
+          const newJob = buildJobRecord(form);
           state.users[state.currentUser].jobs.unshift(newJob);
           state.selectedJobId = newJob.id;
           state.optimizeJobId = newJob.id;
@@ -1719,6 +2244,211 @@
           createButton.disabled = false;
           createButton.textContent = "创建并加入岗位管理";
         }
+      }
+
+      function openResumeJobCreateModal() {
+        clearResumeJobForm();
+        document.getElementById("resume-job-create-modal").classList.remove("hidden");
+        document.getElementById("resume-job-create-modal").classList.add("flex");
+      }
+
+      function closeResumeJobCreateModal() {
+        document.getElementById("resume-job-create-modal").classList.add("hidden");
+        document.getElementById("resume-job-create-modal").classList.remove("flex");
+      }
+
+      function openResumeEntryModal() {
+        document.getElementById("resume-entry-modal").classList.remove("hidden");
+        document.getElementById("resume-entry-modal").classList.add("flex");
+      }
+
+      function closeResumeEntryModal() {
+        document.getElementById("resume-entry-modal").classList.add("hidden");
+        document.getElementById("resume-entry-modal").classList.remove("flex");
+      }
+
+      function openResumeJobEntryModal() {
+        document.getElementById("resume-job-entry-modal").classList.remove("hidden");
+        document.getElementById("resume-job-entry-modal").classList.add("flex");
+      }
+
+      function closeResumeJobEntryModal() {
+        document.getElementById("resume-job-entry-modal").classList.add("hidden");
+        document.getElementById("resume-job-entry-modal").classList.remove("flex");
+      }
+
+      function openResumeJobSelectModal() {
+        resumeUiState.jobSearch = "";
+        document.getElementById("resume-job-select-search").value = "";
+        renderResumeJobSelectModal();
+        document.getElementById("resume-job-select-modal").classList.remove("hidden");
+        document.getElementById("resume-job-select-modal").classList.add("flex");
+      }
+
+      function closeResumeJobSelectModal() {
+        document.getElementById("resume-job-select-modal").classList.add("hidden");
+        document.getElementById("resume-job-select-modal").classList.remove("flex");
+      }
+
+      async function openResumeSelectModal() {
+        resumeUiState.resumeSearch = "";
+        document.getElementById("resume-select-search").value = "";
+        await loadResumeLibraryItems();
+        renderResumeSelectModal();
+        document.getElementById("resume-select-modal").classList.remove("hidden");
+        document.getElementById("resume-select-modal").classList.add("flex");
+      }
+
+      function closeResumeSelectModal() {
+        document.getElementById("resume-select-modal").classList.add("hidden");
+        document.getElementById("resume-select-modal").classList.remove("flex");
+      }
+
+      function openResumeNoResumeModal() {
+        [
+          "resume-form-name",
+          "resume-form-phone",
+          "resume-form-email",
+          "resume-form-city",
+          "resume-form-school",
+          "resume-form-degree",
+          "resume-form-major",
+          "resume-form-edu-time",
+          "resume-form-company",
+          "resume-form-role",
+          "resume-form-work-time",
+          "resume-form-work-desc",
+          "resume-form-project-name",
+          "resume-form-project-desc",
+          "resume-form-skills",
+          "resume-form-awards",
+        ].forEach((id) => {
+          document.getElementById(id).value = "";
+        });
+        document.getElementById("resume-no-resume-modal").classList.remove("hidden");
+        document.getElementById("resume-no-resume-modal").classList.add("flex");
+      }
+
+      function closeResumeNoResumeModal() {
+        document.getElementById("resume-no-resume-modal").classList.add("hidden");
+        document.getElementById("resume-no-resume-modal").classList.remove("flex");
+      }
+
+      async function extractResumeJobFields() {
+        const form = readResumeJobForm();
+        if (!form.jdText) {
+          alert("请先填写岗位描述，再自动提取空白字段。");
+          return;
+        }
+        const button = document.getElementById("resume-extract-job-fields");
+        button.disabled = true;
+        button.textContent = "提取中...";
+        try {
+          const payload = extractBlankFieldsFromDescription(form);
+          writeResumeJobForm({
+            ...form,
+            company: !form.company && payload.company !== "-" ? payload.company : form.company,
+            position: !form.position && payload.position !== "-" ? payload.position : form.position,
+            salary: !form.salary && payload.salary !== "-" ? payload.salary : form.salary,
+            location: !form.location && payload.location !== "-" ? payload.location : form.location,
+            applyLink: !form.applyLink && payload.applyLink !== "-" ? payload.applyLink : form.applyLink,
+          });
+        } finally {
+          button.disabled = false;
+          button.textContent = "依据岗位描述自动提取空白字段";
+        }
+      }
+
+      async function createResumeJob() {
+        const form = readResumeJobForm();
+        const hasAnyValue = Object.values(form).some((value) => String(value || "").trim());
+        if (!hasAnyValue) {
+          alert("请至少填写一项岗位信息。");
+          return;
+        }
+        const button = document.getElementById("resume-create-job-confirm");
+        button.disabled = true;
+        button.textContent = "创建中...";
+        try {
+          const newJob = buildJobRecord(form);
+          state.users[state.currentUser].jobs.unshift(newJob);
+          state.selectedJobId = newJob.id;
+          state.optimizeJobId = newJob.id;
+          const resumeState = currentResumeOptimization();
+          resumeState.jobId = newJob.id;
+          resumeState.started = false;
+          closeResumeJobCreateModal();
+          renderAll();
+        } finally {
+          button.disabled = false;
+          button.textContent = "创建并选定岗位";
+        }
+      }
+
+      function confirmResumeJobSelection() {
+        const selected = document.querySelector('input[name="resume-job-select"]:checked');
+        if (!selected) {
+          alert("请先选择岗位。");
+          return;
+        }
+        const resumeState = currentResumeOptimization();
+        resumeState.jobId = selected.value;
+        resumeState.started = false;
+        closeResumeJobSelectModal();
+        renderAll();
+      }
+
+      function confirmResumeSelection() {
+        const selected = document.querySelector('input[name="resume-select-item"]:checked');
+        if (!selected) {
+          alert("请先选择简历。");
+          return;
+        }
+        const target = resumeUiState.resumeItems.find((item) => item.id === selected.value) || null;
+        setResumeSelectedResume(target);
+        closeResumeSelectModal();
+        renderAll();
+      }
+
+      async function saveNoResumeForm() {
+        const form = {
+          name: document.getElementById("resume-form-name").value.trim(),
+          phone: document.getElementById("resume-form-phone").value.trim(),
+          email: document.getElementById("resume-form-email").value.trim(),
+          city: document.getElementById("resume-form-city").value.trim(),
+          school: document.getElementById("resume-form-school").value.trim(),
+          degree: document.getElementById("resume-form-degree").value.trim(),
+          major: document.getElementById("resume-form-major").value.trim(),
+          eduTime: document.getElementById("resume-form-edu-time").value.trim(),
+          workCompany: document.getElementById("resume-form-company").value.trim(),
+          workRole: document.getElementById("resume-form-role").value.trim(),
+          workTime: document.getElementById("resume-form-work-time").value.trim(),
+          workDesc: document.getElementById("resume-form-work-desc").value.trim(),
+          projectName: document.getElementById("resume-form-project-name").value.trim(),
+          projectDesc: document.getElementById("resume-form-project-desc").value.trim(),
+          skills: document.getElementById("resume-form-skills").value.trim(),
+          awards: document.getElementById("resume-form-awards").value.trim(),
+        };
+        if (!form.name || !form.phone || !form.email || !form.school || !form.degree || !form.eduTime) {
+          alert("请先完成所有必填项（带 * 的字段）。");
+          return;
+        }
+        const payload = await fetchJson("/api/job-materials/text", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user: state.currentUser,
+            jobId: RESUME_LIBRARY_SCOPE,
+            id: "",
+            name: `${form.name} - 基础简历`,
+            category: "简历版本",
+            content: generateResumeMarkdown(form),
+          }),
+        });
+        const target = (payload.materials || []).find((item) => item.name === `${form.name} - 基础简历`) || payload.materials?.[0] || null;
+        setResumeSelectedResume(target);
+        closeResumeNoResumeModal();
+        renderAll();
       }
 
       function startCellEdit(cell) {
@@ -1816,6 +2546,10 @@
         const firstJob = currentJobs()[0];
         state.selectedJobId = firstJob ? firstJob.id : "";
         state.optimizeJobId = firstJob ? firstJob.id : "";
+        if (selectedIds.includes(currentResumeOptimization().jobId)) {
+          currentResumeOptimization().jobId = "";
+          currentResumeOptimization().started = false;
+        }
         if (selectedIds.includes(materialsState.jobId)) closeMaterialsModal();
         renderAll();
       }
@@ -1853,6 +2587,73 @@
         document.getElementById("close-materials-modal").addEventListener("click", () => {
           void proceedAfterUnsavedCheck(async () => {
             closeMaterialsModal();
+          });
+        });
+        document.getElementById("resume-job-entry").addEventListener("click", openResumeJobEntryModal);
+        document.getElementById("close-resume-job-entry-modal").addEventListener("click", closeResumeJobEntryModal);
+        document.getElementById("resume-job-entry-create").addEventListener("click", () => {
+          closeResumeJobEntryModal();
+          openResumeJobCreateModal();
+        });
+        document.getElementById("resume-job-entry-select").addEventListener("click", () => {
+          closeResumeJobEntryModal();
+          openResumeJobSelectModal();
+        });
+        document.getElementById("close-resume-job-create-modal").addEventListener("click", closeResumeJobCreateModal);
+        document.getElementById("close-resume-job-select-modal").addEventListener("click", closeResumeJobSelectModal);
+        document.getElementById("resume-extract-job-fields").addEventListener("click", () => {
+          void extractResumeJobFields();
+        });
+        document.getElementById("resume-create-job-confirm").addEventListener("click", () => {
+          void createResumeJob();
+        });
+        document.getElementById("confirm-resume-job-select").addEventListener("click", confirmResumeJobSelection);
+        document.getElementById("resume-open-job-materials").addEventListener("click", () => {
+          const job = resumeSelectedJob();
+          if (!job) {
+            alert("请先选定岗位，再上传岗位相关资料。");
+            return;
+          }
+          void openMaterialsModal(job.id);
+        });
+        document.getElementById("resume-open-resume-library").addEventListener("click", () => {
+          openResumeEntryModal();
+        });
+        document.getElementById("resume-open-personal-materials").addEventListener("click", () => {
+          void openPersonalMaterialsModal();
+        });
+        document.getElementById("close-resume-entry-modal").addEventListener("click", closeResumeEntryModal);
+        document.getElementById("resume-entry-upload").addEventListener("click", () => {
+          closeResumeEntryModal();
+          void openResumeLibraryModal("upload");
+        });
+        document.getElementById("resume-entry-select-existing").addEventListener("click", () => {
+          closeResumeEntryModal();
+          void openResumeSelectModal();
+        });
+        document.getElementById("resume-entry-no-resume").addEventListener("click", () => {
+          closeResumeEntryModal();
+          openResumeNoResumeModal();
+        });
+        document.getElementById("close-resume-select-modal").addEventListener("click", closeResumeSelectModal);
+        document.getElementById("close-resume-no-resume-modal").addEventListener("click", closeResumeNoResumeModal);
+        document.getElementById("confirm-resume-select").addEventListener("click", confirmResumeSelection);
+        document.getElementById("save-no-resume-form").addEventListener("click", () => {
+          void saveNoResumeForm();
+        });
+        document.getElementById("resume-start-button").addEventListener("click", () => {
+          const resumeState = currentResumeOptimization();
+          if (!resumeState.jobId || !resumeState.selectedResumeId) {
+            alert("请先完成岗位与简历两项必填。");
+            return;
+          }
+          resumeState.started = true;
+          renderAll();
+        });
+        document.querySelectorAll("[data-resume-panel]").forEach((button) => {
+          button.addEventListener("click", () => {
+            currentResumeOptimization().activePanel = button.dataset.resumePanel;
+            renderAll();
           });
         });
         document.getElementById("create-text-material").addEventListener("click", () => {
@@ -1918,6 +2719,14 @@
           const index = Number(select.dataset.pendingFileCategory);
           if (!Number.isInteger(index) || !materialsState.pendingFiles[index]) return;
           materialsState.pendingFiles[index].category = select.value;
+        });
+        document.getElementById("resume-job-select-search").addEventListener("input", (event) => {
+          resumeUiState.jobSearch = event.target.value;
+          renderResumeJobSelectModal();
+        });
+        document.getElementById("resume-select-search").addEventListener("input", (event) => {
+          resumeUiState.resumeSearch = event.target.value;
+          renderResumeSelectModal();
         });
 
         document.getElementById("filter-search").addEventListener("input", (event) => {
@@ -1996,6 +2805,24 @@
             });
           }
         });
+        document.getElementById("resume-job-create-modal").addEventListener("click", (event) => {
+          if (event.target.id === "resume-job-create-modal") closeResumeJobCreateModal();
+        });
+        document.getElementById("resume-job-entry-modal").addEventListener("click", (event) => {
+          if (event.target.id === "resume-job-entry-modal") closeResumeJobEntryModal();
+        });
+        document.getElementById("resume-job-select-modal").addEventListener("click", (event) => {
+          if (event.target.id === "resume-job-select-modal") closeResumeJobSelectModal();
+        });
+        document.getElementById("resume-entry-modal").addEventListener("click", (event) => {
+          if (event.target.id === "resume-entry-modal") closeResumeEntryModal();
+        });
+        document.getElementById("resume-select-modal").addEventListener("click", (event) => {
+          if (event.target.id === "resume-select-modal") closeResumeSelectModal();
+        });
+        document.getElementById("resume-no-resume-modal").addEventListener("click", (event) => {
+          if (event.target.id === "resume-no-resume-modal") closeResumeNoResumeModal();
+        });
         document.getElementById("jd-detail-content").addEventListener("keydown", (event) => {
           if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
             event.preventDefault();
@@ -2016,6 +2843,11 @@
             materialsState.selectedId = button.dataset.materialSelect;
             materialsState.view = "detail";
             materialsState.previewMode = "";
+            if (materialsState.scopeType === "resume") {
+              const target = materialsState.items.find((item) => item.id === button.dataset.materialSelect) || null;
+              setResumeSelectedResume(target);
+              renderAll();
+            }
             renderMaterialsModal();
           });
         });

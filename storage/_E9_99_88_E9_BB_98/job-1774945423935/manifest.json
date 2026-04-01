@@ -1,0 +1,40 @@
+{
+  "materials": [
+    {
+      "id": "e13c2c5d-0417-40fc-b6ca-7073cf8798a6",
+      "name": "123",
+      "category": "其他",
+      "type": "text",
+      "content": "3333",
+      "fileName": "",
+      "filePath": "",
+      "mimeType": "text/plain",
+      "createdAt": "2026-03-31T15:05:13.676Z",
+      "updatedAt": "2026-03-31T15:05:13.676Z"
+    },
+    {
+      "id": "a6050bc6-c73b-431b-8719-8d6db79f25a9",
+      "name": "240730.docx",
+      "category": "行业动态",
+      "type": "file",
+      "content": "",
+      "fileName": "240730.docx",
+      "filePath": "files/a6050bc6-c73b-431b-8719-8d6db79f25a9.docx",
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "createdAt": "2026-03-31T15:04:43.856Z",
+      "updatedAt": "2026-03-31T15:04:43.856Z"
+    },
+    {
+      "id": "20eddb01-61ca-464b-a7d3-099ccf9992f1",
+      "name": "测试下载",
+      "category": "面经",
+      "type": "text",
+      "content": "你好好",
+      "fileName": "",
+      "filePath": "",
+      "mimeType": "text/plain",
+      "createdAt": "2026-03-31T15:04:01.625Z",
+      "updatedAt": "2026-03-31T15:04:21.091Z"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "materials": [
+    {
+      "id": "7b0ff6b8-f64a-4eaa-85f2-23f680ccacb1",
+      "name": "小红",
+      "category": "面经",
+      "type": "text",
+      "content": "xxx",
+      "fileName": "",
+      "filePath": "",
+      "mimeType": "text/plain",
+      "createdAt": "2026-03-31T14:49:16.511Z",
+      "updatedAt": "2026-03-31T14:49:16.511Z"
+    }
+  ]
+}
