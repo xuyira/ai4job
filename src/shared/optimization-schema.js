@@ -128,6 +128,7 @@ export function createSuggestionItem({ id, sessionId, targetSection = "", target
   return {
     id,
     sessionId,
+    suggestionKind: "resume_edit",
     targetSection,
     targetAnchor,
     originalText,

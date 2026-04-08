@@ -3,14 +3,14 @@
   "user": "徐怡然",
   "jobId": "job-1775637848304",
   "selectedResumeId": "8afb8c01-4417-4c76-8575-bea70c382f71",
-  "status": "completed",
-  "currentStep": "resume_rescoring",
+  "status": "in_progress",
+  "currentStep": "resume_generation",
   "stepStatus": {
     "jobAnalysis": "completed",
     "originalScore": "completed",
     "suggestions": "completed",
     "feedback": "completed",
-    "optimizedResume": "completed",
+    "optimizedResume": "streaming",
     "rescoring": "completed"
   },
   "userGoal": "",
@@ -395,7 +395,7 @@
     }
   ],
   "createdAt": "2026-04-08T12:06:28.245Z",
-  "updatedAt": "2026-04-08T12:11:45.648Z",
+  "updatedAt": "2026-04-08T12:30:38.409Z",
   "originalScore": {
     "id": "acc87ff8-2a45-464f-80a1-dd6f7aaceb59",
     "sessionId": "81f85e05-31fe-4799-939a-0a0df2a16e19",

@@ -144,9 +144,13 @@ function validateSuggestionsPayload(parsed) {
   const suggestions = ensureArray(parsed?.suggestions);
   if (!suggestions.length) throw new Error("模型没有返回任何逐条建议。");
   for (const item of suggestions) {
+    if (!["resume_edit", "future_advice"].includes(String(item.suggestionKind || "resume_edit"))) {
+      throw new Error("建议缺少合法的 suggestionKind。");
+    }
     if (!String(item.targetSection || "").trim()) throw new Error("建议缺少 targetSection。");
     if (!String(item.originalText || "").trim()) throw new Error("建议缺少 originalText。");
     if (!String(item.suggestedText || "").trim()) throw new Error("建议缺少 suggestedText。");
+    if (!item.reason || typeof item.reason !== "object") throw new Error("建议缺少 reason。");
   }
 }
 
@@ -451,6 +455,9 @@ export function createOptimizationService({ storageRoot, sessionStore, llmClient
           targetAnchor: rawItem.targetAnchor,
           originalText: rawItem.originalText,
         });
+        suggestion.suggestionKind = ["resume_edit", "future_advice"].includes(String(rawItem.suggestionKind || ""))
+          ? rawItem.suggestionKind
+          : "resume_edit";
         suggestion.suggestedText = rawItem.suggestedText || "";
         suggestion.reason = rawItem.reason || suggestion.reason;
         suggestion.expectedBenefit = rawItem.expectedBenefit || "";
@@ -513,6 +520,12 @@ export function createOptimizationService({ storageRoot, sessionStore, llmClient
       for (const action of ensureArray(actions)) {
         const suggestion = session.suggestions.find((item) => item.id === action.suggestionId);
         if (!suggestion) continue;
+        if (suggestion.suggestionKind === "future_advice") {
+          throw new Error("未来建议无需接受、拒绝或编辑。");
+        }
+        if ([SUGGESTION_STATUS.ACCEPTED, SUGGESTION_STATUS.REJECTED, SUGGESTION_STATUS.EDITED, SUGGESTION_STATUS.APPLIED].includes(suggestion.status)) {
+          throw new Error("该建议已处理完成，不能重复操作。");
+        }
 
         session.feedbackHistory.push(createSuggestionFeedback({
           id: randomUUID(),

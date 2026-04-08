@@ -365,7 +365,10 @@
                           <pre id="resume-original-preview" class="mt-3 max-h-[560px] overflow-auto whitespace-pre-wrap break-words text-sm leading-7 text-slate-700"></pre>
                         </div>
                         <div class="rounded-[1.2rem] bg-shell/80 p-4">
-                          <p class="text-sm font-semibold text-slate-500">当前简历</p>
+                          <div class="flex items-center justify-between gap-3">
+                            <p class="text-sm font-semibold text-slate-500">当前简历</p>
+                            <button id="resume-save-optimized" class="btn border border-line bg-white text-slate-700">保存优化版</button>
+                          </div>
                           <pre id="resume-current-preview" class="mt-3 max-h-[560px] overflow-auto whitespace-pre-wrap break-words text-sm leading-7 text-slate-700"></pre>
                         </div>
                       </div>
@@ -378,8 +381,8 @@
                           <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Optimization Workflow</p>
                           <h3 class="mt-2 text-2xl font-bold text-ink">岗位分析与建议工作台</h3>
                         </div>
-                        <div id="resume-workflow-status" class="text-sm leading-7 text-slate-600"></div>
                       </div>
+                      <div id="resume-workflow-flow" class="mt-5"></div>
                       <div id="resume-panel-content" class="mt-5 space-y-4 text-sm leading-8 text-slate-600"></div>
                     </section>
                   </div>
@@ -1912,6 +1915,7 @@
         materialsState.selectedId = materialsState.items[0]?.id || "";
         if (materialsState.scopeType === "resume" && materialsState.items[0]) {
           setResumeSelectedResume(materialsState.items[0]);
+          await loadResumeLibraryItems();
         }
         materialsState.view = materialsState.selectedId ? "detail" : "empty";
         materialsState.previewMode = "";
@@ -2172,7 +2176,7 @@
         const steps = ["job_analysis", "resume_scoring", "suggestion_generation", "feedback_review", "resume_generation", "resume_rescoring"];
         const session = resumeState.sessionData;
         const currentStep = session?.currentStep || resumeState.currentStep || "job_analysis";
-        document.getElementById("resume-stepper").innerHTML = steps.map((step) => {
+        return steps.map((step) => {
           const isCurrent = step === currentStep;
           const isDone = (() => {
             if (!session) return false;
@@ -2184,12 +2188,70 @@
             if (step === "resume_rescoring") return session.stepStatus?.rescoring === "completed";
             return false;
           })();
+          const stateClass = isCurrent
+            ? "border-rose-200 bg-rose-50 text-rose-700"
+            : isDone
+              ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+              : "border-line bg-shell text-slate-500";
+          const dotClass = isCurrent ? "bg-rose-500" : isDone ? "bg-emerald-500" : "bg-slate-300";
           return `
-            <span class="rounded-full px-3 py-2 text-xs font-semibold ${isCurrent ? "bg-accent text-white" : isDone ? "bg-emerald-100 text-emerald-700" : "bg-shell text-slate-500"}">
-              ${escapeHtml(workflowLabel(step))}
-            </span>
+            <div class="flex items-center gap-3 rounded-xl border px-3 py-3 ${stateClass}">
+              <span class="h-2.5 w-2.5 rounded-full ${dotClass}"></span>
+              <span class="text-sm font-semibold">${escapeHtml(workflowLabel(step))}</span>
+            </div>
           `;
-        }).join("");
+        }).join(`
+          <div class="mx-1 hidden h-px flex-1 bg-line/80 md:block"></div>
+        `);
+      }
+
+      function normalizeSuggestionKind(item) {
+        return item?.suggestionKind === "future_advice" ? "future_advice" : "resume_edit";
+      }
+
+      function isSuggestionFinalized(item) {
+        return ["accepted", "rejected", "edited", "applied"].includes(String(item?.status || ""));
+      }
+
+      function suggestionCardState(item) {
+        const kind = normalizeSuggestionKind(item);
+        if (kind === "future_advice") {
+          return {
+            articleClass: "border-amber-200 bg-amber-50/70",
+            badgeClass: "bg-amber-100 text-amber-700",
+            helperText: "未来建议，无需操作",
+          };
+        }
+        if (String(item?.status || "") === "rejected") {
+          return {
+            articleClass: "border-slate-200 bg-slate-100/80",
+            badgeClass: "bg-slate-200 text-slate-700",
+            helperText: "已处理，不可再次操作",
+          };
+        }
+        if (["accepted", "edited", "applied"].includes(String(item?.status || ""))) {
+          return {
+            articleClass: "border-emerald-200 bg-emerald-50/70",
+            badgeClass: "bg-emerald-100 text-emerald-700",
+            helperText: "已处理，不可再次操作",
+          };
+        }
+        if (String(item?.status || "") === "regenerating") {
+          return {
+            articleClass: "border-amber-200 bg-amber-50/60",
+            badgeClass: "bg-amber-100 text-amber-700",
+            helperText: "建议重写中",
+          };
+        }
+        return {
+          articleClass: "border-line/80 bg-white",
+          badgeClass: "bg-white text-slate-600 border border-line",
+          helperText: "待处理",
+        };
+      }
+
+      function disabledSuggestionButton(label) {
+        return `<button class="btn border border-line bg-slate-100 text-slate-400 opacity-70" disabled>${escapeHtml(label)}</button>`;
       }
 
       function renderResumeDiff(diff) {
@@ -2247,18 +2309,35 @@
         if (!suggestions.length) {
           return `<div class="rounded-[1.2rem] border border-dashed border-line bg-shell/70 p-4 text-sm text-slate-500">当前还没有建议。完成岗位分析和原简历评分后，在这里逐条生成建议。</div>`;
         }
-        return suggestions.map((item) => `
-          <article class="rounded-[1.2rem] border border-line/80 bg-white p-4" data-suggestion-item="${item.id}">
+        return suggestions.map((item) => {
+          const kind = normalizeSuggestionKind(item);
+          const locked = isSuggestionFinalized(item);
+          const state = suggestionCardState(item);
+          const materialRefs = Array.isArray(item.reason?.basedOnMaterials) ? item.reason.basedOnMaterials.filter(Boolean) : [];
+          const actionButtons = kind === "future_advice"
+            ? `<span class="rounded-full ${state.badgeClass} px-3 py-1 text-xs font-semibold">未来建议</span>`
+            : locked
+              ? [
+                  disabledSuggestionButton("接受"),
+                  disabledSuggestionButton("拒绝"),
+                  disabledSuggestionButton("编辑"),
+                  disabledSuggestionButton("重新生成"),
+                ].join("")
+              : `
+                  <button class="btn border border-line bg-white text-slate-700" data-suggestion-action="accept" data-suggestion-id="${item.id}">接受</button>
+                  <button class="btn border border-line bg-white text-slate-700" data-suggestion-action="reject" data-suggestion-id="${item.id}">拒绝</button>
+                  <button class="btn border border-line bg-white text-slate-700" data-suggestion-action="toggle-edit" data-suggestion-id="${item.id}">编辑</button>
+                  <button class="btn border border-line bg-white text-slate-700" data-suggestion-action="regenerate" data-suggestion-id="${item.id}">重新生成</button>
+                `;
+          return `
+          <article class="rounded-[1.2rem] border p-4 ${state.articleClass}" data-suggestion-item="${item.id}">
             <div class="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p class="font-semibold text-slate-800">${escapeHtml(item.targetSection || "未命名段落")}</p>
-                <p class="mt-1 text-xs text-slate-500">优先级：${escapeHtml(item.priority || "medium")} · 状态：${escapeHtml(suggestionStatusLabel(item.status))}</p>
+                <p class="mt-1 text-xs text-slate-500">优先级：${escapeHtml(item.priority || "medium")} · 状态：${escapeHtml(suggestionStatusLabel(item.status))} · ${escapeHtml(state.helperText)}</p>
               </div>
               <div class="flex flex-wrap gap-2">
-                <button class="btn border border-line bg-white text-slate-700" data-suggestion-action="accept" data-suggestion-id="${item.id}">接受</button>
-                <button class="btn border border-line bg-white text-slate-700" data-suggestion-action="reject" data-suggestion-id="${item.id}">拒绝</button>
-                <button class="btn border border-line bg-white text-slate-700" data-suggestion-action="toggle-edit" data-suggestion-id="${item.id}">编辑</button>
-                <button class="btn border border-line bg-white text-slate-700" data-suggestion-action="regenerate" data-suggestion-id="${item.id}">重新生成</button>
+                ${actionButtons}
               </div>
             </div>
             <div class="mt-4 grid gap-4 lg:grid-cols-2">
@@ -2275,6 +2354,7 @@
               <p><span class="font-semibold text-slate-800">修改原因：</span>${escapeHtml(item.reason?.explanation || "")}</p>
               <p class="mt-1"><span class="font-semibold text-slate-800">预期收益：</span>${escapeHtml(item.expectedBenefit || "")}</p>
               <p class="mt-1"><span class="font-semibold text-slate-800">风险提示：</span>${escapeHtml(item.riskNotice || "")}</p>
+              <p class="mt-1"><span class="font-semibold text-slate-800">个人资料引用：</span>${escapeHtml(materialRefs.join("、") || "未引用")}</p>
             </div>
             <div class="mt-3 hidden" data-suggestion-edit-box="${item.id}">
               <textarea class="textarea min-h-[140px]" data-suggestion-edit-input="${item.id}" placeholder="你可以直接编辑建议后的版本，或者写入反馈后点击“重新生成”。">${escapeHtml(item.suggestedText || "")}</textarea>
@@ -2283,7 +2363,8 @@
               </div>
             </div>
           </article>
-        `).join("");
+        `;
+        }).join("");
       }
 
       function renderResumePanelContent(resumeState) {
@@ -2291,7 +2372,10 @@
         const jobAnalysis = session?.jobAnalysis;
         const originalScore = session?.originalScore;
         const optimizedScore = session?.optimizedScore;
-        const eventLog = (session?.eventLog || []).slice().reverse().slice(0, 8);
+        const referencedMaterials = [...new Set((session?.suggestions || [])
+          .flatMap((item) => Array.isArray(item.reason?.basedOnMaterials) ? item.reason.basedOnMaterials : [])
+          .map((item) => String(item || "").trim())
+          .filter(Boolean))];
 
         document.getElementById("resume-panel-content").innerHTML = `
           <section class="rounded-[1.2rem] border border-line/80 bg-shell/50 p-4">
@@ -2332,29 +2416,26 @@
             ${renderScoreCard("新简历评分", optimizedScore)}
           </section>
 
+          <section class="rounded-[1.2rem] border border-line/80 bg-shell/50 p-4">
+            <div class="flex items-center justify-between gap-3">
+              <p class="text-sm font-semibold text-slate-500">个人相关资料命中</p>
+              <span class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-600">${escapeHtml(String(referencedMaterials.length))} 项</span>
+            </div>
+            <p class="mt-2 text-sm text-slate-600">
+              ${escapeHtml(referencedMaterials.length ? referencedMaterials.join("、") : "当前建议里还没有明确引用个人相关资料；补充更具体的项目/实习/成果材料后重新生成，会更容易命中。")}
+            </p>
+          </section>
+
           <section>
             <div class="flex items-center justify-between gap-3">
               <p class="text-sm font-semibold text-slate-500">逐条优化建议</p>
-              <p class="text-xs text-slate-400">支持接受、拒绝、编辑、重新生成</p>
+              <p class="text-xs text-slate-400">可写进简历的建议才需要操作，未来建议只做提醒</p>
             </div>
             <div class="mt-3 space-y-3">${renderSuggestionList(session)}</div>
             <div class="mt-4 flex flex-wrap justify-end gap-3">
-              <button id="resume-confirm-final" class="btn ${canConfirmOptimizedResume(session) ? "bg-accent text-white" : "border border-line bg-white text-slate-400"}" ${canConfirmOptimizedResume(session) ? "" : "disabled"}>
+              <button id="resume-confirm-final" class="btn ${isResumeOptimizationFinalized(session) ? "border border-line bg-slate-100 text-slate-400" : canConfirmOptimizedResume(session) ? "bg-accent text-white" : "border border-line bg-white text-slate-400"}" ${canConfirmOptimizedResume(session) && !isResumeOptimizationFinalized(session) ? "" : "disabled"}>
                 确认新简历并完成优化
               </button>
-            </div>
-          </section>
-
-          <section class="rounded-[1.2rem] border border-line/80 bg-shell/50 p-4">
-            <p class="text-sm font-semibold text-slate-500">工作流日志</p>
-            <div class="mt-3 space-y-2">
-              ${eventLog.length ? eventLog.map((item) => `
-                <div class="rounded-xl bg-white px-3 py-3 text-sm text-slate-700">
-                  <p class="font-semibold text-slate-800">${escapeHtml(workflowLabel(item.step || ""))}</p>
-                  <p class="mt-1">${escapeHtml(item.message || "")}</p>
-                  <p class="mt-1 text-xs text-slate-400">${escapeHtml(formatDateTime(item.createdAt || ""))}</p>
-                </div>
-              `).join("") : `<p class="text-sm text-slate-500">尚无日志。</p>`}
             </div>
           </section>
         `;
@@ -2395,21 +2476,26 @@
         workspace.classList.toggle("hidden", !(resumeState.started && canStart));
         if (!(resumeState.started && canStart)) return;
 
-        document.getElementById("resume-workflow-status").innerHTML = `
-          <p><span class="font-semibold text-slate-800">当前状态：</span>${escapeHtml(workflowStateDescription(resumeState))}</p>
-          <p><span class="font-semibold text-slate-800">当前步骤：</span>${escapeHtml(workflowLabel(session?.currentStep || resumeState.currentStep || "job_analysis"))}</p>
-          <p><span class="font-semibold text-slate-800">Session：</span>${escapeHtml(resumeState.sessionId || "尚未创建")}</p>
-          ${session?.lastError ? `<p class="text-rose-600"><span class="font-semibold">错误：</span>${escapeHtml(session.lastError.message || "")}</p>` : ""}
-        `;
-
         const originalContent = session?.originalResumeVersion?.content || "工作流启动后会在这里展示原简历文本。";
         const currentContent = session?.optimizedResumeVersion?.content || session?.originalResumeVersion?.content || "当前还没有生成优化版简历。";
         document.getElementById("resume-original-preview").textContent = originalContent;
         document.getElementById("resume-current-preview").textContent = currentContent;
+        const saveButton = document.getElementById("resume-save-optimized");
+        const canSaveOptimized = Boolean(session?.optimizedResumeVersion?.content);
+        saveButton.disabled = !canSaveOptimized;
+        saveButton.classList.toggle("opacity-60", !canSaveOptimized);
         document.getElementById("resume-diff-panel").classList.toggle("hidden", !resumeState.diffMode);
         document.getElementById("resume-diff-panel").innerHTML = renderResumeDiff(session?.optimizedResumeVersion?.diff || []);
 
         renderResumePanelContent(resumeState);
+        document.getElementById("resume-workflow-flow").innerHTML = `
+          <div class="rounded-[1.2rem] border border-line/80 bg-shell/50 p-4">
+            <div class="flex flex-col gap-3 md:flex-row md:items-stretch">
+              ${renderResumeStepper(resumeState)}
+            </div>
+            ${session?.lastError ? `<p class="mt-3 text-sm text-rose-600">${escapeHtml(session.lastError.message || "")}</p>` : ""}
+          </div>
+        `;
       }
 
       function renderResumeJobSelectModal() {
@@ -2687,14 +2773,48 @@
         await scoreResumeStep("optimized");
       }
 
+      async function saveOptimizedResumeVersion() {
+        const session = currentResumeOptimization().sessionData;
+        const content = session?.optimizedResumeVersion?.content || "";
+        if (!content.trim()) {
+          alert("当前还没有可保存的优化版简历。");
+          return;
+        }
+        const sourceTitle = session?.optimizedResumeVersion?.title || session?.originalResumeVersion?.title || "优化版简历";
+        const name = `${sourceTitle} ${new Date().toISOString().slice(0, 10)}`;
+        await fetchJson("/api/job-materials/text", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user: state.currentUser,
+            jobId: RESUME_LIBRARY_SCOPE,
+            id: "",
+            name,
+            category: "简历版本",
+            content,
+          }),
+        });
+        await loadResumeLibraryItems();
+        alert(`已保存到简历库：${name}`);
+      }
+
+      function isResumeOptimizationFinalized(session) {
+        return Boolean(session?.optimizedResumeVersion?.content);
+      }
+
       function canConfirmOptimizedResume(session) {
-        return Boolean(session && session.suggestions?.some((item) => item.status === "accepted" || item.status === "edited"));
+        return Boolean(
+          session
+          && !isResumeOptimizationFinalized(session)
+          && session.suggestions?.some((item) => item.status === "accepted" || item.status === "edited")
+        );
       }
 
       async function handleSuggestionAction(action, suggestionId) {
         const resumeState = currentResumeOptimization();
         const suggestion = resumeState.sessionData?.suggestions?.find((item) => item.id === suggestionId);
         if (!suggestion) return;
+        if (normalizeSuggestionKind(suggestion) === "future_advice" || isSuggestionFinalized(suggestion)) return;
 
         if (action === "toggle-edit") {
           const box = document.querySelector(`[data-suggestion-edit-box="${suggestionId}"]`);
@@ -3038,6 +3158,7 @@
             content: generateResumeMarkdown(form),
           }),
         });
+        await loadResumeLibraryItems();
         const target = (payload.materials || []).find((item) => item.name === `${form.name} - 基础简历`) || payload.materials?.[0] || null;
         setResumeSelectedResume(target);
         const resumeState = currentResumeOptimization();
@@ -3254,6 +3375,11 @@
           const resumeState = currentResumeOptimization();
           resumeState.diffMode = !resumeState.diffMode;
           renderAll();
+        });
+        document.getElementById("resume-save-optimized").addEventListener("click", () => {
+          void saveOptimizedResumeVersion().catch((error) => {
+            alert(`保存优化版简历失败：${error.message}`);
+          });
         });
         document.getElementById("resume-panel-content").addEventListener("click", (event) => {
           const finalButton = event.target.closest("#resume-confirm-final");
