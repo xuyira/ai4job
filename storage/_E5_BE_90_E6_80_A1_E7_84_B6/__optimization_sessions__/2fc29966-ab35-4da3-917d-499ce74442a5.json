@@ -1,0 +1,81 @@
+{
+  "id": "2fc29966-ab35-4da3-917d-499ce74442a5",
+  "user": "徐怡然",
+  "jobId": "job-1775637848304",
+  "selectedResumeId": "ce8d1abb-e001-4696-957f-0843ee9369fd",
+  "status": "failed",
+  "currentStep": "job_analysis",
+  "stepStatus": {
+    "jobAnalysis": "failed",
+    "originalScore": "pending",
+    "suggestions": "pending",
+    "feedback": "pending",
+    "optimizedResume": "pending",
+    "rescoring": "pending"
+  },
+  "userGoal": "",
+  "constraints": {
+    "emphasize": [],
+    "preserve": []
+  },
+  "jobAnalysis": {
+    "id": "ca528bd5-7e1f-4920-9d2f-aff36a1358f8",
+    "sessionId": "2fc29966-ab35-4da3-917d-499ce74442a5",
+    "jobId": "job-1775637848304",
+    "version": 1,
+    "status": "streaming",
+    "summary": "",
+    "coreResponsibilities": [],
+    "requiredSkills": [],
+    "bonusSkills": [],
+    "keywords": [],
+    "experienceRequirement": "",
+    "structuralSignals": [],
+    "keyQuestions": {
+      "coreWork": "",
+      "roleDifferentiators": "",
+      "businessDirection": "",
+      "idealCandidate": ""
+    },
+    "evidence": [],
+    "rawText": "",
+    "createdAt": "2026-04-08T10:22:45.051Z",
+    "updatedAt": "2026-04-08T10:22:45.051Z"
+  },
+  "originalResumeVersion": {
+    "id": "204255a7-0b4a-409d-99a4-8cc4591f155a",
+    "sessionId": "2fc29966-ab35-4da3-917d-499ce74442a5",
+    "sourceMaterialId": "ce8d1abb-e001-4696-957f-0843ee9369fd",
+    "parentVersionId": "",
+    "kind": "original",
+    "title": "【徐怡然】个人简历.md",
+    "content": "年   龄 ： 21岁   性   别 ： 女  电   话 ： 15099385316   邮   箱 ： 2054333@tongji.edu.cn  徐 怡 然  2020-09   ~   至今   同济大学   交通工程（ 本科 ）  专业成绩： 前三年平均学积分 88.86  英语水平： CET-4（613分）、CET-6（548分）  荣誉奖项： 2020-2021学年同济大学本科优秀学生奖学金  主修课程： 运筹学、应用数学、智能车路系统、智能交通系统工程、交通运输数据技术、交通系统建模与仿真等等。  教育背景  《基于车-路LiDAR点云融合的自动驾驶感知增强方法》   第二十一届“同路人”交通科技大赛初赛排名第9（9/45）  《城市道路网络生命线识别和韧性分析》   第二十二届“同路人”交通科技大赛初赛排名第6（6/43）  《基于区块链的汽车全生命周期数据服务平台》   2022上海“产业Web3.0”应用创新大赛雏鹰创意组二等奖  《上海无人驾驶出租车从示范到商用的发展策略研究》   2021年第十六期大学生创新实践训练计划(SITP)顺利结题  ·   项目内容：项目聚焦车-路点云融合，在真实的道路环境下构建实车实验，采集自动驾驶车辆以及路侧LiDAR 点云数据；基于  CloudCompare 进行点云配准与融合，并通过迁移学习实现基于SECOND 算法的 3D 点云目标识别；最后通过点云融合前后  的目标检测可视化结果与现场视频进行对比验证。研究发现，多车场景下，经过本项目方法融合后的感知结果可有效补充实际  存在而单车漏检的目标；证明本项目采取的车-路 LiDAR 点云数据融合方法对自动驾驶感知能力有增强效果。  ·   项目内容：基于韧性城市四个维度确定关键设施位置，根据灾害条件下设施点间联系关系分为三类连接类型，并设置不同权值  以反映不同连接类型对道路交通的要求不同，计算出最短路径网络，最后构建交通生命线的度约束最小树模型，采用普里姆算  法+分支定界法求解出最优解，由此识别出交通生命线。在此基础上，基于灾害发生大小的随机性，构建两阶段随机规划模  型，采用 Benders 分解算法求解在资金约束条件下最优的交通生命线韧性提升方案。  ·   项目成果：产出论文\"Identification of Road Network Traffic Lifelines Based on Urban Resilience\"，已被Transportation  Research Board 2024 Annual Meeting录用。  ·   项目内容：通过将汽车供应、生产、流通、营销、使用的信息写入区块链，为每辆车、每个关键零件建立唯一身份识别码，并  为其建立全生命周期不可篡改、分布式存储的数据档案，实现每一次交易、维修、理赔的信息都能被真实记录和存储，允许链  上各企业逆向查询、追根溯源，进而重构汽车行业信用生态，提高汽车市场信任度。  ·   项目内容：通过调研与体验上海示范期间的无人驾驶出租车，与国外已开展的示范或商用进行国际比较研究，从车型产品、应  用场景、安全性等关键维度，提出未来无人驾驶出租车规模化商用的发展策略建议。  项目经历  编程技能： 掌握Python、R语言  仿真技能 ：掌握Vissim、Synchro、TESS NG  办公技能 ：熟练运用office办公软件、CAD  专业技能  ·   学习能力与适应能力较强、表达能力突出、性格开朗、坚毅勇敢。  自我评价",
+    "format": "text",
+    "acceptedSuggestionIds": [],
+    "rejectedSuggestionIds": [],
+    "editedSuggestionIds": [],
+    "changeSummary": [],
+    "createdAt": "2026-04-08T10:22:45.047Z",
+    "updatedAt": "2026-04-08T10:22:45.047Z"
+  },
+  "suggestions": [],
+  "feedbackHistory": [],
+  "eventLog": [
+    {
+      "id": "44ff5741-4d2f-40c6-b95a-6f3c4707307d",
+      "type": "job_analysis_failed",
+      "step": "job_analysis",
+      "message": "岗位分析失败：OpenAI 调用失败: HTTP 429 {\n    \"error\": {\n        \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n        \"type\": \"insufficient_quota\",\n        \"param\": null,\n        ",
+      "createdAt": "2026-04-08T10:22:46.311Z",
+      "meta": {}
+    }
+  ],
+  "lastError": {
+    "step": "job_analysis",
+    "message": "岗位分析失败：OpenAI 调用失败: HTTP 429 {\n    \"error\": {\n        \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.\",\n        \"type\": \"insufficient_quota\",\n        \"param\": null,\n        ",
+    "retryable": true,
+    "at": "2026-04-08T10:22:46.315Z"
+  },
+  "createdAt": "2026-04-08T10:22:45.047Z",
+  "updatedAt": "2026-04-08T10:22:46.315Z"
+}

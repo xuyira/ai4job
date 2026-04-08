@@ -7,6 +7,12 @@ import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
+import { createOpenAIClient } from "./src/server/llm/openai-client.js";
+import { createOptimizationSessionStore } from "./src/server/services/optimization-session-store.js";
+import { createOptimizationService } from "./src/server/services/optimization-service.js";
+import { endSse, sendSseHeaders, writeSseEvent } from "./src/server/utils/http.js";
+import { logger } from "./src/server/utils/logger.js";
+import { SCORE_TYPE, STREAM_EVENT } from "./src/shared/optimization-constants.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,6 +24,7 @@ const PORT = Number(process.env.PORT || 3000);
 const HOST = process.env.HOST || "127.0.0.1";
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4.1-mini";
+const OPENAI_BASE_URL = process.env.OPENAI_BASE_URL || "https://api.openai.com/v1";
 const MAX_FETCH_CHARS = 20000;
 const SUPPORTED_LINK_HOSTS = ["zhipin.com", "zhaopin.com", "iguopin.com"];
 const MATERIALS_ROOT = path.join(__dirname, "storage");
@@ -28,6 +35,19 @@ const ALLOWED_UPLOAD_EXTENSIONS = new Set([
   ".ppt", ".pptx",
 ]);
 const PPT_EXTENSIONS = new Set([".ppt", ".pptx"]);
+const openAIClient = createOpenAIClient({
+  apiKey: OPENAI_API_KEY,
+  model: OPENAI_MODEL,
+  baseUrl: OPENAI_BASE_URL,
+});
+const optimizationSessionStore = createOptimizationSessionStore({
+  storageRoot: MATERIALS_ROOT,
+});
+const optimizationService = createOptimizationService({
+  storageRoot: MATERIALS_ROOT,
+  sessionStore: optimizationSessionStore,
+  llmClient: openAIClient,
+});
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -900,6 +920,7 @@ async function fetchBossDetail(url) {
 
 async function extractWithOpenAI({ rawInput, fetchedText, host }) {
   if (!OPENAI_API_KEY) return null;
+  const chatCompletionsUrl = `${OPENAI_BASE_URL.replace(/\/+$/, "")}/chat/completions`;
 
   const prompt = [
     "你是岗位解析器。请从输入内容中提取岗位信息，并且只返回 JSON。",
@@ -911,7 +932,7 @@ async function extractWithOpenAI({ rawInput, fetchedText, host }) {
     `网页正文: ${fetchedText || "-"}`,
   ].join("\n");
 
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  const response = await fetch(chatCompletionsUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -993,6 +1014,21 @@ async function readRequestBody(req) {
   const chunks = [];
   for await (const chunk of req) chunks.push(chunk);
   return Buffer.concat(chunks).toString("utf8");
+}
+
+async function handleWorkflowSse(res, worker) {
+  sendSseHeaders(res);
+  try {
+    await worker((event, data) => {
+      writeSseEvent(res, event, { ok: true, ...data });
+    });
+    writeSseEvent(res, STREAM_EVENT.DONE, { ok: true });
+  } catch (error) {
+    logger.error("Workflow stream failed", { error: error.message });
+    writeSseEvent(res, STREAM_EVENT.ERROR, { ok: false, error: error.message || "工作流执行失败" });
+  } finally {
+    endSse(res);
+  }
 }
 
 async function handleApi(req, res) {
@@ -1153,6 +1189,194 @@ async function handleApi(req, res) {
       return;
     } catch (error) {
       sendJson(res, 400, { ok: false, error: error.message || "清理资料失败" });
+      return;
+    }
+  }
+
+  if (req.method === "POST" && req.url === "/api/analyze-job") {
+    try {
+      const payload = JSON.parse((await readRequestBody(req)) || "{}");
+      const session = await optimizationService.createOrLoadSession({
+        user: payload.user,
+        sessionId: payload.sessionId,
+        jobId: payload.jobId,
+        selectedResumeId: payload.selectedResumeId,
+        userGoal: payload.userGoal,
+        constraints: payload.constraints,
+      });
+      if (payload.stream) {
+        await handleWorkflowSse(res, async (writeEvent) => {
+          await optimizationService.analyzeJob({
+            session,
+            job: payload.job || {},
+            writeEvent,
+          });
+        });
+        return;
+      }
+
+      const result = await optimizationService.analyzeJob({
+        session,
+        job: payload.job || {},
+      });
+      sendJson(res, 200, { ok: true, data: { sessionId: session.id, jobAnalysis: result } });
+      return;
+    } catch (error) {
+      sendJson(res, 400, { ok: false, error: error.message || "岗位分析失败" });
+      return;
+    }
+  }
+
+  if (req.method === "POST" && req.url === "/api/score-resume") {
+    try {
+      const payload = JSON.parse((await readRequestBody(req)) || "{}");
+      const session = await optimizationService.loadSession(payload.user, payload.sessionId);
+      const scoreType = payload.scoreType === SCORE_TYPE.OPTIMIZED ? SCORE_TYPE.OPTIMIZED : SCORE_TYPE.ORIGINAL;
+      if (payload.stream) {
+        await handleWorkflowSse(res, async (writeEvent) => {
+          await optimizationService.scoreResume({
+            session,
+            scoreType,
+            writeEvent,
+          });
+        });
+        return;
+      }
+      const score = await optimizationService.scoreResume({
+        session,
+        scoreType,
+      });
+      sendJson(res, 200, { ok: true, data: { sessionId: session.id, score } });
+      return;
+    } catch (error) {
+      sendJson(res, 400, { ok: false, error: error.message || "简历评分失败" });
+      return;
+    }
+  }
+
+  if (req.method === "POST" && req.url === "/api/generate-suggestions") {
+    try {
+      const payload = JSON.parse((await readRequestBody(req)) || "{}");
+      const session = await optimizationService.loadSession(payload.user, payload.sessionId);
+      if (payload.stream) {
+        await handleWorkflowSse(res, async (writeEvent) => {
+          await optimizationService.generateSuggestions({
+            session,
+            userGoal: payload.userGoal,
+            constraints: payload.constraints || {},
+            writeEvent,
+          });
+        });
+        return;
+      }
+      const suggestions = await optimizationService.generateSuggestions({
+        session,
+        userGoal: payload.userGoal,
+        constraints: payload.constraints || {},
+      });
+      sendJson(res, 200, { ok: true, data: { sessionId: session.id, suggestions } });
+      return;
+    } catch (error) {
+      sendJson(res, 400, { ok: false, error: error.message || "生成建议失败" });
+      return;
+    }
+  }
+
+  if (req.method === "POST" && req.url === "/api/apply-suggestions") {
+    try {
+      const payload = JSON.parse((await readRequestBody(req)) || "{}");
+      const session = await optimizationService.loadSession(payload.user, payload.sessionId);
+      if (payload.stream) {
+        await handleWorkflowSse(res, async (writeEvent) => {
+          await optimizationService.applySuggestionActions({
+            session,
+            actions: payload.actions || [],
+            generateResume: Boolean(payload.generateResume),
+            writeEvent,
+          });
+        });
+        return;
+      }
+      const updated = await optimizationService.applySuggestionActions({
+        session,
+        actions: payload.actions || [],
+        generateResume: Boolean(payload.generateResume),
+      });
+      sendJson(res, 200, { ok: true, data: { session: updated } });
+      return;
+    } catch (error) {
+      sendJson(res, 400, { ok: false, error: error.message || "应用建议失败" });
+      return;
+    }
+  }
+
+  if (req.method === "POST" && req.url === "/api/rescore-resume") {
+    try {
+      const payload = JSON.parse((await readRequestBody(req)) || "{}");
+      const session = await optimizationService.loadSession(payload.user, payload.sessionId);
+      if (payload.stream) {
+        await handleWorkflowSse(res, async (writeEvent) => {
+          await optimizationService.scoreResume({
+            session,
+            scoreType: SCORE_TYPE.OPTIMIZED,
+            writeEvent,
+          });
+        });
+        return;
+      }
+      const score = await optimizationService.scoreResume({
+        session,
+        scoreType: SCORE_TYPE.OPTIMIZED,
+      });
+      sendJson(res, 200, { ok: true, data: { sessionId: session.id, score } });
+      return;
+    } catch (error) {
+      sendJson(res, 400, { ok: false, error: error.message || "复评分失败" });
+      return;
+    }
+  }
+
+  if (req.method === "GET" && req.url.startsWith("/api/continue-optimization-session")) {
+    try {
+      const requestUrl = new URL(req.url, `http://${req.headers.host}`);
+      const session = await optimizationService.continueLatestSession(
+        requestUrl.searchParams.get("user") || "",
+        {
+          jobId: requestUrl.searchParams.get("jobId") || "",
+          resumeId: requestUrl.searchParams.get("resumeId") || "",
+        },
+      );
+      sendJson(res, 200, { ok: true, data: session });
+      return;
+    } catch (error) {
+      sendJson(res, 400, { ok: false, error: error.message || "读取优化会话失败" });
+      return;
+    }
+  }
+
+  if (req.method === "GET" && req.url.startsWith("/api/optimization-session")) {
+    try {
+      const requestUrl = new URL(req.url, `http://${req.headers.host}`);
+      const session = await optimizationService.loadSession(
+        requestUrl.searchParams.get("user") || "",
+        requestUrl.searchParams.get("sessionId") || "",
+      );
+      sendJson(res, 200, { ok: true, data: session });
+      return;
+    } catch (error) {
+      sendJson(res, 400, { ok: false, error: error.message || "读取会话失败" });
+      return;
+    }
+  }
+
+  if (req.method === "POST" && req.url === "/api/pause-optimization-session") {
+    try {
+      const payload = JSON.parse((await readRequestBody(req)) || "{}");
+      const session = await optimizationService.pauseSession(payload.user, payload.sessionId);
+      sendJson(res, 200, { ok: true, data: session });
+      return;
+    } catch (error) {
+      sendJson(res, 400, { ok: false, error: error.message || "暂停会话失败" });
       return;
     }
   }

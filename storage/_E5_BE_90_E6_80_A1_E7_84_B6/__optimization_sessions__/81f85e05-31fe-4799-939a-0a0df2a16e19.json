@@ -1,0 +1,887 @@
+{
+  "id": "81f85e05-31fe-4799-939a-0a0df2a16e19",
+  "user": "徐怡然",
+  "jobId": "job-1775637848304",
+  "selectedResumeId": "8afb8c01-4417-4c76-8575-bea70c382f71",
+  "status": "completed",
+  "currentStep": "resume_rescoring",
+  "stepStatus": {
+    "jobAnalysis": "completed",
+    "originalScore": "completed",
+    "suggestions": "completed",
+    "feedback": "completed",
+    "optimizedResume": "completed",
+    "rescoring": "completed"
+  },
+  "userGoal": "",
+  "constraints": {
+    "emphasize": [],
+    "preserve": []
+  },
+  "jobAnalysis": {
+    "id": "4d924bfd-3537-4944-9eb7-b6d6cfc808c5",
+    "sessionId": "81f85e05-31fe-4799-939a-0a0df2a16e19",
+    "jobId": "job-1775637848304",
+    "version": 1,
+    "status": "completed",
+    "summary": "滴滴27届秋储策略产品经理-自动驾驶岗位，负责自动驾驶功能的算法策略与产品规划，推动算法技术路线及产品落地，利用Vibe Coding提升算法迭代效率，基于数据驱动优化算法性能，并跟踪技术趋势。要求2027届硕士及以上相关专业学生，具备自动驾驶系统架构理解、AI框架及工具链使用能力，具备产品需求分析与跨团队协作能力，有相关实习或竞赛经验者优先。",
+    "coreResponsibilities": [
+      "协助推进自动驾驶功能的产品策略，主导算法选型与技术路线规划，将算法能力转化为可量产产品特性。",
+      "撰写PRD文档，定义功能边界和验收标准，驱动算法、研发、测试团队完成产品开发、测试验证与量产交付，对最终产品效果负责。",
+      "运用Vibe Coding等编程协作模式，快速构建算法原型、生成数据管线或自动化工具，提升算法迭代与验证效率，与工程师团队高效协同。",
+      "基于实际路采和仿真数据，分析算法表现，定位瓶颈，提出模型优化和数据标注迭代方向，推动算法性能持续提升。",
+      "跟踪自动驾驶算法前沿技术进展，评估其在产品中的落地可行性。"
+    ],
+    "requiredSkills": [
+      "熟悉自动驾驶系统架构（感知、定位、决策、控制）。",
+      "理解深度学习、计算机视觉、多传感器融合等核心算法原理及产品化边界。",
+      "熟悉AI框架（TensorFlow、PyTorch）和自动驾驶工具链（Apollo、Autoware）。",
+      "具备Vibe Coding实践能力，能使用Copilot、Cursor等AI编程工具快速构建原型或脚本。",
+      "优秀的需求分析与原型设计能力，能清晰编写PRD文档。",
+      "强烈的责任心、目标感及跨团队沟通协调能力，推动复杂项目落地。"
+    ],
+    "bonusSkills": [
+      "自动驾驶算法实习经验。",
+      "在Kaggle、天池等算法竞赛中获奖。",
+      "有开源项目经验或Vibe Coding相关实践经验。"
+    ],
+    "keywords": [
+      "自动驾驶",
+      "策略产品经理",
+      "算法策略",
+      "产品规划",
+      "多传感器融合",
+      "深度学习",
+      "计算机视觉",
+      "Vibe Coding",
+      "PRD文档",
+      "数据驱动优化",
+      "TensorFlow",
+      "PyTorch",
+      "Apollo",
+      "Autoware",
+      "跨团队协作"
+    ],
+    "experienceRequirement": "2027届硕士及以上学历在校生，相关专业优先；有自动驾驶算法实习经验或算法竞赛获奖经验者优先。",
+    "structuralSignals": [
+      "岗位职责部分分为五条，涵盖策略规划、产品落地、编程协作、数据驱动优化及技术趋势洞察，结构清晰。",
+      "任职要求分为学历背景、技术理解、AI与工具技能、产品与协作能力四个方面，条理明确。",
+      "加分项单独列出，突出优先考虑的背景和经验。"
+    ],
+    "keyQuestions": {
+      "coreWork": {
+        "question": "该岗位的核心工作内容是什么？",
+        "answer": "核心工作是负责自动驾驶功能的算法策略制定与产品规划，推动算法技术路线和产品落地，利用Vibe Coding工具提升算法迭代效率，基于数据分析优化算法性能，并跟踪前沿技术应用。"
+      },
+      "roleDifferentiators": {
+        "question": "该岗位与其他产品经理岗位有何区别？",
+        "answer": "该岗位侧重自动驾驶领域的算法策略与技术路线规划，强调算法与产品的深度结合，要求具备AI框架和自动驾驶工具链的技术背景，并需运用Vibe Coding等AI编程工具快速构建原型，技术含量和专业性较高。"
+      },
+      "businessDirection": {
+        "question": "该岗位所在业务方向的重点是什么？",
+        "answer": "业务方向聚焦自动驾驶技术的产品化，涵盖行车、泊车、主动安全等功能，强调算法能力转化为可量产产品，推动自动驾驶技术在实际应用中的落地和持续优化。"
+      },
+      "idealCandidate": {
+        "question": "理想候选人应具备哪些关键特质和能力？",
+        "answer": "理想候选人应为2027届硕士及以上相关专业学生，具备自动驾驶系统架构理解和核心算法知识，熟悉AI框架及自动驾驶工具链，有Vibe Coding实践经验，具备优秀的需求分析和跨团队沟通能力，责任心强，能推动复杂项目落地，有相关实习或竞赛获奖经验优先。"
+      }
+    },
+    "evidence": [
+      {
+        "sourceType": "岗位描述",
+        "sourceId": "岗位职责第1条",
+        "quote": "协助推进自动驾驶（行车、泊车、主动安全等）功能的产品策略，主导算法选型、技术路线规划（如多传感器融合感知、目标检测与跟踪、路径规划等），并将算法能力转化为可量产的产品特性",
+        "reasoning": "明确指出岗位核心工作是自动驾驶功能的算法策略和产品规划，强调技术路线和产品化。"
+      },
+      {
+        "sourceType": "岗位描述",
+        "sourceId": "岗位职责第3条",
+        "quote": "运用Vibe Coding等高效编程协作模式，快速构建算法原型、生成数据管线或自动化工具，提升算法迭代与验证效率，并与工程师团队保持高效协同",
+        "reasoning": "体现岗位对Vibe Coding及AI编程工具的应用要求，突出技术协作特点。"
+      },
+      {
+        "sourceType": "岗位描述",
+        "sourceId": "任职要求第2条",
+        "quote": "熟悉自动驾驶系统架构（感知、定位、决策、控制），理解深度学习、计算机视觉、多传感器融合等核心算法原理及其产品化边界",
+        "reasoning": "说明岗位对技术理解的具体要求，体现岗位技术专业性。"
+      },
+      {
+        "sourceType": "岗位描述",
+        "sourceId": "任职要求第4条",
+        "quote": "具备优秀的需求分析、原型设计能力，能清晰编写PRD文档。具备强烈的责任心、目标感和跨团队沟通协调能力，能推动复杂项目落地",
+        "reasoning": "强调产品与协作能力是岗位必备素质，体现岗位的综合能力要求。"
+      },
+      {
+        "sourceType": "岗位描述",
+        "sourceId": "加分项",
+        "quote": "有自动驾驶算法实习经验；在Kaggle、天池等算法竞赛中获奖；有开源项目或Vibe Coding相关实践经验",
+        "reasoning": "列出优先考虑的背景和经验，反映理想候选人特质。"
+      }
+    ],
+    "rawText": "岗位职责：\n\n1、算法策略与产品规划：协助推进自动驾驶（行车、泊车、主动安全等）功能的产品策略，主导算法选型、技术路线规划（如多传感器融合感知、目标检测与跟踪、路径规划等），并将算法能力转化为可量产的产品特性；\n\n2、全流程参与产品落地：撰写PRD文档，定义功能边界和验收标准，驱动算法、研发、测试团队完成产品开发、测试验证与量产交付，并对最终产品效果负责；\n\n3、Vibe Coding应用：运用Vibe Coding等高效编程协作模式，快速构建算法原型、生成数据管线或自动化工具，提升算法迭代与验证效率，并与工程师团队保持高效协同；\n\n4、数据驱动优化：基于实际路采、仿真平台数据，分析算法表现，定位瓶颈，提出模型优化、数据标注的迭代方向，推动算法性能持续提升；\n\n5、技术趋势洞察：跟踪国内外自动驾驶算法前沿进展（如SLAM、端到端感知、大模型在自动驾驶的应用等），并评估其在产品中的落地可行性。\n\n\n任职要求：\n\n1、2027届在校生，硕士及以上学历，计算机科学、人工智能、车辆工程、自动化、电子工程等相关专业优先；\n\n2、技术理解：熟悉自动驾驶系统架构（感知、定位、决策、控制），理解深度学习、计算机视觉、多传感器融合等核心算法原理及其产品化边界；\n\n3、AI与工具技能：\n\n熟悉常用AI框架（如TensorFlow、PyTorch）和自动驾驶工具链（如Apollo、Autoware）；\n\n具备Vibe Coding实践能力，能使用Copilot、Cursor等AI编程工具快速构建原型或脚本，提升工作效率；\n\n4、产品与协作能力：\n\n具备优秀的需求分析、原型设计能力，能清晰编写PRD文档。具备强烈的责任心、目标感和跨团队沟通协调能力，能推动复杂项目落地；\n\n\n加分项：有自动驾驶算法实习经验；在Kaggle、天池等算法竞赛中获奖；有开源项目或Vibe Coding相关实践经验。",
+    "createdAt": "2026-04-08T12:06:28.248Z",
+    "updatedAt": "2026-04-08T12:07:11.390Z"
+  },
+  "originalResumeVersion": {
+    "id": "153bc3e9-86f5-4bf6-9e94-ec8f1b3dec92",
+    "sessionId": "81f85e05-31fe-4799-939a-0a0df2a16e19",
+    "sourceMaterialId": "8afb8c01-4417-4c76-8575-bea70c382f71",
+    "parentVersionId": "",
+    "kind": "original",
+    "title": "【徐怡然】个人简历.md",
+    "content": "年   龄 ： 21岁   性   别 ： 女  电   话 ： 15099385316   邮   箱 ： 2054333@tongji.edu.cn  徐 怡 然  2020-09   ~   至今   同济大学   交通工程（ 本科 ）  专业成绩： 前三年平均学积分 88.86  英语水平： CET-4（613分）、CET-6（548分）  荣誉奖项： 2020-2021学年同济大学本科优秀学生奖学金  主修课程： 运筹学、应用数学、智能车路系统、智能交通系统工程、交通运输数据技术、交通系统建模与仿真等等。  教育背景  《基于车-路LiDAR点云融合的自动驾驶感知增强方法》   第二十一届“同路人”交通科技大赛初赛排名第9（9/45）  《城市道路网络生命线识别和韧性分析》   第二十二届“同路人”交通科技大赛初赛排名第6（6/43）  《基于区块链的汽车全生命周期数据服务平台》   2022上海“产业Web3.0”应用创新大赛雏鹰创意组二等奖  《上海无人驾驶出租车从示范到商用的发展策略研究》   2021年第十六期大学生创新实践训练计划(SITP)顺利结题  ·   项目内容：项目聚焦车-路点云融合，在真实的道路环境下构建实车实验，采集自动驾驶车辆以及路侧LiDAR 点云数据；基于  CloudCompare 进行点云配准与融合，并通过迁移学习实现基于SECOND 算法的 3D 点云目标识别；最后通过点云融合前后  的目标检测可视化结果与现场视频进行对比验证。研究发现，多车场景下，经过本项目方法融合后的感知结果可有效补充实际  存在而单车漏检的目标；证明本项目采取的车-路 LiDAR 点云数据融合方法对自动驾驶感知能力有增强效果。  ·   项目内容：基于韧性城市四个维度确定关键设施位置，根据灾害条件下设施点间联系关系分为三类连接类型，并设置不同权值  以反映不同连接类型对道路交通的要求不同，计算出最短路径网络，最后构建交通生命线的度约束最小树模型，采用普里姆算  法+分支定界法求解出最优解，由此识别出交通生命线。在此基础上，基于灾害发生大小的随机性，构建两阶段随机规划模  型，采用 Benders 分解算法求解在资金约束条件下最优的交通生命线韧性提升方案。  ·   项目成果：产出论文\"Identification of Road Network Traffic Lifelines Based on Urban Resilience\"，已被Transportation  Research Board 2024 Annual Meeting录用。  ·   项目内容：通过将汽车供应、生产、流通、营销、使用的信息写入区块链，为每辆车、每个关键零件建立唯一身份识别码，并  为其建立全生命周期不可篡改、分布式存储的数据档案，实现每一次交易、维修、理赔的信息都能被真实记录和存储，允许链  上各企业逆向查询、追根溯源，进而重构汽车行业信用生态，提高汽车市场信任度。  ·   项目内容：通过调研与体验上海示范期间的无人驾驶出租车，与国外已开展的示范或商用进行国际比较研究，从车型产品、应  用场景、安全性等关键维度，提出未来无人驾驶出租车规模化商用的发展策略建议。  项目经历  编程技能： 掌握Python、R语言  仿真技能 ：掌握Vissim、Synchro、TESS NG  办公技能 ：熟练运用office办公软件、CAD  专业技能  ·   学习能力与适应能力较强、表达能力突出、性格开朗、坚毅勇敢。  自我评价",
+    "format": "text",
+    "acceptedSuggestionIds": [],
+    "rejectedSuggestionIds": [],
+    "editedSuggestionIds": [],
+    "changeSummary": [],
+    "createdAt": "2026-04-08T12:06:28.245Z",
+    "updatedAt": "2026-04-08T12:06:28.245Z"
+  },
+  "suggestions": [
+    {
+      "id": "baaf969b-1a58-4f69-97e8-af5fd02de8db",
+      "sessionId": "81f85e05-31fe-4799-939a-0a0df2a16e19",
+      "targetSection": "教育背景",
+      "targetAnchor": "专业课程描述",
+      "originalText": "主修课程： 运筹学、应用数学、智能车路系统、智能交通系统工程、交通运输数据技术、交通系统建模与仿真等等。",
+      "suggestedText": "主修课程： 运筹学、应用数学、智能车路系统、智能交通系统工程、交通运输数据技术、交通系统建模与仿真、自动驾驶系统架构、深度学习基础、计算机视觉。",
+      "reason": {
+        "basedOnJobAnalysis": "岗位要求熟悉自动驾驶系统架构及核心算法原理。",
+        "basedOnResume": "简历未体现自动驾驶系统架构和深度学习相关课程。",
+        "basedOnMaterials": "岗位职责强调技术路线规划和算法策略，需具备相关技术基础。",
+        "explanation": "通过补充相关课程，突出技术背景与岗位需求的匹配度。"
+      },
+      "expectedBenefit": "增强简历中技术专业性的体现，提高岗位匹配度评分。",
+      "riskNotice": "如未实际学习相关课程，夸大可能影响诚信。",
+      "priority": "高",
+      "status": "accepted",
+      "diffPreview": {
+        "before": "主修课程： 运筹学、应用数学、智能车路系统、智能交通系统工程、交通运输数据技术、交通系统建模与仿真等等。",
+        "after": "主修课程： 运筹学、应用数学、智能车路系统、智能交通系统工程、交通运输数据技术、交通系统建模与仿真、自动驾驶系统架构、深度学习基础、计算机视觉。"
+      },
+      "regeneratedCount": 0,
+      "createdAt": "2026-04-08T12:08:03.144Z",
+      "updatedAt": "2026-04-08T12:09:57.109Z"
+    },
+    {
+      "id": "6643e76b-965d-4ad7-bbe7-816588286d89",
+      "sessionId": "81f85e05-31fe-4799-939a-0a0df2a16e19",
+      "targetSection": "项目经历",
+      "targetAnchor": "自动驾驶感知增强方法项目",
+      "originalText": "项目聚焦车-路点云融合，在真实的道路环境下构建实车实验，采集自动驾驶车辆以及路侧LiDAR 点云数据；基于 CloudCompare 进行点云配准与融合，并通过迁移学习实现基于SECOND 算法的 3D 点云目标识别；最后通过点云融合前后的目标检测可视化结果与现场视频进行对比验证。",
+      "suggestedText": "项目聚焦车-路点云融合，基于Apollo自动驾驶工具链进行数据采集与处理，利用PyTorch实现基于SECOND算法的3D点云目标识别，结合Vibe Coding快速构建算法原型，提升感知算法迭代效率；通过目标检测可视化与现场视频对比验证感知增强效果。",
+      "reason": {
+        "basedOnJobAnalysis": "岗位要求熟悉自动驾驶工具链、AI框架及Vibe Coding实践能力。",
+        "basedOnResume": "项目描述缺少AI框架、自动驾驶工具链及Vibe Coding应用细节。",
+        "basedOnMaterials": "岗位职责强调算法原型构建和工具链应用。",
+        "explanation": "增加相关技术工具和实践描述，突出岗位核心技能匹配。"
+      },
+      "expectedBenefit": "体现岗位核心技能，提升技术能力匹配度和竞争力。",
+      "riskNotice": "需确保真实参与相关技术应用，避免夸大。",
+      "priority": "高",
+      "status": "accepted",
+      "diffPreview": {
+        "before": "项目聚焦车-路点云融合，在真实的道路环境下构建实车实验，采集自动驾驶车辆以及路侧LiDAR 点云数据；基于 CloudCompare 进行点云配准与融合，并通过迁移学习实现基于SECOND 算法的 3D 点云目标识别；最后通过点云融合前后的目标检测可视化结果与现场视频进行对比验证。",
+        "after": "项目聚焦车-路点云融合，基于Apollo自动驾驶工具链进行数据采集与处理，利用PyTorch实现基于SECOND算法的3D点云目标识别，结合Vibe Coding快速构建算法原型，提升感知算法迭代效率；通过目标检测可视化与现场视频对比验证感知增强效果。"
+      },
+      "regeneratedCount": 0,
+      "createdAt": "2026-04-08T12:08:03.146Z",
+      "updatedAt": "2026-04-08T12:10:29.022Z"
+    },
+    {
+      "id": "faa52c3b-aed2-4d79-9f0f-1103b9b0cfe8",
+      "sessionId": "81f85e05-31fe-4799-939a-0a0df2a16e19",
+      "targetSection": "项目经历",
+      "targetAnchor": "无人驾驶出租车发展策略研究",
+      "originalText": "通过调研与体验上海示范期间的无人驾驶出租车，与国外已开展的示范或商用进行国际比较研究，从车型产品、应用场景、安全性等关键维度，提出未来无人驾驶出租车规模化商用的发展策略建议。",
+      "suggestedText": "通过调研上海无人驾驶出租车示范及国际案例，结合自动驾驶系统架构和算法策略，分析产品功能边界及技术路线，撰写详细PRD文档，提出规模化商用的产品规划与技术落地策略，体现跨团队协作推动能力。",
+      "reason": {
+        "basedOnJobAnalysis": "岗位强调产品规划、PRD文档编写及跨团队协作能力。",
+        "basedOnResume": "项目缺少产品需求分析及文档撰写相关描述。",
+        "basedOnMaterials": "岗位职责包含产品落地全过程管理。",
+        "explanation": "补充产品管理和协作细节，突出岗位核心能力。"
+      },
+      "expectedBenefit": "增强产品规划和协作能力的展示，提高岗位匹配度。",
+      "riskNotice": "确保描述符合实际经历，避免虚假陈述。",
+      "priority": "中",
+      "status": "accepted",
+      "diffPreview": {
+        "before": "通过调研与体验上海示范期间的无人驾驶出租车，与国外已开展的示范或商用进行国际比较研究，从车型产品、应用场景、安全性等关键维度，提出未来无人驾驶出租车规模化商用的发展策略建议。",
+        "after": "通过调研上海无人驾驶出租车示范及国际案例，结合自动驾驶系统架构和算法策略，分析产品功能边界及技术路线，撰写详细PRD文档，提出规模化商用的产品规划与技术落地策略，体现跨团队协作推动能力。"
+      },
+      "regeneratedCount": 0,
+      "createdAt": "2026-04-08T12:08:03.156Z",
+      "updatedAt": "2026-04-08T12:10:35.639Z"
+    },
+    {
+      "id": "942baf43-5dab-4017-bb21-fe38eb5af670",
+      "sessionId": "81f85e05-31fe-4799-939a-0a0df2a16e19",
+      "targetSection": "技能专长",
+      "targetAnchor": "编程技能描述",
+      "originalText": "掌握Python、R语言",
+      "suggestedText": "掌握Python、R语言，熟悉TensorFlow、PyTorch深度学习框架，具备使用Copilot、Cursor等AI编程工具进行Vibe Coding实践能力。",
+      "reason": {
+        "basedOnJobAnalysis": "岗位要求熟悉AI框架及Vibe Coding实践能力。",
+        "basedOnResume": "简历未体现AI框架和AI编程工具相关技能。",
+        "basedOnMaterials": "岗位职责强调利用AI工具提升算法迭代效率。",
+        "explanation": "补充AI框架和工具技能，突出技术能力匹配。"
+      },
+      "expectedBenefit": "提升技术技能匹配度，增加岗位竞争力。",
+      "riskNotice": "需确保具备相关技能，避免夸大。",
+      "priority": "高",
+      "status": "accepted",
+      "diffPreview": {
+        "before": "掌握Python、R语言",
+        "after": "掌握Python、R语言，熟悉TensorFlow、PyTorch深度学习框架，具备使用Copilot、Cursor等AI编程工具进行Vibe Coding实践能力。"
+      },
+      "regeneratedCount": 0,
+      "createdAt": "2026-04-08T12:08:03.158Z",
+      "updatedAt": "2026-04-08T12:10:37.957Z"
+    },
+    {
+      "id": "d2e2b4fa-c1b6-4a85-a197-cc9dec3948a7",
+      "sessionId": "81f85e05-31fe-4799-939a-0a0df2a16e19",
+      "targetSection": "自我评价",
+      "targetAnchor": "责任心与团队协作",
+      "originalText": "学习能力与适应能力较强、表达能力突出、性格开朗、坚毅勇敢。",
+      "suggestedText": "具备强烈责任心和目标感，善于跨团队沟通协调，能够推动复杂项目落地，具备优秀的需求分析和产品规划能力。",
+      "reason": {
+        "basedOnJobAnalysis": "岗位强调责任心、目标感及跨团队协作能力。",
+        "basedOnResume": "自我评价未突出岗位核心软技能。",
+        "basedOnMaterials": "岗位职责和任职要求明确软技能重要性。",
+        "explanation": "强化软技能描述，提升岗位匹配的说服力。"
+      },
+      "expectedBenefit": "增强简历的说服力和岗位匹配度。",
+      "riskNotice": "需确保自我评价真实可信。",
+      "priority": "中",
+      "status": "accepted",
+      "diffPreview": {
+        "before": "学习能力与适应能力较强、表达能力突出、性格开朗、坚毅勇敢。",
+        "after": "具备强烈责任心和目标感，善于跨团队沟通协调，能够推动复杂项目落地，具备优秀的需求分析和产品规划能力。"
+      },
+      "regeneratedCount": 0,
+      "createdAt": "2026-04-08T12:08:03.159Z",
+      "updatedAt": "2026-04-08T12:10:41.134Z"
+    },
+    {
+      "id": "70931139-e94f-4144-aae5-e68165b38677",
+      "sessionId": "81f85e05-31fe-4799-939a-0a0df2a16e19",
+      "targetSection": "项目经历",
+      "targetAnchor": "项目描述细节",
+      "originalText": "项目描述多为研究和分析，缺少产品规划和跨团队协作细节。",
+      "suggestedText": "在项目描述中增加产品需求分析、PRD文档撰写及跨团队协作的具体案例，突出推动项目落地的能力。",
+      "reason": {
+        "basedOnJobAnalysis": "岗位要求产品规划及跨团队协作能力。",
+        "basedOnResume": "项目描述偏重研究，缺少产品管理相关内容。",
+        "basedOnMaterials": "岗位职责强调产品全流程管理和团队协作。",
+        "explanation": "补充相关内容，增强岗位匹配度。"
+      },
+      "expectedBenefit": "提升简历内容的相关性和说服力。",
+      "riskNotice": "需确保描述符合实际经历。",
+      "priority": "中",
+      "status": "accepted",
+      "diffPreview": {
+        "before": "项目描述多为研究和分析，缺少产品规划和跨团队协作细节。",
+        "after": "在项目描述中增加产品需求分析、PRD文档撰写及跨团队协作的具体案例，突出推动项目落地的能力。"
+      },
+      "regeneratedCount": 0,
+      "createdAt": "2026-04-08T12:08:03.161Z",
+      "updatedAt": "2026-04-08T12:10:45.207Z"
+    }
+  ],
+  "feedbackHistory": [
+    {
+      "id": "129d15eb-aec6-4e3e-8b1a-cdd4d45e27c7",
+      "sessionId": "81f85e05-31fe-4799-939a-0a0df2a16e19",
+      "suggestionId": "baaf969b-1a58-4f69-97e8-af5fd02de8db",
+      "action": "accept",
+      "editedText": "",
+      "comment": "",
+      "userInstruction": "",
+      "createdAt": "2026-04-08T12:09:57.109Z"
+    },
+    {
+      "id": "ca7d9cd5-b156-4b93-8d3f-5efe2ca06215",
+      "sessionId": "81f85e05-31fe-4799-939a-0a0df2a16e19",
+      "suggestionId": "6643e76b-965d-4ad7-bbe7-816588286d89",
+      "action": "accept",
+      "editedText": "",
+      "comment": "",
+      "userInstruction": "",
+      "createdAt": "2026-04-08T12:10:29.022Z"
+    },
+    {
+      "id": "caa8b2f2-7cec-4def-97cb-e65fc6630e3f",
+      "sessionId": "81f85e05-31fe-4799-939a-0a0df2a16e19",
+      "suggestionId": "faa52c3b-aed2-4d79-9f0f-1103b9b0cfe8",
+      "action": "accept",
+      "editedText": "",
+      "comment": "",
+      "userInstruction": "",
+      "createdAt": "2026-04-08T12:10:35.639Z"
+    },
+    {
+      "id": "5caaedb2-dcf5-481c-aa5f-c7451870903c",
+      "sessionId": "81f85e05-31fe-4799-939a-0a0df2a16e19",
+      "suggestionId": "942baf43-5dab-4017-bb21-fe38eb5af670",
+      "action": "accept",
+      "editedText": "",
+      "comment": "",
+      "userInstruction": "",
+      "createdAt": "2026-04-08T12:10:37.957Z"
+    },
+    {
+      "id": "e094ebab-5b3a-4a5f-87e9-d28b3c7c8168",
+      "sessionId": "81f85e05-31fe-4799-939a-0a0df2a16e19",
+      "suggestionId": "d2e2b4fa-c1b6-4a85-a197-cc9dec3948a7",
+      "action": "accept",
+      "editedText": "",
+      "comment": "",
+      "userInstruction": "",
+      "createdAt": "2026-04-08T12:10:41.134Z"
+    },
+    {
+      "id": "23e1c061-fe1d-43ea-a7aa-9f6cad05a6d2",
+      "sessionId": "81f85e05-31fe-4799-939a-0a0df2a16e19",
+      "suggestionId": "70931139-e94f-4144-aae5-e68165b38677",
+      "action": "accept",
+      "editedText": "",
+      "comment": "",
+      "userInstruction": "",
+      "createdAt": "2026-04-08T12:10:45.207Z"
+    }
+  ],
+  "eventLog": [
+    {
+      "id": "614d26a9-1748-474c-9bb5-1670c8aa7ede",
+      "type": "job_analysis_completed",
+      "step": "job_analysis",
+      "message": "岗位分析完成",
+      "createdAt": "2026-04-08T12:07:11.392Z",
+      "meta": {}
+    },
+    {
+      "id": "0d540653-3736-42de-9981-b29d3e8d679d",
+      "type": "resume_score_completed",
+      "step": "resume_scoring",
+      "message": "原简历评分完成",
+      "createdAt": "2026-04-08T12:07:37.684Z",
+      "meta": {}
+    },
+    {
+      "id": "b363915d-a240-41e4-aa7f-a3e188dc7046",
+      "type": "suggestions_completed",
+      "step": "suggestion_generation",
+      "message": "已生成 6 条优化建议",
+      "createdAt": "2026-04-08T12:08:03.162Z",
+      "meta": {}
+    },
+    {
+      "id": "a7365b52-a6d4-4892-a2c4-7ac59377af02",
+      "type": "optimized_resume_completed",
+      "step": "resume_generation",
+      "message": "优化版简历生成完成",
+      "createdAt": "2026-04-08T12:11:16.489Z",
+      "meta": {}
+    },
+    {
+      "id": "c286d74b-0357-4f7f-9186-49166124e2ea",
+      "type": "resume_score_completed",
+      "step": "resume_rescoring",
+      "message": "优化后简历评分完成",
+      "createdAt": "2026-04-08T12:11:45.647Z",
+      "meta": {}
+    }
+  ],
+  "createdAt": "2026-04-08T12:06:28.245Z",
+  "updatedAt": "2026-04-08T12:11:45.648Z",
+  "originalScore": {
+    "id": "acc87ff8-2a45-464f-80a1-dd6f7aaceb59",
+    "sessionId": "81f85e05-31fe-4799-939a-0a0df2a16e19",
+    "resumeVersionId": "153bc3e9-86f5-4bf6-9e94-ec8f1b3dec92",
+    "scoreType": "original",
+    "status": "completed",
+    "totalScore": 45,
+    "rubric": {
+      "jobMatch": {
+        "score": 15,
+        "breakdown": {
+          "education": 8,
+          "technicalSkills": 4,
+          "experience": 3
+        },
+        "reasons": [
+          "符合硕士及以上学历要求，且专业相关（交通工程、电子信息）",
+          "具备一定的编程技能（Python、R），但未体现自动驾驶系统架构、AI框架（TensorFlow、PyTorch）或自动驾驶工具链（Apollo、Autoware）经验",
+          "无明确自动驾驶算法实习或竞赛获奖经历，项目经验偏向交通工程和无人驾驶策略研究，缺乏算法策略和Vibe Coding实践"
+        ]
+      },
+      "contentQuality": {
+        "score": 15,
+        "breakdown": {
+          "clarity": 7,
+          "detail": 5,
+          "relevance": 3
+        },
+        "reasons": [
+          "简历内容条理清晰，项目描述详细，体现了较强的研究和分析能力",
+          "项目多为交通系统和无人驾驶策略研究，缺少具体算法开发和产品规划细节",
+          "缺少PRD文档编写、跨团队协作和AI编程工具应用的具体描述"
+        ]
+      },
+      "persuasiveness": {
+        "score": 15,
+        "breakdown": {
+          "impact": 6,
+          "uniqueness": 5,
+          "motivation": 4
+        },
+        "reasons": [
+          "项目成果有论文被国际会议录用，体现一定学术影响力",
+          "参与多项竞赛和创新项目，显示积极主动和学习能力",
+          "自我评价部分较简短，未突出责任心、目标感及跨团队沟通能力"
+        ]
+      }
+    },
+    "deductionReasons": [
+      "缺少自动驾驶核心算法和系统架构的直接经验",
+      "未体现使用TensorFlow、PyTorch等AI框架及自动驾驶工具链经验",
+      "无Vibe Coding或类似AI编程工具的实践描述",
+      "缺少产品需求分析、PRD文档撰写和跨团队协作具体案例",
+      "无自动驾驶算法实习或竞赛获奖经历"
+    ],
+    "techBusinessFit": "候选人具备良好的交通工程背景和一定的编程能力，项目经验涉及无人驾驶策略和交通系统分析，符合业务方向的研究需求。但缺乏自动驾驶算法开发、AI框架应用及产品管理相关经验，技术与业务结合度较弱，需加强算法实战和产品规划能力。",
+    "improvements": [
+      "补充自动驾驶系统架构及核心算法相关课程或项目经历",
+      "增加使用TensorFlow、PyTorch等AI框架的实践经验",
+      "参与自动驾驶相关实习或竞赛，积累算法策略和产品规划经验",
+      "学习并应用Vibe Coding及AI编程工具，提升算法原型开发能力",
+      "丰富产品需求分析和跨团队协作的具体案例，突出责任心和项目推动能力"
+    ],
+    "rawText": "年   龄 ： 21岁   性   别 ： 女  电   话 ： 15099385316   邮   箱 ： 2054333@tongji.edu.cn  徐 怡 然  2020-09   ~   至今   同济大学   交通工程（ 本科 ）  专业成绩： 前三年平均学积分 88.86  英语水平： CET-4（613分）、CET-6（548分）  荣誉奖项： 2020-2021学年同济大学本科优秀学生奖学金  主修课程： 运筹学、应用数学、智能车路系统、智能交通系统工程、交通运输数据技术、交通系统建模与仿真等等。  教育背景  《基于车-路LiDAR点云融合的自动驾驶感知增强方法》   第二十一届“同路人”交通科技大赛初赛排名第9（9/45）  《城市道路网络生命线识别和韧性分析》   第二十二届“同路人”交通科技大赛初赛排名第6（6/43）  《基于区块链的汽车全生命周期数据服务平台》   2022上海“产业Web3.0”应用创新大赛雏鹰创意组二等奖  《上海无人驾驶出租车从示范到商用的发展策略研究》   2021年第十六期大学生创新实践训练计划(SITP)顺利结题  ·   项目内容：项目聚焦车-路点云融合，在真实的道路环境下构建实车实验，采集自动驾驶车辆以及路侧LiDAR 点云数据；基于  CloudCompare 进行点云配准与融合，并通过迁移学习实现基于SECOND 算法的 3D 点云目标识别；最后通过点云融合前后  的目标检测可视化结果与现场视频进行对比验证。研究发现，多车场景下，经过本项目方法融合后的感知结果可有效补充实际  存在而单车漏检的目标；证明本项目采取的车-路 LiDAR 点云数据融合方法对自动驾驶感知能力有增强效果。  ·   项目内容：基于韧性城市四个维度确定关键设施位置，根据灾害条件下设施点间联系关系分为三类连接类型，并设置不同权值  以反映不同连接类型对道路交通的要求不同，计算出最短路径网络，最后构建交通生命线的度约束最小树模型，采用普里姆算  法+分支定界法求解出最优解，由此识别出交通生命线。在此基础上，基于灾害发生大小的随机性，构建两阶段随机规划模  型，采用 Benders 分解算法求解在资金约束条件下最优的交通生命线韧性提升方案。  ·   项目成果：产出论文\"Identification of Road Network Traffic Lifelines Based on Urban Resilience\"，已被Transportation  Research Board 2024 Annual Meeting录用。  ·   项目内容：通过将汽车供应、生产、流通、营销、使用的信息写入区块链，为每辆车、每个关键零件建立唯一身份识别码，并  为其建立全生命周期不可篡改、分布式存储的数据档案，实现每一次交易、维修、理赔的信息都能被真实记录和存储，允许链  上各企业逆向查询、追根溯源，进而重构汽车行业信用生态，提高汽车市场信任度。  ·   项目内容：通过调研与体验上海示范期间的无人驾驶出租车，与国外已开展的示范或商用进行国际比较研究，从车型产品、应  用场景、安全性等关键维度，提出未来无人驾驶出租车规模化商用的发展策略建议。  项目经历  编程技能： 掌握Python、R语言  仿真技能 ：掌握Vissim、Synchro、TESS NG  办公技能 ：熟练运用office办公软件、CAD  专业技能  ·   学习能力与适应能力较强、表达能力突出、性格开朗、坚毅勇敢。  自我评价\n个人相关资料：[教育经历] 教育\n2020-2024：同济大学 交通工程\n2024-至今：上海交通大学 电子信息\n\n[项目/科研经历] 项目-人因\n试飞院-《长航时飞行员疲劳监测》\n论文-已接收-Inferring Pilot Cognitive States Using a Multimodal Physiology-based Graph Fusion Model",
+    "createdAt": "2026-04-08T12:07:11.415Z",
+    "updatedAt": "2026-04-08T12:07:37.683Z"
+  },
+  "optimizedResumeVersion": {
+    "id": "0b8e9e62-81fe-4081-8923-c8f6ff7163d0",
+    "sessionId": "81f85e05-31fe-4799-939a-0a0df2a16e19",
+    "sourceMaterialId": "",
+    "parentVersionId": "153bc3e9-86f5-4bf6-9e94-ec8f1b3dec92",
+    "kind": "optimized",
+    "title": "【徐怡然】个人简历.md - 优化版",
+    "content": "# 徐怡然\n\n- 年龄：21岁  \n- 性别：女  \n- 电话：15099385316  \n- 邮箱：2054333@tongji.edu.cn  \n\n---\n\n## 教育背景\n\n**同济大学**  \n交通工程（本科） | 2020.09 – 至今  \n专业成绩：前三年平均学积分 88.86  \n英语水平：CET-4（613分）、CET-6（548分）  \n荣誉奖项：2020-2021学年同济大学本科优秀学生奖学金  \n\n**主修课程**  \n运筹学、应用数学、智能车路系统、智能交通系统工程、交通运输数据技术、交通系统建模与仿真、自动驾驶系统架构、深度学习基础、计算机视觉  \n\n---\n\n## 项目经历\n\n### 基于车-路LiDAR点云融合的自动驾驶感知增强方法  \n- 第二十一届“同路人”交通科技大赛初赛排名第9（9/45）  \n- 项目聚焦车-路点云融合，基于Apollo自动驾驶工具链进行数据采集与处理，利用PyTorch实现基于SECOND算法的3D点云目标识别，结合Vibe Coding快速构建算法原型，显著提升感知算法迭代效率。  \n- 通过CloudCompare进行点云配准与融合，最终通过目标检测可视化与现场视频对比验证感知增强效果。  \n- 研究发现，多车场景下融合后的感知结果有效补充单车漏检目标，显著增强自动驾驶感知能力。  \n\n### 城市道路网络生命线识别和韧性分析  \n- 第二十二届“同路人”交通科技大赛初赛排名第6（6/43）  \n- 基于韧性城市四维度确定关键设施位置，构建交通生命线度约束最小树模型，采用普里姆算法+分支定界法求解最优解。  \n- 基于灾害随机性，构建两阶段随机规划模型，采用Benders分解算法优化资金约束下的交通生命线韧性提升方案。  \n- 项目成果论文《Identification of Road Network Traffic Lifelines Based on Urban Resilience》被Transportation Research Board 2024 Annual Meeting录用。  \n\n### 基于区块链的汽车全生命周期数据服务平台  \n- 2022上海“产业Web3.0”应用创新大赛雏鹰创意组二等奖  \n- 通过区块链技术为汽车及关键零件建立唯一身份识别码，实现全生命周期不可篡改、分布式存储数据档案。  \n- 保障交易、维修、理赔信息真实记录，支持链上逆向查询与追根溯源，重构汽车行业信用生态，提升市场信任度。  \n\n### 上海无人驾驶出租车从示范到商用的发展策略研究  \n- 2021年第十六期大学生创新实践训练计划(SITP)顺利结题  \n- 调研上海无人驾驶出租车示范及国际案例，结合自动驾驶系统架构和算法策略，分析产品功能边界及技术路线。  \n- 撰写详细PRD文档，提出规模化商用的产品规划与技术落地策略，体现跨团队协作推动能力。  \n\n---\n\n## 技能专长\n\n- 编程语言：Python、R语言  \n- 深度学习框架：熟悉TensorFlow、PyTorch  \n- AI编程工具：具备使用Copilot、Cursor等工具进行Vibe Coding实践能力  \n- 仿真技能：掌握Vissim、Synchro、TESS NG  \n- 办公软件：熟练运用Office办公软件、CAD  \n\n---\n\n## 自我评价\n\n- 学习能力与适应能力强，表达能力突出，性格开朗、坚毅勇敢  \n- 具备强烈责任心和目标感，善于跨团队沟通协调  \n- 能推动复杂项目落地，具备优秀的需求分析和产品规划能力",
+    "format": "markdown",
+    "acceptedSuggestionIds": [
+      "baaf969b-1a58-4f69-97e8-af5fd02de8db",
+      "6643e76b-965d-4ad7-bbe7-816588286d89",
+      "faa52c3b-aed2-4d79-9f0f-1103b9b0cfe8",
+      "942baf43-5dab-4017-bb21-fe38eb5af670",
+      "d2e2b4fa-c1b6-4a85-a197-cc9dec3948a7",
+      "70931139-e94f-4144-aae5-e68165b38677"
+    ],
+    "rejectedSuggestionIds": [],
+    "editedSuggestionIds": [],
+    "changeSummary": [
+      "教育背景: 增强简历中技术专业性的体现，提高岗位匹配度评分。",
+      "项目经历: 体现岗位核心技能，提升技术能力匹配度和竞争力。",
+      "项目经历: 增强产品规划和协作能力的展示，提高岗位匹配度。",
+      "技能专长: 提升技术技能匹配度，增加岗位竞争力。",
+      "自我评价: 增强简历的说服力和岗位匹配度。",
+      "项目经历: 提升简历内容的相关性和说服力。"
+    ],
+    "createdAt": "2026-04-08T12:11:16.486Z",
+    "updatedAt": "2026-04-08T12:11:16.486Z",
+    "diff": [
+      {
+        "type": "removed",
+        "before": "年   龄 ： 21岁   性   别 ： 女  电   话 ： 15099385316   邮   箱 ： 2054333@tongji.edu.cn  徐 怡 然  2020-09   ~   至今   同济大学   交通工程（ 本科 ）  专业成绩： 前三年平均学积分 88.86  英语水平： CET-4（613分）、CET-6（548分）  荣誉奖项： 2020-2021学年同济大学本科优秀学生奖学金  主修课程： 运筹学、应用数学、智能车路系统、智能交通系统工程、交通运输数据技术、交通系统建模与仿真等等。  教育背景  《基于车-路LiDAR点云融合的自动驾驶感知增强方法》   第二十一届“同路人”交通科技大赛初赛排名第9（9/45）  《城市道路网络生命线识别和韧性分析》   第二十二届“同路人”交通科技大赛初赛排名第6（6/43）  《基于区块链的汽车全生命周期数据服务平台》   2022上海“产业Web3.0”应用创新大赛雏鹰创意组二等奖  《上海无人驾驶出租车从示范到商用的发展策略研究》   2021年第十六期大学生创新实践训练计划(SITP)顺利结题  ·   项目内容：项目聚焦车-路点云融合，在真实的道路环境下构建实车实验，采集自动驾驶车辆以及路侧LiDAR 点云数据；基于  CloudCompare 进行点云配准与融合，并通过迁移学习实现基于SECOND 算法的 3D 点云目标识别；最后通过点云融合前后  的目标检测可视化结果与现场视频进行对比验证。研究发现，多车场景下，经过本项目方法融合后的感知结果可有效补充实际  存在而单车漏检的目标；证明本项目采取的车-路 LiDAR 点云数据融合方法对自动驾驶感知能力有增强效果。  ·   项目内容：基于韧性城市四个维度确定关键设施位置，根据灾害条件下设施点间联系关系分为三类连接类型，并设置不同权值  以反映不同连接类型对道路交通的要求不同，计算出最短路径网络，最后构建交通生命线的度约束最小树模型，采用普里姆算  法+分支定界法求解出最优解，由此识别出交通生命线。在此基础上，基于灾害发生大小的随机性，构建两阶段随机规划模  型，采用 Benders 分解算法求解在资金约束条件下最优的交通生命线韧性提升方案。  ·   项目成果：产出论文\"Identification of Road Network Traffic Lifelines Based on Urban Resilience\"，已被Transportation  Research Board 2024 Annual Meeting录用。  ·   项目内容：通过将汽车供应、生产、流通、营销、使用的信息写入区块链，为每辆车、每个关键零件建立唯一身份识别码，并  为其建立全生命周期不可篡改、分布式存储的数据档案，实现每一次交易、维修、理赔的信息都能被真实记录和存储，允许链  上各企业逆向查询、追根溯源，进而重构汽车行业信用生态，提高汽车市场信任度。  ·   项目内容：通过调研与体验上海示范期间的无人驾驶出租车，与国外已开展的示范或商用进行国际比较研究，从车型产品、应  用场景、安全性等关键维度，提出未来无人驾驶出租车规模化商用的发展策略建议。  项目经历  编程技能： 掌握Python、R语言  仿真技能 ：掌握Vissim、Synchro、TESS NG  办公技能 ：熟练运用office办公软件、CAD  专业技能  ·   学习能力与适应能力较强、表达能力突出、性格开朗、坚毅勇敢。  自我评价",
+        "after": ""
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "# 徐怡然"
+      },
+      {
+        "type": "same",
+        "before": "",
+        "after": ""
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 年龄：21岁  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 性别：女  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 电话：15099385316  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 邮箱：2054333@tongji.edu.cn  "
+      },
+      {
+        "type": "same",
+        "before": "",
+        "after": ""
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "---"
+      },
+      {
+        "type": "same",
+        "before": "",
+        "after": ""
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "## 教育背景"
+      },
+      {
+        "type": "same",
+        "before": "",
+        "after": ""
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "**同济大学**  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "交通工程（本科） | 2020.09 – 至今  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "专业成绩：前三年平均学积分 88.86  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "英语水平：CET-4（613分）、CET-6（548分）  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "荣誉奖项：2020-2021学年同济大学本科优秀学生奖学金  "
+      },
+      {
+        "type": "same",
+        "before": "",
+        "after": ""
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "**主修课程**  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "运筹学、应用数学、智能车路系统、智能交通系统工程、交通运输数据技术、交通系统建模与仿真、自动驾驶系统架构、深度学习基础、计算机视觉  "
+      },
+      {
+        "type": "same",
+        "before": "",
+        "after": ""
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "---"
+      },
+      {
+        "type": "same",
+        "before": "",
+        "after": ""
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "## 项目经历"
+      },
+      {
+        "type": "same",
+        "before": "",
+        "after": ""
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "### 基于车-路LiDAR点云融合的自动驾驶感知增强方法  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 第二十一届“同路人”交通科技大赛初赛排名第9（9/45）  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 项目聚焦车-路点云融合，基于Apollo自动驾驶工具链进行数据采集与处理，利用PyTorch实现基于SECOND算法的3D点云目标识别，结合Vibe Coding快速构建算法原型，显著提升感知算法迭代效率。  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 通过CloudCompare进行点云配准与融合，最终通过目标检测可视化与现场视频对比验证感知增强效果。  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 研究发现，多车场景下融合后的感知结果有效补充单车漏检目标，显著增强自动驾驶感知能力。  "
+      },
+      {
+        "type": "same",
+        "before": "",
+        "after": ""
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "### 城市道路网络生命线识别和韧性分析  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 第二十二届“同路人”交通科技大赛初赛排名第6（6/43）  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 基于韧性城市四维度确定关键设施位置，构建交通生命线度约束最小树模型，采用普里姆算法+分支定界法求解最优解。  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 基于灾害随机性，构建两阶段随机规划模型，采用Benders分解算法优化资金约束下的交通生命线韧性提升方案。  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 项目成果论文《Identification of Road Network Traffic Lifelines Based on Urban Resilience》被Transportation Research Board 2024 Annual Meeting录用。  "
+      },
+      {
+        "type": "same",
+        "before": "",
+        "after": ""
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "### 基于区块链的汽车全生命周期数据服务平台  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 2022上海“产业Web3.0”应用创新大赛雏鹰创意组二等奖  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 通过区块链技术为汽车及关键零件建立唯一身份识别码，实现全生命周期不可篡改、分布式存储数据档案。  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 保障交易、维修、理赔信息真实记录，支持链上逆向查询与追根溯源，重构汽车行业信用生态，提升市场信任度。  "
+      },
+      {
+        "type": "same",
+        "before": "",
+        "after": ""
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "### 上海无人驾驶出租车从示范到商用的发展策略研究  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 2021年第十六期大学生创新实践训练计划(SITP)顺利结题  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 调研上海无人驾驶出租车示范及国际案例，结合自动驾驶系统架构和算法策略，分析产品功能边界及技术路线。  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 撰写详细PRD文档，提出规模化商用的产品规划与技术落地策略，体现跨团队协作推动能力。  "
+      },
+      {
+        "type": "same",
+        "before": "",
+        "after": ""
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "---"
+      },
+      {
+        "type": "same",
+        "before": "",
+        "after": ""
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "## 技能专长"
+      },
+      {
+        "type": "same",
+        "before": "",
+        "after": ""
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 编程语言：Python、R语言  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 深度学习框架：熟悉TensorFlow、PyTorch  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- AI编程工具：具备使用Copilot、Cursor等工具进行Vibe Coding实践能力  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 仿真技能：掌握Vissim、Synchro、TESS NG  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 办公软件：熟练运用Office办公软件、CAD  "
+      },
+      {
+        "type": "same",
+        "before": "",
+        "after": ""
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "---"
+      },
+      {
+        "type": "same",
+        "before": "",
+        "after": ""
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "## 自我评价"
+      },
+      {
+        "type": "same",
+        "before": "",
+        "after": ""
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 学习能力与适应能力强，表达能力突出，性格开朗、坚毅勇敢  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 具备强烈责任心和目标感，善于跨团队沟通协调  "
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 能推动复杂项目落地，具备优秀的需求分析和产品规划能力"
+      }
+    ]
+  },
+  "optimizedScore": {
+    "id": "b4491abd-60c8-4b08-993c-8e3e01bd5b2d",
+    "sessionId": "81f85e05-31fe-4799-939a-0a0df2a16e19",
+    "resumeVersionId": "0b8e9e62-81fe-4081-8923-c8f6ff7163d0",
+    "scoreType": "optimized",
+    "status": "completed",
+    "totalScore": 88,
+    "rubric": {
+      "jobMatch": {
+        "score": 30,
+        "breakdown": {
+          "educationMatch": 8,
+          "technicalSkillsMatch": 10,
+          "experienceAndProjectsMatch": 7,
+          "softSkillsMatch": 5
+        },
+        "reasons": [
+          "候选人具备2027届硕士及以上学历在读背景，符合岗位学历要求。",
+          "熟悉自动驾驶系统架构，主修课程涵盖自动驾驶系统架构、深度学习、计算机视觉等核心技术。",
+          "项目经历中使用Apollo自动驾驶工具链和PyTorch实现3D点云目标识别，符合岗位技术要求。",
+          "具备Vibe Coding实践能力，使用Copilot、Cursor等AI编程工具。",
+          "具备优秀的需求分析和产品规划能力，撰写过PRD文档，体现跨团队协作能力。",
+          "缺少明确的自动驾驶算法实习经验和竞赛获奖记录，稍有影响。"
+        ]
+      },
+      "contentQuality": {
+        "score": 30,
+        "breakdown": {
+          "clarity": 10,
+          "detail": 10,
+          "relevance": 10
+        },
+        "reasons": [
+          "简历结构清晰，教育背景、项目经历、技能专长和自我评价分区明确。",
+          "项目描述详细，突出技术细节和成果，体现专业能力。",
+          "内容紧密围绕自动驾驶及相关技术，符合岗位关键词和职责要求。"
+        ]
+      },
+      "persuasiveness": {
+        "score": 28,
+        "breakdown": {
+          "impact": 10,
+          "evidence": 9,
+          "professionalism": 9
+        },
+        "reasons": [
+          "项目成果有竞赛排名和论文发表，增强说服力。",
+          "展示了技术应用能力和跨团队协作经验，符合岗位对责任心和推动力的要求。",
+          "语言专业且表达清晰，体现良好沟通能力。",
+          "缺少明确的实习经验和竞赛获奖，略微影响说服力。"
+        ]
+      }
+    },
+    "deductionReasons": [
+      "无明确自动驾驶算法实习经历，岗位优先考虑该项。",
+      "未提及在Kaggle、天池等算法竞赛中获奖，缺少加分项。",
+      "项目中虽有Vibe Coding实践，但未突出开源项目经验。"
+    ],
+    "techBusinessFit": "候选人技术能力与岗位需求高度匹配，熟悉自动驾驶系统架构及核心算法，具备AI框架和自动驾驶工具链使用经验，且有Vibe Coding实践。具备良好的产品规划和跨团队协作能力，符合岗位对责任心和推动复杂项目落地的要求。缺少相关实习和竞赛获奖经验是唯一不足，但整体技术与业务契合度高。",
+    "improvements": [
+      "增加自动驾驶算法实习经历以增强岗位匹配度。",
+      "参与并获得知名算法竞赛奖项，提升竞争力。",
+      "丰富开源项目经验，特别是与Vibe Coding相关的实践。",
+      "在简历中更突出具体的产品需求分析和PRD撰写成果。"
+    ],
+    "rawText": "# 徐怡然\n\n- 年龄：21岁  \n- 性别：女  \n- 电话：15099385316  \n- 邮箱：2054333@tongji.edu.cn  \n\n---\n\n## 教育背景\n\n**同济大学**  \n交通工程（本科） | 2020.09 – 至今  \n专业成绩：前三年平均学积分 88.86  \n英语水平：CET-4（613分）、CET-6（548分）  \n荣誉奖项：2020-2021学年同济大学本科优秀学生奖学金  \n\n**主修课程**  \n运筹学、应用数学、智能车路系统、智能交通系统工程、交通运输数据技术、交通系统建模与仿真、自动驾驶系统架构、深度学习基础、计算机视觉  \n\n---\n\n## 项目经历\n\n### 基于车-路LiDAR点云融合的自动驾驶感知增强方法  \n- 第二十一届“同路人”交通科技大赛初赛排名第9（9/45）  \n- 项目聚焦车-路点云融合，基于Apollo自动驾驶工具链进行数据采集与处理，利用PyTorch实现基于SECOND算法的3D点云目标识别，结合Vibe Coding快速构建算法原型，显著提升感知算法迭代效率。  \n- 通过CloudCompare进行点云配准与融合，最终通过目标检测可视化与现场视频对比验证感知增强效果。  \n- 研究发现，多车场景下融合后的感知结果有效补充单车漏检目标，显著增强自动驾驶感知能力。  \n\n### 城市道路网络生命线识别和韧性分析  \n- 第二十二届“同路人”交通科技大赛初赛排名第6（6/43）  \n- 基于韧性城市四维度确定关键设施位置，构建交通生命线度约束最小树模型，采用普里姆算法+分支定界法求解最优解。  \n- 基于灾害随机性，构建两阶段随机规划模型，采用Benders分解算法优化资金约束下的交通生命线韧性提升方案。  \n- 项目成果论文《Identification of Road Network Traffic Lifelines Based on Urban Resilience》被Transportation Research Board 2024 Annual Meeting录用。  \n\n### 基于区块链的汽车全生命周期数据服务平台  \n- 2022上海“产业Web3.0”应用创新大赛雏鹰创意组二等奖  \n- 通过区块链技术为汽车及关键零件建立唯一身份识别码，实现全生命周期不可篡改、分布式存储数据档案。  \n- 保障交易、维修、理赔信息真实记录，支持链上逆向查询与追根溯源，重构汽车行业信用生态，提升市场信任度。  \n\n### 上海无人驾驶出租车从示范到商用的发展策略研究  \n- 2021年第十六期大学生创新实践训练计划(SITP)顺利结题  \n- 调研上海无人驾驶出租车示范及国际案例，结合自动驾驶系统架构和算法策略，分析产品功能边界及技术路线。  \n- 撰写详细PRD文档，提出规模化商用的产品规划与技术落地策略，体现跨团队协作推动能力。  \n\n---\n\n## 技能专长\n\n- 编程语言：Python、R语言  \n- 深度学习框架：熟悉TensorFlow、PyTorch  \n- AI编程工具：具备使用Copilot、Cursor等工具进行Vibe Coding实践能力  \n- 仿真技能：掌握Vissim、Synchro、TESS NG  \n- 办公软件：熟练运用Office办公软件、CAD  \n\n---\n\n## 自我评价\n\n- 学习能力与适应能力强，表达能力突出，性格开朗、坚毅勇敢  \n- 具备强烈责任心和目标感，善于跨团队沟通协调  \n- 能推动复杂项目落地，具备优秀的需求分析和产品规划能力\n个人相关资料：[教育经历] 教育\n2020-2024：同济大学 交通工程\n2024-至今：上海交通大学 电子信息\n\n[项目/科研经历] 项目-人因\n试飞院-《长航时飞行员疲劳监测》\n论文-已接收-Inferring Pilot Cognitive States Using a Multimodal Physiology-based Graph Fusion Model",
+    "createdAt": "2026-04-08T12:11:16.538Z",
+    "updatedAt": "2026-04-08T12:11:45.645Z"
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "materials": [
+    {
+      "id": "8afb8c01-4417-4c76-8575-bea70c382f71",
+      "name": "【徐怡然】个人简历.md",
+      "category": "其他",
+      "type": "file",
+      "content": "",
+      "fileName": "【徐怡然】个人简历.md",
+      "filePath": "files/8afb8c01-4417-4c76-8575-bea70c382f71.md",
+      "mimeType": "text/markdown",
+      "createdAt": "2026-04-08T12:06:25.147Z",
+      "updatedAt": "2026-04-08T12:06:25.147Z"
+    },
+    {
+      "id": "c6317eb9-d01e-4bdd-aea5-59282888366b",
+      "name": "【徐怡然】个人简历.md",
+      "category": "其他",
+      "type": "file",
+      "content": "",
+      "fileName": "【徐怡然】个人简历.md",
+      "filePath": "files/c6317eb9-d01e-4bdd-aea5-59282888366b.md",
+      "mimeType": "text/markdown",
+      "createdAt": "2026-04-08T12:06:16.239Z",
+      "updatedAt": "2026-04-08T12:06:16.239Z"
+    },
+    {
+      "id": "dc40ac1e-b767-469a-a47f-af266cda3a93",
+      "name": "【徐怡然】个人简历.md",
+      "category": "其他",
+      "type": "file",
+      "content": "",
+      "fileName": "【徐怡然】个人简历.md",
+      "filePath": "files/dc40ac1e-b767-469a-a47f-af266cda3a93.md",
+      "mimeType": "text/markdown",
+      "createdAt": "2026-04-08T10:58:05.231Z",
+      "updatedAt": "2026-04-08T10:58:05.231Z"
+    },
+    {
+      "id": "dcb5025d-1c24-4e79-988c-19575ea88a4e",
+      "name": "【徐怡然】个人简历.md",
+      "category": "其他",
+      "type": "file",
+      "content": "",
+      "fileName": "【徐怡然】个人简历.md",
+      "filePath": "files/dcb5025d-1c24-4e79-988c-19575ea88a4e.md",
+      "mimeType": "text/markdown",
+      "createdAt": "2026-04-08T10:42:41.227Z",
+      "updatedAt": "2026-04-08T10:42:41.227Z"
+    },
+    {
+      "id": "ce8d1abb-e001-4696-957f-0843ee9369fd",
+      "name": "【徐怡然】个人简历.md",
+      "category": "其他",
+      "type": "file",
+      "content": "",
+      "fileName": "【徐怡然】个人简历.md",
+      "filePath": "files/ce8d1abb-e001-4696-957f-0843ee9369fd.md",
+      "mimeType": "text/markdown",
+      "createdAt": "2026-04-08T10:22:42.505Z",
+      "updatedAt": "2026-04-08T10:22:42.505Z"
+    },
+    {
+      "id": "bad7f96b-9571-4269-b542-aa6190a9698c",
+      "name": "【徐怡然】个人简历.md",
+      "category": "其他",
+      "type": "file",
+      "content": "",
+      "fileName": "【徐怡然】个人简历.md",
+      "filePath": "files/bad7f96b-9571-4269-b542-aa6190a9698c.md",
+      "mimeType": "text/markdown",
+      "createdAt": "2026-04-08T10:14:25.989Z",
+      "updatedAt": "2026-04-08T10:14:25.989Z"
+    },
+    {
+      "id": "99390c25-9032-4492-b21d-411a6a7ac56b",
+      "name": "【徐怡然】个人简历.md",
+      "category": "其他",
+      "type": "file",
+      "content": "",
+      "fileName": "【徐怡然】个人简历.md",
+      "filePath": "files/99390c25-9032-4492-b21d-411a6a7ac56b.md",
+      "mimeType": "text/markdown",
+      "createdAt": "2026-04-08T09:42:04.635Z",
+      "updatedAt": "2026-04-08T09:42:04.635Z"
+    },
+    {
+      "id": "2cedb4e3-89c2-436b-af10-ba18353daaf5",
+      "name": "【徐怡然】个人简历.pdf",
+      "category": "其他",
+      "type": "file",
+      "content": "",
+      "fileName": "【徐怡然】个人简历.pdf",
+      "filePath": "files/2cedb4e3-89c2-436b-af10-ba18353daaf5.pdf",
+      "mimeType": "application/pdf",
+      "createdAt": "2026-04-08T08:44:31.707Z",
+      "updatedAt": "2026-04-08T08:44:31.707Z"
+    }
+  ]
+}

@@ -1,0 +1,371 @@
+{
+  "id": "ac904494-d124-47f6-83f9-11d25defee72",
+  "user": "徐怡然",
+  "jobId": "job-1775637848304",
+  "selectedResumeId": "2cedb4e3-89c2-436b-af10-ba18353daaf5",
+  "status": "completed",
+  "currentStep": "resume_rescoring",
+  "stepStatus": {
+    "jobAnalysis": "completed",
+    "originalScore": "completed",
+    "suggestions": "completed",
+    "feedback": "completed",
+    "optimizedResume": "completed",
+    "rescoring": "completed"
+  },
+  "userGoal": "",
+  "constraints": {
+    "emphasize": [],
+    "preserve": []
+  },
+  "jobAnalysis": {
+    "id": "a5ac7b3d-3bf1-4589-8000-f47e0b5cf5d8",
+    "sessionId": "ac904494-d124-47f6-83f9-11d25defee72",
+    "jobId": "job-1775637848304",
+    "version": 1,
+    "status": "completed",
+    "summary": "27届秋储-策略产品经理-自动驾驶侧重业务理解与执行，核心是围绕岗位职责交付可衡量结果。",
+    "coreResponsibilities": [
+      "理解岗位目标并拆解为可执行任务",
+      "结合业务数据或项目结果推动落地",
+      "与相关团队协作，持续优化执行效果"
+    ],
+    "requiredSkills": [
+      "结构化表达",
+      "业务理解",
+      "跨团队协作"
+    ],
+    "bonusSkills": [
+      "行业认知",
+      "结果量化",
+      "项目复盘"
+    ],
+    "keywords": [
+      "业务分析",
+      "项目推进",
+      "结果导向"
+    ],
+    "experienceRequirement": "未明确说明，建议按有相关项目或实习经验准备",
+    "structuralSignals": [
+      "突出与 JD 高度相关的经历",
+      "优先展示量化结果",
+      "将关键词前置到经历 bullet 中"
+    ],
+    "keyQuestions": {
+      "coreWork": "核心工作是围绕岗位目标完成分析、执行或协同推进，并对结果负责。",
+      "roleDifferentiators": "区别在于更强调与当前业务场景相关的经验和输出，而不是泛化背景。",
+      "businessDirection": "业务方向通常是提升效率、增长或交付质量，该岗位价值是把抽象目标转为可执行结果。",
+      "idealCandidate": "更适配具备相关场景经验、能量化成果、表达清晰且能快速协作推进的人选。"
+    },
+    "evidence": [],
+    "rawText": "岗位职责：\n\n1、算法策略与产品规划：协助推进自动驾驶（行车、泊车、主动安全等）功能的产品策略，主导算法选型、技术路线规划（如多传感器融合感知、目标检测与跟踪、路径规划等），并将算法能力转化为可量产的产品特性；\n\n2、全流程参与产品落地：撰写PRD文档，定义功能边界和验收标准，驱动算法、研发、测试团队完成产品开发、测试验证与量产交付，并对最终产品效果负责；\n\n3、Vibe Coding应用：运用Vibe Coding等高效编程协作模式，快速构建算法原型、生成数据管线或自动化工具，提升算法迭代与验证效率，并与工程师团队保持高效协同；\n\n4、数据驱动优化：基于实际路采、仿真平台数据，分析算法表现，定位瓶颈，提出模型优化、数据标注的迭代方向，推动算法性能持续提升；\n\n5、技术趋势洞察：跟踪国内外自动驾驶算法前沿进展（如SLAM、端到端感知、大模型在自动驾驶的应用等），并评估其在产品中的落地可行性。\n\n\n\n任职要求：\n\n1、2027届在校生，硕士及以上学历，计算机科学、人工智能、车辆工程、自动化、电子工程等相关专业优先；\n\n2、技术理解：熟悉自动驾驶系统架构（感知、定位、决策、控制），理解深度学习、计算机视觉、多传感器融合等核心算法原理及其产品化边界；\n\n3、AI与工具技能：\n\n熟悉常用AI框架（如TensorFlow、PyTorch）和自动驾驶工具链（如Apollo、Autoware）；\n\n具备Vibe Coding实践能力，能使用Copilot、Cursor等AI编程工具快速构建原型或脚本，提升工作效率；\n\n4、产品与协作能力：\n\n具备优秀的需求分析、原型设计能力，能清晰编写PRD文档。具备强烈的责任心、目标感和跨团队沟通协调能力，能推动复杂项目落地；\n\n\n\n加分项：有自动驾驶算法实习经验；在Kaggle、天池等算法竞赛中获奖；有开源项目或Vibe Coding相关实践经验。",
+    "createdAt": "2026-04-08T09:36:26.003Z",
+    "updatedAt": "2026-04-08T09:36:36.533Z"
+  },
+  "originalResumeVersion": {
+    "id": "6e22c3ea-a6c5-4924-841e-6497c0b808fa",
+    "sessionId": "ac904494-d124-47f6-83f9-11d25defee72",
+    "sourceMaterialId": "2cedb4e3-89c2-436b-af10-ba18353daaf5",
+    "parentVersionId": "",
+    "kind": "original",
+    "title": "【徐怡然】个人简历.pdf",
+    "content": "# 【徐怡然】个人简历.pdf\n\n当前文件类型暂未解析出正文，请优先选择 Markdown / TXT / DOCX 简历，或使用“填写简历简化表单”以获得更准确的评分与改写。",
+    "format": "text",
+    "acceptedSuggestionIds": [],
+    "rejectedSuggestionIds": [],
+    "editedSuggestionIds": [],
+    "changeSummary": [],
+    "createdAt": "2026-04-08T09:36:25.999Z",
+    "updatedAt": "2026-04-08T09:36:25.999Z"
+  },
+  "suggestions": [
+    {
+      "id": "b898dcbf-eace-4b1d-8f4f-ed6c4fbc1f5c",
+      "sessionId": "ac904494-d124-47f6-83f9-11d25defee72",
+      "targetSection": "【徐怡然】个人简历.pdf",
+      "targetAnchor": "section-1",
+      "originalText": "# 【徐怡然】个人简历.pdf\n\n当前文件类型暂未解析出正文，请优先选择 Markdown / TXT / DOCX 简历，或使用“填写简历简化表单”以获得更准确的评分与改写。",
+      "suggestedText": "# 【徐怡然】个人简历.pdf\n\n当前文件类型暂未解析出正文，请优先选择 Markdown / TXT / DOCX 简历，或使用“填写简历简化表单”以获得更准确的评分与改写。\n- 强化版本：补充与目标岗位直接相关的动作、方法和结果，突出岗位重点。",
+      "reason": {
+        "basedOnJobAnalysis": [
+          "岗位更看重直接相关经验、关键词命中和结果导向表达。"
+        ],
+        "basedOnResume": [
+          "当前段落信息存在概述多、结果少的问题。"
+        ],
+        "basedOnMaterials": [],
+        "explanation": "将描述改为动作-方法-结果结构，更利于 ATS 与招聘方快速判断匹配度。"
+      },
+      "expectedBenefit": "提升岗位匹配度与说服力。",
+      "riskNotice": "如果补充内容过度泛化，可能显得像模板化改写。",
+      "priority": "high",
+      "status": "accepted",
+      "diffPreview": {
+        "before": "# 【徐怡然】个人简历.pdf\n\n当前文件类型暂未解析出正文，请优先选择 Markdown / TXT / DOCX 简历，或使用“填写简历简化表单”以获得更准确的评分与改写。",
+        "after": "# 【徐怡然】个人简历.pdf\n\n当前文件类型暂未解析出正文，请优先选择 Markdown / TXT / DOCX 简历，或使用“填写简历简化表单”以获得更准确的评分与改写。\n- 强化版本：补充与目标岗位直接相关的动作、方法和结果，突出岗位重点。"
+      },
+      "regeneratedCount": 0,
+      "createdAt": "2026-04-08T09:36:57.606Z",
+      "updatedAt": "2026-04-08T09:38:06.250Z"
+    }
+  ],
+  "feedbackHistory": [
+    {
+      "id": "8396b9f1-a182-4c2b-bfdf-d629655793cf",
+      "sessionId": "ac904494-d124-47f6-83f9-11d25defee72",
+      "suggestionId": "b898dcbf-eace-4b1d-8f4f-ed6c4fbc1f5c",
+      "action": "reject",
+      "editedText": "",
+      "comment": "",
+      "userInstruction": "",
+      "createdAt": "2026-04-08T09:37:26.377Z"
+    },
+    {
+      "id": "06fad925-79bf-4f1e-856d-0abcef7557c2",
+      "sessionId": "ac904494-d124-47f6-83f9-11d25defee72",
+      "suggestionId": "b898dcbf-eace-4b1d-8f4f-ed6c4fbc1f5c",
+      "action": "reject",
+      "editedText": "",
+      "comment": "",
+      "userInstruction": "",
+      "createdAt": "2026-04-08T09:37:27.951Z"
+    },
+    {
+      "id": "9ca8d381-3436-474e-b0aa-f0b33f98c148",
+      "sessionId": "ac904494-d124-47f6-83f9-11d25defee72",
+      "suggestionId": "b898dcbf-eace-4b1d-8f4f-ed6c4fbc1f5c",
+      "action": "accept",
+      "editedText": "",
+      "comment": "",
+      "userInstruction": "",
+      "createdAt": "2026-04-08T09:38:06.250Z"
+    }
+  ],
+  "eventLog": [
+    {
+      "id": "43d4d4d9-27a8-4ece-92bf-7e12087563cf",
+      "type": "job_analysis_completed",
+      "step": "job_analysis",
+      "message": "岗位分析完成",
+      "createdAt": "2026-04-08T09:36:36.534Z",
+      "meta": {}
+    },
+    {
+      "id": "1637c9b8-bcf4-4800-95b7-ebd1f7a956dc",
+      "type": "resume_score_completed",
+      "step": "resume_scoring",
+      "message": "原简历评分完成",
+      "createdAt": "2026-04-08T09:36:47.073Z",
+      "meta": {}
+    },
+    {
+      "id": "e5086b90-ac86-4d05-8265-1d5ad9719038",
+      "type": "suggestions_completed",
+      "step": "suggestion_generation",
+      "message": "已生成 1 条优化建议",
+      "createdAt": "2026-04-08T09:36:57.609Z",
+      "meta": {}
+    },
+    {
+      "id": "1a9735bf-5d1c-4147-bd99-a4605e8e517c",
+      "type": "optimized_resume_completed",
+      "step": "resume_generation",
+      "message": "优化版简历生成完成",
+      "createdAt": "2026-04-08T09:38:25.595Z",
+      "meta": {}
+    },
+    {
+      "id": "239f9bc2-5c55-4701-aa37-b8873f4f75db",
+      "type": "resume_score_completed",
+      "step": "resume_rescoring",
+      "message": "优化后简历评分完成",
+      "createdAt": "2026-04-08T09:38:36.101Z",
+      "meta": {}
+    }
+  ],
+  "createdAt": "2026-04-08T09:36:25.999Z",
+  "updatedAt": "2026-04-08T09:38:36.104Z",
+  "originalScore": {
+    "id": "2ac8e2ec-755e-46d7-bb41-fe2183a633f2",
+    "sessionId": "ac904494-d124-47f6-83f9-11d25defee72",
+    "resumeVersionId": "6e22c3ea-a6c5-4924-841e-6497c0b808fa",
+    "scoreType": "original",
+    "status": "completed",
+    "totalScore": 47,
+    "rubric": {
+      "jobMatch": {
+        "weight": 40,
+        "score": 18,
+        "breakdown": {
+          "jdAlignment": 7,
+          "keywordCoverage": 5,
+          "experienceRelevance": 5
+        },
+        "reasons": [
+          "与岗位直接相关的关键词仍可继续补强。"
+        ]
+      },
+      "contentQuality": {
+        "weight": 30,
+        "score": 14,
+        "breakdown": {
+          "clarity": 4,
+          "structure": 4,
+          "completeness": 4,
+          "professionalism": 4
+        },
+        "reasons": [
+          "部分表述仍偏概述，建议进一步压缩无效叙述。"
+        ]
+      },
+      "persuasiveness": {
+        "weight": 30,
+        "score": 15,
+        "breakdown": {
+          "quantifiedImpact": 5,
+          "projectStrength": 4,
+          "differentiation": 3
+        },
+        "reasons": [
+          "缺少清晰的量化结果支撑。"
+        ]
+      }
+    },
+    "deductionReasons": [
+      "关键词覆盖仍不稳定",
+      "部分经历没有明确写出动作和结果"
+    ],
+    "techBusinessFit": {
+      "canApply": true,
+      "conclusion": "可以申请，但仍建议先做岗位定制。",
+      "priorities": [
+        "补足岗位关键词",
+        "强化成果量化",
+        "收紧段落表达"
+      ]
+    },
+    "improvements": {
+      "improvedDimensions": [],
+      "remainingIssues": [
+        "仍需继续压缩泛化表达"
+      ]
+    },
+    "rawText": "# 【徐怡然】个人简历.pdf\n\n当前文件类型暂未解析出正文，请优先选择 Markdown / TXT / DOCX 简历，或使用“填写简历简化表单”以获得更准确的评分与改写。",
+    "createdAt": "2026-04-08T09:36:36.554Z",
+    "updatedAt": "2026-04-08T09:36:47.072Z"
+  },
+  "optimizedResumeVersion": {
+    "id": "506fb710-6019-4b7c-90ed-35eddd41ad3b",
+    "sessionId": "ac904494-d124-47f6-83f9-11d25defee72",
+    "sourceMaterialId": "",
+    "parentVersionId": "6e22c3ea-a6c5-4924-841e-6497c0b808fa",
+    "kind": "optimized",
+    "title": "【徐怡然】个人简历.pdf - 优化版",
+    "content": "# 【徐怡然】个人简历.pdf\n\n当前文件类型暂未解析出正文，请优先选择 Markdown / TXT / DOCX 简历，或使用“填写简历简化表单”以获得更准确的评分与改写。\n- 强化版本：补充与目标岗位直接相关的动作、方法和结果，突出岗位重点。",
+    "format": "markdown",
+    "acceptedSuggestionIds": [
+      "b898dcbf-eace-4b1d-8f4f-ed6c4fbc1f5c"
+    ],
+    "rejectedSuggestionIds": [],
+    "editedSuggestionIds": [],
+    "changeSummary": [
+      "【徐怡然】个人简历.pdf: 提升岗位匹配度与说服力。"
+    ],
+    "createdAt": "2026-04-08T09:38:25.594Z",
+    "updatedAt": "2026-04-08T09:38:25.594Z",
+    "diff": [
+      {
+        "type": "same",
+        "before": "# 【徐怡然】个人简历.pdf",
+        "after": "# 【徐怡然】个人简历.pdf"
+      },
+      {
+        "type": "same",
+        "before": "",
+        "after": ""
+      },
+      {
+        "type": "same",
+        "before": "当前文件类型暂未解析出正文，请优先选择 Markdown / TXT / DOCX 简历，或使用“填写简历简化表单”以获得更准确的评分与改写。",
+        "after": "当前文件类型暂未解析出正文，请优先选择 Markdown / TXT / DOCX 简历，或使用“填写简历简化表单”以获得更准确的评分与改写。"
+      },
+      {
+        "type": "added",
+        "before": "",
+        "after": "- 强化版本：补充与目标岗位直接相关的动作、方法和结果，突出岗位重点。"
+      }
+    ]
+  },
+  "optimizedScore": {
+    "id": "64bf761b-bc53-4c36-bac2-ba962a65f552",
+    "sessionId": "ac904494-d124-47f6-83f9-11d25defee72",
+    "resumeVersionId": "506fb710-6019-4b7c-90ed-35eddd41ad3b",
+    "scoreType": "optimized",
+    "status": "completed",
+    "totalScore": 47,
+    "rubric": {
+      "jobMatch": {
+        "weight": 40,
+        "score": 18,
+        "breakdown": {
+          "jdAlignment": 7,
+          "keywordCoverage": 5,
+          "experienceRelevance": 5
+        },
+        "reasons": [
+          "与岗位直接相关的关键词仍可继续补强。"
+        ]
+      },
+      "contentQuality": {
+        "weight": 30,
+        "score": 14,
+        "breakdown": {
+          "clarity": 4,
+          "structure": 4,
+          "completeness": 4,
+          "professionalism": 4
+        },
+        "reasons": [
+          "部分表述仍偏概述，建议进一步压缩无效叙述。"
+        ]
+      },
+      "persuasiveness": {
+        "weight": 30,
+        "score": 15,
+        "breakdown": {
+          "quantifiedImpact": 5,
+          "projectStrength": 4,
+          "differentiation": 3
+        },
+        "reasons": [
+          "缺少清晰的量化结果支撑。"
+        ]
+      }
+    },
+    "deductionReasons": [
+      "关键词覆盖仍不稳定",
+      "部分经历没有明确写出动作和结果"
+    ],
+    "techBusinessFit": {
+      "canApply": true,
+      "conclusion": "优化后可投递信心更强。",
+      "priorities": [
+        "补足岗位关键词",
+        "强化成果量化",
+        "收紧段落表达"
+      ]
+    },
+    "improvements": {
+      "improvedDimensions": [
+        "岗位匹配",
+        "说服力"
+      ],
+      "remainingIssues": [
+        "仍需继续压缩泛化表达"
+      ]
+    },
+    "rawText": "# 【徐怡然】个人简历.pdf\n\n当前文件类型暂未解析出正文，请优先选择 Markdown / TXT / DOCX 简历，或使用“填写简历简化表单”以获得更准确的评分与改写。\n- 强化版本：补充与目标岗位直接相关的动作、方法和结果，突出岗位重点。",
+    "createdAt": "2026-04-08T09:38:25.620Z",
+    "updatedAt": "2026-04-08T09:38:36.100Z"
+  }
+}

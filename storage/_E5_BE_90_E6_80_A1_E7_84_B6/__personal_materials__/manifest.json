@@ -1,0 +1,28 @@
+{
+  "materials": [
+    {
+      "id": "00a40c8d-600c-422e-a75d-a7c5fb382685",
+      "name": "教育",
+      "category": "教育经历",
+      "type": "text",
+      "content": "2020-2024：同济大学 交通工程\n2024-至今：上海交通大学 电子信息",
+      "fileName": "",
+      "filePath": "",
+      "mimeType": "text/plain",
+      "createdAt": "2026-04-08T12:05:14.385Z",
+      "updatedAt": "2026-04-08T12:05:49.928Z"
+    },
+    {
+      "id": "456061bc-0981-44b6-98cc-22b7690800e7",
+      "name": "项目-人因",
+      "category": "项目/科研经历",
+      "type": "text",
+      "content": "试飞院-《长航时飞行员疲劳监测》\n论文-已接收-Inferring Pilot Cognitive States Using a Multimodal Physiology-based Graph Fusion Model",
+      "fileName": "",
+      "filePath": "",
+      "mimeType": "text/plain",
+      "createdAt": "2026-04-08T08:50:00.319Z",
+      "updatedAt": "2026-04-08T12:05:54.072Z"
+    }
+  ]
+}
