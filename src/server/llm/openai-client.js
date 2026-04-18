@@ -1,5 +1,4 @@
 import { logger } from "../utils/logger.js";
-import { fetch as undiciFetch, ProxyAgent } from "undici";
 
 function createChatCompletionsUrl(baseUrl) {
   const normalizedBaseUrl = String(baseUrl || "https://api.openai.com/v1").replace(/\/+$/, "");
@@ -7,8 +6,6 @@ function createChatCompletionsUrl(baseUrl) {
 }
 
 export function createOpenAIClient({ apiKey, model, baseUrl }) {
-  const proxyUrl = process.env.OPENAI_PROXY_URL || process.env.HTTPS_PROXY || process.env.HTTP_PROXY || "";
-  const dispatcher = proxyUrl ? new ProxyAgent(proxyUrl) : undefined;
   const chatCompletionsUrl = createChatCompletionsUrl(baseUrl);
 
   async function chatJson({ system, user }) {
@@ -16,7 +13,7 @@ export function createOpenAIClient({ apiKey, model, baseUrl }) {
       throw new Error("未配置 OPENAI_API_KEY，无法调用大模型。");
     }
 
-    const response = await undiciFetch(chatCompletionsUrl, {
+    const response = await fetch(chatCompletionsUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -31,7 +28,6 @@ export function createOpenAIClient({ apiKey, model, baseUrl }) {
           { role: "user", content: user },
         ],
       }),
-      dispatcher,
     });
 
     if (!response.ok) {
@@ -54,7 +50,7 @@ export function createOpenAIClient({ apiKey, model, baseUrl }) {
       throw new Error("未配置 OPENAI_API_KEY，无法调用大模型。");
     }
 
-    const response = await undiciFetch(chatCompletionsUrl, {
+    const response = await fetch(chatCompletionsUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -68,7 +64,6 @@ export function createOpenAIClient({ apiKey, model, baseUrl }) {
           { role: "user", content: user },
         ],
       }),
-      dispatcher,
     });
 
     if (!response.ok) {
