@@ -4,6 +4,7 @@ import path from "node:path";
 import { createLineDiff } from "./resume-diff-service.js";
 import {
   buildJobAnalysisPrompt,
+  buildOptimizedResumePrompt,
   buildResumeRewritePrompt,
   buildResumeScorePrompt,
   buildSuggestionRegenerationPrompt,
@@ -140,6 +141,12 @@ function validateResumeScorePayload(parsed) {
   }
 }
 
+function validateOptimizedResumePayload(parsed) {
+  if (!parsed || typeof parsed !== "object") throw new Error("优化简历结果为空。");
+  if (!String(parsed.optimizedResume || "").trim()) throw new Error("优化简历缺少 optimizedResume。");
+  if (!Array.isArray(parsed.changeSummary) || !parsed.changeSummary.length) throw new Error("优化简历缺少 changeSummary。");
+}
+
 function validateSuggestionsPayload(parsed) {
   const suggestions = ensureArray(parsed?.suggestions);
   if (!suggestions.length) throw new Error("模型没有返回任何逐条建议。");
@@ -158,19 +165,27 @@ function hasMeaningfulDiff(before, after) {
   return String(before || "").trim() !== String(after || "").trim();
 }
 
-export function createOptimizationService({ storageRoot, sessionStore, llmClient }) {
+export function createOptimizationService({ storageRoot, sessionStore, llmClient, materialProvider }) {
   const activeControllers = new Map();
+  const runtimeMaterialProvider = materialProvider || {
+    async list(user, scopeId) {
+      return readManifest(storageRoot, user, scopeId);
+    },
+    async listWithContent(user, scopeId) {
+      const materials = await readManifest(storageRoot, user, scopeId);
+      return Promise.all(materials.map(async (item) => ({
+        ...item,
+        extractedContent: await extractMaterialContent(storageRoot, user, scopeId, item),
+      })));
+    },
+  };
 
   async function listMaterials(user, scopeId) {
-    return readManifest(storageRoot, user, scopeId);
+    return runtimeMaterialProvider.list(user, scopeId);
   }
 
   async function listMaterialsWithContent(user, scopeId) {
-    const materials = await listMaterials(user, scopeId);
-    return Promise.all(materials.map(async (item) => ({
-      ...item,
-      extractedContent: await extractMaterialContent(storageRoot, user, scopeId, item),
-    })));
+    return runtimeMaterialProvider.listWithContent(user, scopeId);
   }
 
   async function getResumeMaterial(user, resumeId) {
@@ -191,31 +206,48 @@ export function createOptimizationService({ storageRoot, sessionStore, llmClient
     };
   }
 
-  async function createOrLoadSession({ user, sessionId, jobId, selectedResumeId, userGoal = "", constraints = {} }) {
+  async function createOrLoadSession({
+    user,
+    sessionId,
+    jobId,
+    selectedResumeId,
+    resumeText = "",
+    resumeTitle = "",
+    userGoal = "",
+    constraints = {},
+  }) {
     if (sessionId) {
       return sessionStore.load(user, sessionId);
     }
 
     assertRequired(user, "缺少用户标识");
     assertRequired(jobId, "缺少岗位标识");
-    assertRequired(selectedResumeId, "缺少简历标识");
+    const inlineResumeText = String(resumeText || "").trim();
 
-    const { material, content } = await getResumeText(user, selectedResumeId);
+    let material = null;
+    let content = inlineResumeText;
+    if (!inlineResumeText) {
+      assertRequired(selectedResumeId, "缺少简历标识");
+      const resumeResult = await getResumeText(user, selectedResumeId);
+      material = resumeResult.material;
+      content = resumeResult.content;
+    }
+
     const session = createOptimizationSession({
       id: randomUUID(),
       user,
       jobId,
-      selectedResumeId,
+      selectedResumeId: selectedResumeId || "inline-resume",
       userGoal,
       constraints,
       originalResumeVersion: createResumeVersion({
         id: randomUUID(),
         sessionId: "",
-        sourceMaterialId: material.id,
+        sourceMaterialId: material?.id || "",
         kind: "original",
-        title: material.name || material.fileName || "原简历",
+        title: resumeTitle || material?.name || material?.fileName || "当前简历",
         content,
-        format: material.type === "text" ? "markdown" : "text",
+        format: material?.type === "text" ? "markdown" : "text",
       }),
     });
     session.originalResumeVersion.sessionId = session.id;
@@ -565,6 +597,57 @@ export function createOptimizationService({ storageRoot, sessionStore, llmClient
 
   async function generateOptimizedResume({ session, writeEvent }) {
     return withStep(session, { step: OPTIMIZATION_STEPS.RESUME_GENERATION, stepStatusKey: "optimizedResume" }, async () => {
+      let parsed;
+      try {
+        parsed = await llmClient.chatJson({
+          system: "你是简历优化器，请严格返回结构化 JSON。",
+          user: buildOptimizedResumePrompt({
+            jobAnalysis: session.jobAnalysis,
+            resumeText: session.originalResumeVersion.content,
+          }),
+        });
+        validateOptimizedResumePayload(parsed);
+      } catch (error) {
+        throw new Error(`新简历生成失败：${error.message}`);
+      }
+
+      const content = String(parsed.optimizedResume || "").trim();
+      if (!hasMeaningfulDiff(session.originalResumeVersion.content, content)) {
+        throw new Error("模型返回的新简历与原简历没有实质差异。");
+      }
+
+      const optimized = createResumeVersion({
+        id: randomUUID(),
+        sessionId: session.id,
+        parentVersionId: session.originalResumeVersion.id,
+        kind: "optimized",
+        title: `${session.originalResumeVersion.title} - 优化版`,
+        content,
+        format: "markdown",
+      });
+      optimized.changeSummary = ensureArray(parsed.changeSummary).map((item) => String(item || "").trim()).filter(Boolean);
+      optimized.diff = createLineDiff(session.originalResumeVersion.content, content);
+
+      session.optimizedResumeVersion = optimized;
+      session.currentStep = OPTIMIZATION_STEPS.RESUME_GENERATION;
+      session.status = SESSION_STATUS.COMPLETED;
+      await sessionStore.save(session);
+      writeEvent?.(STREAM_EVENT.RESUME_DELTA, { sessionId: session.id, field: "content", value: content });
+      writeEvent?.(STREAM_EVENT.RESUME_COMPLETED, { sessionId: session.id, optimizedResumeVersion: optimized });
+
+      logSessionEvent(session, {
+        id: randomUUID(),
+        type: "optimized_resume_completed",
+        step: OPTIMIZATION_STEPS.RESUME_GENERATION,
+        message: "优化版简历生成完成",
+      });
+      await sessionStore.save(session);
+      return optimized;
+    });
+  }
+
+  async function generateOptimizedResumeFromSuggestions({ session, writeEvent }) {
+    return withStep(session, { step: OPTIMIZATION_STEPS.RESUME_GENERATION, stepStatusKey: "optimizedResume" }, async () => {
       const accepted = session.suggestions.filter((item) => [SUGGESTION_STATUS.ACCEPTED, SUGGESTION_STATUS.EDITED].includes(item.status));
       let content = session.originalResumeVersion.content;
 
@@ -634,6 +717,7 @@ export function createOptimizationService({ storageRoot, sessionStore, llmClient
     generateSuggestions,
     applySuggestionActions,
     generateOptimizedResume,
+    generateOptimizedResumeFromSuggestions,
     pauseSession,
     getResumeText,
   };

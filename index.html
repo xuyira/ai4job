@@ -332,10 +332,9 @@
                 </div>
                 <div class="mt-4 rounded-[1.5rem] border border-line/80 bg-white p-5">
                   <p class="text-sm font-semibold text-slate-500">个人信息</p>
-                  <p class="mt-2 text-sm leading-7 text-slate-600">必填：上传简历；选填：上传个人相关资料</p>
+                  <p class="mt-2 text-sm leading-7 text-slate-600">必填：上传或选择一份尽可能完整的 Markdown 简历</p>
                   <button id="resume-open-resume-library" class="btn mt-4 w-full border border-line bg-white text-slate-700">上传 / 选择简历</button>
                   <div id="resume-selected-card" class="mt-4 rounded-[1rem] bg-shell px-4 py-4 text-sm leading-7 text-slate-700"></div>
-                  <button id="resume-open-personal-materials" class="btn mt-4 w-full border border-line bg-white text-slate-700">上传个人相关资料</button>
                 </div>
                 <button id="resume-start-button" class="btn mt-4 w-full bg-accent text-white">开始简历优化</button>
                 <button class="btn mt-4 w-full border border-line bg-white text-slate-700" data-back-home>返回首页岗位管理</button>
@@ -366,10 +365,14 @@
                         </div>
                         <div class="rounded-[1.2rem] bg-shell/80 p-4">
                           <div class="flex items-center justify-between gap-3">
-                            <p class="text-sm font-semibold text-slate-500">当前简历</p>
-                            <button id="resume-save-optimized" class="btn border border-line bg-white text-slate-700">保存优化版</button>
+                            <p class="text-sm font-semibold text-slate-500">优化后简历</p>
+                            <div class="flex flex-wrap gap-2">
+                              <button id="resume-regenerate" class="btn border border-line bg-white text-slate-700">重新生成</button>
+                              <button id="resume-save-optimized" class="btn border border-line bg-white text-slate-700">保存到简历库</button>
+                              <button id="resume-download-optimized" class="btn border border-line bg-white text-slate-700">下载 Markdown</button>
+                            </div>
                           </div>
-                          <pre id="resume-current-preview" class="mt-3 max-h-[560px] overflow-auto whitespace-pre-wrap break-words text-sm leading-7 text-slate-700"></pre>
+                          <textarea id="resume-current-preview" class="textarea mt-3 min-h-[560px] text-sm leading-7 text-slate-700"></textarea>
                         </div>
                       </div>
                       <div id="resume-diff-panel" class="mt-4 hidden rounded-[1.2rem] border border-line/80 bg-white p-4"></div>
@@ -379,7 +382,7 @@
                       <div class="flex flex-wrap items-center justify-between gap-3">
                         <div>
                           <p class="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">Optimization Workflow</p>
-                          <h3 class="mt-2 text-2xl font-bold text-ink">岗位分析与建议工作台</h3>
+                          <h3 class="mt-2 text-2xl font-bold text-ink">岗位分析与简历优化工作台</h3>
                         </div>
                       </div>
                       <div id="resume-workflow-flow" class="mt-5"></div>
@@ -756,6 +759,8 @@
           workflowState: "idle",
           currentStep: "job_analysis",
           sessionData: null,
+          optimizedDraft: "",
+          optimizedDraftVersionId: "",
           diffMode: false,
           pendingActions: {},
         };
@@ -764,6 +769,7 @@
       function defaultUserData(jobs = []) {
         return {
           jobs,
+          resumeLibrary: [],
           resumeOptimization: defaultResumeOptimizationState(),
         };
       }
@@ -789,9 +795,7 @@
 
       let state = loadState();
       const JOB_MATERIAL_CATEGORIES = ["面经", "行业动态", "其他"];
-      const PERSONAL_MATERIAL_CATEGORIES = ["教育经历", "实习/工作经历", "项目/科研经历", "志愿/社团经历", "技能/证书", "成果/荣誉", "简历版本", "其他"];
       const RESUME_LIBRARY_SCOPE = "__resume_library__";
-      const PERSONAL_MATERIAL_SCOPE = "__personal_materials__";
       const materialsState = {
         jobId: "",
         scopeType: "job",
@@ -851,6 +855,9 @@
         if (!Array.isArray(state.users[state.currentUser].jobs)) {
           state.users[state.currentUser].jobs = [];
         }
+        if (!Array.isArray(state.users[state.currentUser].resumeLibrary)) {
+          state.users[state.currentUser].resumeLibrary = [];
+        }
         if (!state.users[state.currentUser].resumeOptimization) {
           state.users[state.currentUser].resumeOptimization = defaultResumeOptimizationState();
         }
@@ -874,6 +881,51 @@
       function currentResumeOptimization() {
         ensureCurrentUser();
         return state.users[state.currentUser].resumeOptimization;
+      }
+
+      function currentResumeLibrary() {
+        ensureCurrentUser();
+        return state.users[state.currentUser].resumeLibrary;
+      }
+
+      function setResumeLibrary(items) {
+        state.users[state.currentUser].resumeLibrary = items;
+      }
+
+      function upsertResumeLibraryItem(item) {
+        const current = currentResumeLibrary();
+        const existingIndex = current.findIndex((entry) => entry.id === item.id);
+        if (existingIndex >= 0) {
+          current[existingIndex] = {
+            ...current[existingIndex],
+            ...item,
+            updatedAt: new Date().toISOString(),
+          };
+          return current[existingIndex];
+        }
+        const nextItem = buildResumeLibraryItem(item);
+        current.unshift(nextItem);
+        return nextItem;
+      }
+
+      function buildResumeLibraryItem({ id = "", name = "", content = "", category = "简历版本", fileName = "", mimeType = "text/markdown" }) {
+        const now = new Date().toISOString();
+        return {
+          id: id || crypto.randomUUID(),
+          name: name || fileName || "未命名简历",
+          category,
+          type: "text",
+          content,
+          fileName: fileName || "",
+          mimeType,
+          createdAt: now,
+          updatedAt: now,
+        };
+      }
+
+      function selectedResumeMaterial() {
+        const resumeState = currentResumeOptimization();
+        return currentResumeLibrary().find((item) => item.id === resumeState.selectedResumeId) || null;
       }
 
       function formatDateTime(value) {
@@ -954,6 +1006,10 @@
             }
           }
         }
+      }
+
+      function showDeferredFeatureNotice(message = "当前能力为 EdgeOne Pages 最小版暂未实现，等待后续开发。") {
+        alert(message);
       }
 
       function fileToBase64(file) {
@@ -1666,6 +1722,15 @@
 
       async function refreshMaterials(jobId = materialsState.jobId) {
         if (!jobId) return;
+        if (jobId === RESUME_LIBRARY_SCOPE) {
+          materialsState.items = currentResumeLibrary().filter((item) => normalizeMaterialCategory(item.category) === "简历版本");
+          if (!materialsState.items.find((item) => item.id === materialsState.selectedId)) {
+            materialsState.selectedId = "";
+            if (materialsState.view === "detail") materialsState.view = "empty";
+          }
+          renderMaterialsModal();
+          return;
+        }
         const payload = await fetchJson(`/api/job-materials?${new URLSearchParams({ user: state.currentUser, jobId }).toString()}`);
         materialsState.items = payload.materials || [];
         if (!materialsState.items.find((item) => item.id === materialsState.selectedId)) {
@@ -1676,54 +1741,15 @@
       }
 
       async function openMaterialsModal(jobId) {
-        const job = currentJobs().find((item) => item.id === jobId);
-        if (!job) return;
-        resetMaterialScope({
-          scopeId: jobId,
-          scopeType: "job",
-          title: `${displayValue(job.company)} · ${displayValue(job.position)}`,
-          categories: JOB_MATERIAL_CATEGORIES,
-          modalCaption: "岗位相关资料详情",
-          createTextLabel: "新增文本资料",
-          uploadLabel: "上传新资料",
-          uploadHelp: "支持 pdf、doc、docx、txt、md、png、jpg、jpeg、gif、webp、bmp、svg、ppt、pptx，单文件不超过 20MB。",
-          uploadAccept: ".pdf,.doc,.docx,.txt,.md,.png,.jpg,.jpeg,.gif,.webp,.bmp,.svg,.ppt,.pptx",
-        });
-        document.getElementById("materials-modal-title").textContent = materialsState.jobTitle;
-        document.getElementById("materials-modal").classList.remove("hidden");
-        document.getElementById("materials-modal").classList.add("flex");
-        try {
-          await refreshMaterials(jobId);
-        } catch (error) {
-          alert(`读取岗位相关资料失败：${error.message}`);
-          closeMaterialsModal();
-        }
-      }
-
-      async function openPersonalMaterialsModal() {
-        resetMaterialScope({
-          scopeId: PERSONAL_MATERIAL_SCOPE,
-          scopeType: "personal",
-          title: `${state.currentUser} · 个人相关资料`,
-          categories: PERSONAL_MATERIAL_CATEGORIES,
-          modalCaption: "个人相关资料详情",
-          createTextLabel: "新增文本资料",
-          uploadLabel: "上传个人资料",
-          uploadHelp: "支持 pdf、doc、docx、txt、md、png、jpg、jpeg、gif、webp、bmp、svg、ppt、pptx，单文件不超过 20MB。",
-          uploadAccept: ".pdf,.doc,.docx,.txt,.md,.png,.jpg,.jpeg,.gif,.webp,.bmp,.svg,.ppt,.pptx",
-        });
-        document.getElementById("materials-modal-title").textContent = materialsState.jobTitle;
-        document.getElementById("materials-modal").classList.remove("hidden");
-        document.getElementById("materials-modal").classList.add("flex");
-        try {
-          await refreshMaterials(PERSONAL_MATERIAL_SCOPE);
-        } catch (error) {
-          alert(`读取个人相关资料失败：${error.message}`);
-          closeMaterialsModal();
-        }
+        void jobId;
+        showDeferredFeatureNotice("岗位相关资料、文件上传和预览能力在 EdgeOne Pages 最小版中暂未实现，等待后续开发。");
       }
 
       async function openResumeLibraryModal(initialView = "empty") {
+        if (initialView === "upload") {
+          showDeferredFeatureNotice("简历文件上传能力在 EdgeOne Pages 最小版中暂未实现。当前可先使用“选择已有简历”或“还没有简历，先填写基础信息”。");
+          return;
+        }
         const resumeState = currentResumeOptimization();
         resetMaterialScope({
           scopeId: RESUME_LIBRARY_SCOPE,
@@ -2087,31 +2113,18 @@
           resumeState.sessionId = "";
           resumeState.sessionData = null;
           resumeState.workflowState = "idle";
+          resumeState.optimizedDraft = "";
+          resumeState.optimizedDraftVersionId = "";
         }
       }
 
       function workflowLabel(step) {
         const labels = {
           job_analysis: "岗位分析",
-          resume_scoring: "原简历评分",
-          suggestion_generation: "生成建议",
-          feedback_review: "用户确认",
-          resume_generation: "生成新简历",
-          resume_rescoring: "新简历复评",
+          resume_generation: "生成优化稿",
+          completed: "编辑并保存",
         };
         return labels[step] || step;
-      }
-
-      function suggestionStatusLabel(status) {
-        const labels = {
-          pending: "待处理",
-          accepted: "已接受",
-          rejected: "已拒绝",
-          edited: "已编辑",
-          regenerating: "重写中",
-          applied: "已应用",
-        };
-        return labels[status] || status;
       }
 
       function workflowStateDescription(resumeState) {
@@ -2119,12 +2132,7 @@
           idle: "待准备",
           ready: "可启动",
           analyzing_job: "岗位分析中",
-          scoring_original: "原简历评分中",
-          generating_suggestions: "建议生成中",
-          awaiting_feedback: "等待逐条确认",
-          applying_feedback: "处理反馈中",
-          generating_resume: "生成新简历中",
-          rescoring_resume: "新简历复评分中",
+          generating_resume: "生成优化稿中",
           completed: "已完成",
           paused: "已暂停",
           error: "异常",
@@ -2137,25 +2145,9 @@
         if (session.status === "paused") return "paused";
         if (session.status === "failed") return "error";
         if (session.status === "completed") return "completed";
-        if (session.status === "waiting_feedback") return "awaiting_feedback";
         if (session.currentStep === "job_analysis") return "analyzing_job";
-        if (session.currentStep === "resume_scoring") return "scoring_original";
-        if (session.currentStep === "suggestion_generation") return "generating_suggestions";
-        if (session.currentStep === "feedback_review") return "awaiting_feedback";
         if (session.currentStep === "resume_generation") return "generating_resume";
-        if (session.currentStep === "resume_rescoring") return "rescoring_resume";
         return "ready";
-      }
-
-      function computeNextWorkflowAction(session) {
-        if (!session) return "start";
-        if (!session.jobAnalysis || session.stepStatus?.jobAnalysis !== "completed") return "analyze";
-        if (!session.originalScore || session.stepStatus?.originalScore !== "completed") return "score_original";
-        if (!Array.isArray(session.suggestions) || !session.suggestions.length || session.stepStatus?.suggestions !== "completed") return "generate_suggestions";
-        const acceptedCount = (session.suggestions || []).filter((item) => item.status === "accepted" || item.status === "edited").length;
-        if (!session.optimizedResumeVersion) return acceptedCount ? "generate_resume" : "await_feedback";
-        if (!session.optimizedScore || session.stepStatus?.rescoring !== "completed") return "rescore";
-        return "completed";
       }
 
       function normalizeKeyQuestionItem(item) {
@@ -2172,20 +2164,31 @@
         };
       }
 
+      function getOptimizedDraftValue(resumeState) {
+        return String(
+          resumeState.optimizedDraft
+          || resumeState.sessionData?.optimizedResumeVersion?.content
+          || ""
+        );
+      }
+
+      function isResumeOptimizationFinalized(session) {
+        return Boolean(session?.optimizedResumeVersion?.content);
+      }
+
       function renderResumeStepper(resumeState) {
-        const steps = ["job_analysis", "resume_scoring", "suggestion_generation", "feedback_review", "resume_generation", "resume_rescoring"];
+        const steps = ["job_analysis", "resume_generation", "completed"];
         const session = resumeState.sessionData;
-        const currentStep = session?.currentStep || resumeState.currentStep || "job_analysis";
+        const currentStep = isResumeOptimizationFinalized(session)
+          ? "completed"
+          : (session?.currentStep || resumeState.currentStep || "job_analysis");
         return steps.map((step) => {
           const isCurrent = step === currentStep;
           const isDone = (() => {
             if (!session) return false;
             if (step === "job_analysis") return session.stepStatus?.jobAnalysis === "completed";
-            if (step === "resume_scoring") return session.stepStatus?.originalScore === "completed";
-            if (step === "suggestion_generation") return session.stepStatus?.suggestions === "completed";
-            if (step === "feedback_review") return session.stepStatus?.feedback === "completed" || session.status === "waiting_feedback";
             if (step === "resume_generation") return session.stepStatus?.optimizedResume === "completed";
-            if (step === "resume_rescoring") return session.stepStatus?.rescoring === "completed";
+            if (step === "completed") return isResumeOptimizationFinalized(session);
             return false;
           })();
           const stateClass = isCurrent
@@ -2205,64 +2208,15 @@
         `);
       }
 
-      function normalizeSuggestionKind(item) {
-        return item?.suggestionKind === "future_advice" ? "future_advice" : "resume_edit";
-      }
-
-      function isSuggestionFinalized(item) {
-        return ["accepted", "rejected", "edited", "applied"].includes(String(item?.status || ""));
-      }
-
-      function suggestionCardState(item) {
-        const kind = normalizeSuggestionKind(item);
-        if (kind === "future_advice") {
-          return {
-            articleClass: "border-amber-200 bg-amber-50/70",
-            badgeClass: "bg-amber-100 text-amber-700",
-            helperText: "未来建议，无需操作",
-          };
-        }
-        if (String(item?.status || "") === "rejected") {
-          return {
-            articleClass: "border-slate-200 bg-slate-100/80",
-            badgeClass: "bg-slate-200 text-slate-700",
-            helperText: "已处理，不可再次操作",
-          };
-        }
-        if (["accepted", "edited", "applied"].includes(String(item?.status || ""))) {
-          return {
-            articleClass: "border-emerald-200 bg-emerald-50/70",
-            badgeClass: "bg-emerald-100 text-emerald-700",
-            helperText: "已处理，不可再次操作",
-          };
-        }
-        if (String(item?.status || "") === "regenerating") {
-          return {
-            articleClass: "border-amber-200 bg-amber-50/60",
-            badgeClass: "bg-amber-100 text-amber-700",
-            helperText: "建议重写中",
-          };
-        }
-        return {
-          articleClass: "border-line/80 bg-white",
-          badgeClass: "bg-white text-slate-600 border border-line",
-          helperText: "待处理",
-        };
-      }
-
-      function disabledSuggestionButton(label) {
-        return `<button class="btn border border-line bg-slate-100 text-slate-400 opacity-70" disabled>${escapeHtml(label)}</button>`;
-      }
-
       function renderResumeDiff(diff) {
         if (!Array.isArray(diff) || !diff.length) {
           return `<p class="text-sm text-slate-500">当前没有可展示的差异。</p>`;
         }
         return diff.map((line) => {
           const cls = line.type === "added"
-            ? "bg-emerald-50 text-emerald-800"
+            ? "bg-rose-50 text-rose-700"
             : line.type === "removed"
-              ? "bg-rose-50 text-rose-700"
+              ? "bg-slate-100 text-slate-600"
               : "bg-white text-slate-500";
           const marker = line.type === "added" ? "+" : line.type === "removed" ? "-" : " ";
           const text = line.after || line.before || "";
@@ -2270,112 +2224,10 @@
         }).join("");
       }
 
-      function renderScoreCard(title, score) {
-        if (!score) {
-          return `
-            <div class="rounded-[1.2rem] border border-dashed border-line bg-shell/70 p-4">
-              <p class="font-semibold text-slate-700">${escapeHtml(title)}</p>
-              <p class="mt-2 text-sm text-slate-500">尚未生成评分。</p>
-            </div>
-          `;
-        }
-        return `
-          <div class="rounded-[1.2rem] border border-line/80 bg-shell/50 p-4">
-            <div class="flex items-center justify-between gap-4">
-              <p class="font-semibold text-slate-800">${escapeHtml(title)}</p>
-              <span class="rounded-full bg-accentSoft px-3 py-1 text-sm font-semibold text-accent">${escapeHtml(String(score.totalScore || 0))} / 100</span>
-            </div>
-            <div class="mt-3 grid gap-3 sm:grid-cols-3">
-              <div class="rounded-xl bg-white px-3 py-3">
-                <p class="text-xs text-slate-400">岗位匹配</p>
-                <p class="mt-1 font-semibold text-slate-800">${escapeHtml(String(score.rubric?.jobMatch?.score || 0))} / 40</p>
-              </div>
-              <div class="rounded-xl bg-white px-3 py-3">
-                <p class="text-xs text-slate-400">内容质量</p>
-                <p class="mt-1 font-semibold text-slate-800">${escapeHtml(String(score.rubric?.contentQuality?.score || 0))} / 30</p>
-              </div>
-              <div class="rounded-xl bg-white px-3 py-3">
-                <p class="text-xs text-slate-400">说服力</p>
-                <p class="mt-1 font-semibold text-slate-800">${escapeHtml(String(score.rubric?.persuasiveness?.score || 0))} / 30</p>
-              </div>
-            </div>
-            <p class="mt-3 text-sm text-slate-600">${escapeHtml(score.techBusinessFit?.conclusion || "")}</p>
-          </div>
-        `;
-      }
-
-      function renderSuggestionList(session) {
-        const suggestions = session?.suggestions || [];
-        if (!suggestions.length) {
-          return `<div class="rounded-[1.2rem] border border-dashed border-line bg-shell/70 p-4 text-sm text-slate-500">当前还没有建议。完成岗位分析和原简历评分后，在这里逐条生成建议。</div>`;
-        }
-        return suggestions.map((item) => {
-          const kind = normalizeSuggestionKind(item);
-          const locked = isSuggestionFinalized(item);
-          const state = suggestionCardState(item);
-          const materialRefs = Array.isArray(item.reason?.basedOnMaterials) ? item.reason.basedOnMaterials.filter(Boolean) : [];
-          const actionButtons = kind === "future_advice"
-            ? `<span class="rounded-full ${state.badgeClass} px-3 py-1 text-xs font-semibold">未来建议</span>`
-            : locked
-              ? [
-                  disabledSuggestionButton("接受"),
-                  disabledSuggestionButton("拒绝"),
-                  disabledSuggestionButton("编辑"),
-                  disabledSuggestionButton("重新生成"),
-                ].join("")
-              : `
-                  <button class="btn border border-line bg-white text-slate-700" data-suggestion-action="accept" data-suggestion-id="${item.id}">接受</button>
-                  <button class="btn border border-line bg-white text-slate-700" data-suggestion-action="reject" data-suggestion-id="${item.id}">拒绝</button>
-                  <button class="btn border border-line bg-white text-slate-700" data-suggestion-action="toggle-edit" data-suggestion-id="${item.id}">编辑</button>
-                  <button class="btn border border-line bg-white text-slate-700" data-suggestion-action="regenerate" data-suggestion-id="${item.id}">重新生成</button>
-                `;
-          return `
-          <article class="rounded-[1.2rem] border p-4 ${state.articleClass}" data-suggestion-item="${item.id}">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p class="font-semibold text-slate-800">${escapeHtml(item.targetSection || "未命名段落")}</p>
-                <p class="mt-1 text-xs text-slate-500">优先级：${escapeHtml(item.priority || "medium")} · 状态：${escapeHtml(suggestionStatusLabel(item.status))} · ${escapeHtml(state.helperText)}</p>
-              </div>
-              <div class="flex flex-wrap gap-2">
-                ${actionButtons}
-              </div>
-            </div>
-            <div class="mt-4 grid gap-4 lg:grid-cols-2">
-              <div class="rounded-xl bg-shell/70 p-3">
-                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">修改前</p>
-                <pre class="mt-2 whitespace-pre-wrap break-words text-sm leading-7 text-slate-700">${escapeHtml(item.originalText || "")}</pre>
-              </div>
-              <div class="rounded-xl bg-emerald-50 p-3">
-                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">建议版本</p>
-                <pre class="mt-2 whitespace-pre-wrap break-words text-sm leading-7 text-slate-700">${escapeHtml(item.suggestedText || "")}</pre>
-              </div>
-            </div>
-            <div class="mt-3 rounded-xl bg-shell/70 p-3 text-sm leading-7 text-slate-600">
-              <p><span class="font-semibold text-slate-800">修改原因：</span>${escapeHtml(item.reason?.explanation || "")}</p>
-              <p class="mt-1"><span class="font-semibold text-slate-800">预期收益：</span>${escapeHtml(item.expectedBenefit || "")}</p>
-              <p class="mt-1"><span class="font-semibold text-slate-800">风险提示：</span>${escapeHtml(item.riskNotice || "")}</p>
-              <p class="mt-1"><span class="font-semibold text-slate-800">个人资料引用：</span>${escapeHtml(materialRefs.join("、") || "未引用")}</p>
-            </div>
-            <div class="mt-3 hidden" data-suggestion-edit-box="${item.id}">
-              <textarea class="textarea min-h-[140px]" data-suggestion-edit-input="${item.id}" placeholder="你可以直接编辑建议后的版本，或者写入反馈后点击“重新生成”。">${escapeHtml(item.suggestedText || "")}</textarea>
-              <div class="mt-3 flex flex-wrap gap-2">
-                <button class="btn bg-accent text-white" data-suggestion-action="save-edit" data-suggestion-id="${item.id}">保存编辑</button>
-              </div>
-            </div>
-          </article>
-        `;
-        }).join("");
-      }
-
       function renderResumePanelContent(resumeState) {
         const session = resumeState.sessionData;
         const jobAnalysis = session?.jobAnalysis;
-        const originalScore = session?.originalScore;
-        const optimizedScore = session?.optimizedScore;
-        const referencedMaterials = [...new Set((session?.suggestions || [])
-          .flatMap((item) => Array.isArray(item.reason?.basedOnMaterials) ? item.reason.basedOnMaterials : [])
-          .map((item) => String(item || "").trim())
-          .filter(Boolean))];
+        const changeSummary = session?.optimizedResumeVersion?.changeSummary || [];
 
         document.getElementById("resume-panel-content").innerHTML = `
           <section class="rounded-[1.2rem] border border-line/80 bg-shell/50 p-4">
@@ -2411,32 +2263,20 @@
             ` : `<p class="mt-2 text-sm text-slate-500">尚未生成岗位分析。</p>`}
           </section>
 
-          <section class="grid gap-4 lg:grid-cols-2">
-            ${renderScoreCard("原简历评分", originalScore)}
-            ${renderScoreCard("新简历评分", optimizedScore)}
-          </section>
-
           <section class="rounded-[1.2rem] border border-line/80 bg-shell/50 p-4">
             <div class="flex items-center justify-between gap-3">
-              <p class="text-sm font-semibold text-slate-500">个人相关资料命中</p>
-              <span class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-600">${escapeHtml(String(referencedMaterials.length))} 项</span>
+              <p class="text-sm font-semibold text-slate-500">本次改动说明</p>
+              <span class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-600">${escapeHtml(workflowStateDescription(resumeState))}</span>
             </div>
-            <p class="mt-2 text-sm text-slate-600">
-              ${escapeHtml(referencedMaterials.length ? referencedMaterials.join("、") : "当前建议里还没有明确引用个人相关资料；补充更具体的项目/实习/成果材料后重新生成，会更容易命中。")}
-            </p>
-          </section>
-
-          <section>
-            <div class="flex items-center justify-between gap-3">
-              <p class="text-sm font-semibold text-slate-500">逐条优化建议</p>
-              <p class="text-xs text-slate-400">可写进简历的建议才需要操作，未来建议只做提醒</p>
-            </div>
-            <div class="mt-3 space-y-3">${renderSuggestionList(session)}</div>
-            <div class="mt-4 flex flex-wrap justify-end gap-3">
-              <button id="resume-confirm-final" class="btn ${isResumeOptimizationFinalized(session) ? "border border-line bg-slate-100 text-slate-400" : canConfirmOptimizedResume(session) ? "bg-accent text-white" : "border border-line bg-white text-slate-400"}" ${canConfirmOptimizedResume(session) && !isResumeOptimizationFinalized(session) ? "" : "disabled"}>
-                确认新简历并完成优化
-              </button>
-            </div>
+            ${changeSummary.length ? `
+              <div class="mt-3 space-y-2">
+                ${changeSummary.map((item, index) => `
+                  <div class="rounded-xl bg-white px-3 py-3 text-sm text-slate-700">
+                    <span class="font-semibold text-slate-800">${index + 1}.</span> ${escapeHtml(item)}
+                  </div>
+                `).join("")}
+              </div>
+            ` : `<p class="mt-2 text-sm text-slate-500">生成优化稿后，这里会显示本次主要改动。</p>`}
           </section>
         `;
       }
@@ -2468,7 +2308,7 @@
         const startButton = document.getElementById("resume-start-button");
         startButton.disabled = !canStart;
         startButton.classList.toggle("opacity-60", !canStart);
-        startButton.textContent = session ? "进入简历优化工作台" : (canStart ? "开始简历优化" : "开始简历优化（请先完成岗位与简历必填项）");
+        startButton.textContent = session ? "重新进入工作台" : (canStart ? "开始简历优化" : "开始简历优化（请先完成岗位与简历必填项）");
 
         const empty = document.getElementById("resume-workspace-empty");
         const workspace = document.getElementById("resume-workspace");
@@ -2477,13 +2317,21 @@
         if (!(resumeState.started && canStart)) return;
 
         const originalContent = session?.originalResumeVersion?.content || "工作流启动后会在这里展示原简历文本。";
-        const currentContent = session?.optimizedResumeVersion?.content || session?.originalResumeVersion?.content || "当前还没有生成优化版简历。";
+        const currentContent = getOptimizedDraftValue(resumeState);
         document.getElementById("resume-original-preview").textContent = originalContent;
-        document.getElementById("resume-current-preview").textContent = currentContent;
+        document.getElementById("resume-current-preview").value = currentContent;
+
         const saveButton = document.getElementById("resume-save-optimized");
-        const canSaveOptimized = Boolean(session?.optimizedResumeVersion?.content);
+        const regenerateButton = document.getElementById("resume-regenerate");
+        const downloadButton = document.getElementById("resume-download-optimized");
+        const canSaveOptimized = Boolean(currentContent.trim());
         saveButton.disabled = !canSaveOptimized;
         saveButton.classList.toggle("opacity-60", !canSaveOptimized);
+        downloadButton.disabled = !canSaveOptimized;
+        downloadButton.classList.toggle("opacity-60", !canSaveOptimized);
+        regenerateButton.disabled = !(session?.jobAnalysis && session.stepStatus?.jobAnalysis === "completed");
+        regenerateButton.classList.toggle("opacity-60", regenerateButton.disabled);
+
         document.getElementById("resume-diff-panel").classList.toggle("hidden", !resumeState.diffMode);
         document.getElementById("resume-diff-panel").innerHTML = renderResumeDiff(session?.optimizedResumeVersion?.diff || []);
 
@@ -2548,8 +2396,7 @@
       }
 
       async function loadResumeLibraryItems() {
-        const payload = await fetchJson(`/api/job-materials?${new URLSearchParams({ user: state.currentUser, jobId: RESUME_LIBRARY_SCOPE }).toString()}`);
-        resumeUiState.resumeItems = (payload.materials || []).filter((item) => normalizeMaterialCategory(item.category) === "简历版本");
+        resumeUiState.resumeItems = currentResumeLibrary().filter((item) => normalizeMaterialCategory(item.category) === "简历版本");
       }
 
       function generateResumeMarkdown(form) {
@@ -2603,6 +2450,15 @@
         resumeState.sessionId = session?.id || "";
         resumeState.currentStep = session?.currentStep || "job_analysis";
         resumeState.workflowState = inferWorkflowStateFromSession(session);
+        const optimizedVersionId = session?.optimizedResumeVersion?.id || "";
+        if (optimizedVersionId && optimizedVersionId !== resumeState.optimizedDraftVersionId) {
+          resumeState.optimizedDraft = session.optimizedResumeVersion.content || "";
+          resumeState.optimizedDraftVersionId = optimizedVersionId;
+        }
+        if (!optimizedVersionId) {
+          resumeState.optimizedDraft = "";
+          resumeState.optimizedDraftVersionId = "";
+        }
       }
 
       async function loadOptimizationSession(sessionId) {
@@ -2614,40 +2470,13 @@
         return payload.data || null;
       }
 
-      async function analyzeJobStep({ stream = true } = {}) {
+      async function analyzeJobStep() {
         const resumeState = currentResumeOptimization();
         const job = resumeSelectedJob();
+        const resumeMaterial = selectedResumeMaterial();
         const constraints = buildResumeWorkflowConstraints();
         resumeState.workflowState = "analyzing_job";
         renderAll();
-
-        if (stream) {
-          await fetchStream("/api/analyze-job", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              user: state.currentUser,
-              sessionId: resumeState.sessionId,
-              jobId: resumeState.jobId,
-              selectedResumeId: resumeState.selectedResumeId,
-              job,
-              userGoal: "",
-              constraints,
-              stream: true,
-            }),
-          }, {
-            session: (payload) => {
-              if (payload.sessionId) resumeState.sessionId = payload.sessionId;
-            },
-            job_analysis_completed: (payload) => {
-              if (!resumeState.sessionData) resumeState.sessionData = {};
-              if (!resumeState.sessionData.id && payload.sessionId) resumeState.sessionId = payload.sessionId;
-            },
-            done: () => {},
-          });
-          await loadOptimizationSession(resumeState.sessionId);
-          return;
-        }
 
         const payload = await fetchJson("/api/analyze-job", {
           method: "POST",
@@ -2657,189 +2486,77 @@
             sessionId: resumeState.sessionId,
             jobId: resumeState.jobId,
             selectedResumeId: resumeState.selectedResumeId,
+            resumeTitle: resumeMaterial?.name || resumeMaterial?.fileName || "当前简历",
+            resumeText: resumeMaterial?.content || "",
             job,
             userGoal: "",
             constraints,
           }),
         });
         resumeState.sessionId = payload.data.sessionId;
-        await loadOptimizationSession(resumeState.sessionId);
+        updateResumeSession(payload.data.session || null);
+        renderAll();
       }
 
-      async function scoreResumeStep(scoreType = "original") {
+      async function generateOptimizedResumeStep() {
         const resumeState = currentResumeOptimization();
-        resumeState.workflowState = scoreType === "optimized" ? "rescoring_resume" : "scoring_original";
+        resumeState.workflowState = "generating_resume";
         renderAll();
-        await fetchStream(scoreType === "optimized" ? "/api/rescore-resume" : "/api/score-resume", {
+        const payload = await fetchJson("/api/generate-optimized-resume", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             user: state.currentUser,
             sessionId: resumeState.sessionId,
-            scoreType,
-            stream: true,
           }),
         });
-        await loadOptimizationSession(resumeState.sessionId);
-      }
-
-      async function generateSuggestionsStep() {
-        const resumeState = currentResumeOptimization();
-        resumeState.workflowState = "generating_suggestions";
+        updateResumeSession(payload.data.session || null);
         renderAll();
-        await fetchStream("/api/generate-suggestions", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            user: state.currentUser,
-            sessionId: resumeState.sessionId,
-            userGoal: "",
-            constraints: buildResumeWorkflowConstraints(),
-            stream: true,
-          }),
-        });
-        await loadOptimizationSession(resumeState.sessionId);
-      }
-
-      async function applySuggestionActions(actions, generateResume = false) {
-        const resumeState = currentResumeOptimization();
-        resumeState.workflowState = generateResume ? "generating_resume" : "applying_feedback";
-        renderAll();
-        if (generateResume) {
-          await fetchStream("/api/apply-suggestions", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              user: state.currentUser,
-              sessionId: resumeState.sessionId,
-              actions,
-              generateResume: true,
-              stream: true,
-            }),
-          });
-        } else {
-          await fetchJson("/api/apply-suggestions", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              user: state.currentUser,
-              sessionId: resumeState.sessionId,
-              actions,
-              generateResume: false,
-            }),
-          });
-        }
-        await loadOptimizationSession(resumeState.sessionId);
-      }
-
-      async function runNextResumeWorkflowStep() {
-        const resumeState = currentResumeOptimization();
-        const nextAction = computeNextWorkflowAction(resumeState.sessionData);
-        if (nextAction === "start" || nextAction === "analyze") {
-          await analyzeJobStep({ stream: true });
-          return;
-        }
-        if (nextAction === "score_original") {
-          await scoreResumeStep("original");
-          return;
-        }
-        if (nextAction === "generate_suggestions") {
-          await generateSuggestionsStep();
-          return;
-        }
-        if (nextAction === "generate_resume") {
-          await applySuggestionActions([], true);
-          return;
-        }
-        if (nextAction === "rescore") {
-          await scoreResumeStep("optimized");
-          return;
-        }
-        if (nextAction === "await_feedback") {
-          alert("请先对建议逐条接受、拒绝或编辑，再生成新简历。");
-          return;
-        }
-        alert("当前工作流已完成。");
-      }
-
-      async function generateFinalResumeAndRescore() {
-        const resumeState = currentResumeOptimization();
-        const accepted = (resumeState.sessionData?.suggestions || []).filter((item) => item.status === "accepted" || item.status === "edited");
-        if (!accepted.length) {
-          alert("请至少接受或编辑一条建议后再生成新简历。");
-          return;
-        }
-        await applySuggestionActions([], true);
-        await scoreResumeStep("optimized");
       }
 
       async function saveOptimizedResumeVersion() {
-        const session = currentResumeOptimization().sessionData;
-        const content = session?.optimizedResumeVersion?.content || "";
+        const resumeState = currentResumeOptimization();
+        const session = resumeState.sessionData;
+        const content = getOptimizedDraftValue(resumeState);
         if (!content.trim()) {
           alert("当前还没有可保存的优化版简历。");
           return;
         }
         const sourceTitle = session?.optimizedResumeVersion?.title || session?.originalResumeVersion?.title || "优化版简历";
         const name = `${sourceTitle} ${new Date().toISOString().slice(0, 10)}`;
-        await fetchJson("/api/job-materials/text", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            user: state.currentUser,
-            jobId: RESUME_LIBRARY_SCOPE,
-            id: "",
-            name,
-            category: "简历版本",
-            content,
-          }),
+        const saved = upsertResumeLibraryItem({
+          name,
+          category: "简历版本",
+          content,
         });
         await loadResumeLibraryItems();
+        const target = resumeUiState.resumeItems.find((item) => item.id === saved.id) || saved || null;
+        if (target) setResumeSelectedResume(target);
+        renderAll();
         alert(`已保存到简历库：${name}`);
       }
 
-      function isResumeOptimizationFinalized(session) {
-        return Boolean(session?.optimizedResumeVersion?.content);
-      }
-
-      function canConfirmOptimizedResume(session) {
-        return Boolean(
-          session
-          && !isResumeOptimizationFinalized(session)
-          && session.suggestions?.some((item) => item.status === "accepted" || item.status === "edited")
-        );
-      }
-
-      async function handleSuggestionAction(action, suggestionId) {
+      function downloadOptimizedResume() {
         const resumeState = currentResumeOptimization();
-        const suggestion = resumeState.sessionData?.suggestions?.find((item) => item.id === suggestionId);
-        if (!suggestion) return;
-        if (normalizeSuggestionKind(suggestion) === "future_advice" || isSuggestionFinalized(suggestion)) return;
-
-        if (action === "toggle-edit") {
-          const box = document.querySelector(`[data-suggestion-edit-box="${suggestionId}"]`);
-          box?.classList.toggle("hidden");
+        const content = getOptimizedDraftValue(resumeState);
+        if (!content.trim()) {
+          alert("当前还没有可下载的优化版简历。");
           return;
         }
-
-        if (action === "save-edit") {
-          const input = document.querySelector(`[data-suggestion-edit-input="${suggestionId}"]`);
-          await applySuggestionActions([{
-            suggestionId,
-            action: "edit",
-            editedText: input?.value || suggestion.suggestedText,
-          }], false);
-          return;
-        }
-
-        if (action === "regenerate") {
-          const instruction = window.prompt("请输入这条建议的修改方向。", "保留事实不变，语气更贴近目标岗位。");
-          if (instruction === null) return;
-          await applySuggestionActions([{ suggestionId, action: "regenerate", userInstruction: instruction }], false);
-          return;
-        }
-
-        await applySuggestionActions([{ suggestionId, action }], false);
+        const job = resumeSelectedJob();
+        const baseName = [
+          state.currentUser,
+          displayValue(job?.position).replace(/[\\/:*?"<>|]+/g, "-"),
+          "优化版",
+          new Date().toISOString().slice(0, 10),
+        ].filter(Boolean).join("-");
+        const blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `${baseName}.md`;
+        link.click();
+        URL.revokeObjectURL(url);
       }
 
       async function startResumeWorkflow() {
@@ -2850,20 +2567,27 @@
           resumeId: resumeState.selectedResumeId,
         }).toString()}`);
 
-        if (payload.data && payload.data.status !== "completed") {
+        if (payload.data) {
           updateResumeSession(payload.data);
           resumeState.started = true;
           renderAll();
+          if (!payload.data.jobAnalysis || payload.data.stepStatus?.jobAnalysis !== "completed") {
+            await analyzeJobStep();
+          }
+          if (!payload.data.optimizedResumeVersion) {
+            await generateOptimizedResumeStep();
+          }
           return;
         }
 
         resumeState.sessionId = "";
         resumeState.sessionData = null;
+        resumeState.optimizedDraft = "";
+        resumeState.optimizedDraftVersionId = "";
         resumeState.started = true;
         renderAll();
-        await analyzeJobStep({ stream: true });
-        await scoreResumeStep("original");
-        await generateSuggestionsStep();
+        await analyzeJobStep();
+        await generateOptimizedResumeStep();
       }
 
       function renderAll() {
@@ -3146,20 +2870,13 @@
           alert("请先完成所有必填项（带 * 的字段）。");
           return;
         }
-        const payload = await fetchJson("/api/job-materials/text", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            user: state.currentUser,
-            jobId: RESUME_LIBRARY_SCOPE,
-            id: "",
-            name: `${form.name} - 基础简历`,
-            category: "简历版本",
-            content: generateResumeMarkdown(form),
-          }),
+        const saved = upsertResumeLibraryItem({
+          name: `${form.name} - 基础简历`,
+          category: "简历版本",
+          content: generateResumeMarkdown(form),
         });
         await loadResumeLibraryItems();
-        const target = (payload.materials || []).find((item) => item.name === `${form.name} - 基础简历`) || payload.materials?.[0] || null;
+        const target = resumeUiState.resumeItems.find((item) => item.id === saved.id) || saved || null;
         setResumeSelectedResume(target);
         const resumeState = currentResumeOptimization();
         resumeState.sessionId = "";
@@ -3247,19 +2964,6 @@
         }
         const confirmed = window.confirm("确定删除已勾选的岗位及其岗位空间内容吗？");
         if (!confirmed) return;
-        try {
-          await fetchJson("/api/job-materials/purge", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              user: state.currentUser,
-              jobIds: selectedIds,
-            }),
-          });
-        } catch (error) {
-          alert(`清理岗位相关资料失败：${error.message}`);
-          return;
-        }
         state.users[state.currentUser].jobs = currentJobs().filter((job) => !selectedIds.includes(job.id));
         const firstJob = currentJobs()[0];
         state.selectedJobId = firstJob ? firstJob.id : "";
@@ -3327,23 +3031,15 @@
         });
         document.getElementById("confirm-resume-job-select").addEventListener("click", confirmResumeJobSelection);
         document.getElementById("resume-open-job-materials").addEventListener("click", () => {
-          const job = resumeSelectedJob();
-          if (!job) {
-            alert("请先选定岗位，再上传岗位相关资料。");
-            return;
-          }
-          void openMaterialsModal(job.id);
+          showDeferredFeatureNotice("岗位相关资料、文件上传和预览能力在 EdgeOne Pages 最小版中暂未实现，等待后续开发。");
         });
         document.getElementById("resume-open-resume-library").addEventListener("click", () => {
           openResumeEntryModal();
         });
-        document.getElementById("resume-open-personal-materials").addEventListener("click", () => {
-          void openPersonalMaterialsModal();
-        });
         document.getElementById("close-resume-entry-modal").addEventListener("click", closeResumeEntryModal);
         document.getElementById("resume-entry-upload").addEventListener("click", () => {
           closeResumeEntryModal();
-          void openResumeLibraryModal("upload");
+          showDeferredFeatureNotice("简历文件上传能力在 EdgeOne Pages 最小版中暂未实现。当前可先选择已有简历，或填写基础信息生成文本简历。");
         });
         document.getElementById("resume-entry-select-existing").addEventListener("click", () => {
           closeResumeEntryModal();
@@ -3376,26 +3072,24 @@
           resumeState.diffMode = !resumeState.diffMode;
           renderAll();
         });
+        document.getElementById("resume-regenerate").addEventListener("click", () => {
+          void generateOptimizedResumeStep().catch((error) => {
+            currentResumeOptimization().workflowState = "error";
+            alert(`重新生成优化稿失败：${error.message}`);
+            renderAll();
+          });
+        });
         document.getElementById("resume-save-optimized").addEventListener("click", () => {
           void saveOptimizedResumeVersion().catch((error) => {
             alert(`保存优化版简历失败：${error.message}`);
           });
         });
-        document.getElementById("resume-panel-content").addEventListener("click", (event) => {
-          const finalButton = event.target.closest("#resume-confirm-final");
-          if (finalButton) {
-            void generateFinalResumeAndRescore().catch((error) => {
-              currentResumeOptimization().workflowState = "error";
-              alert(`生成新简历失败：${error.message}`);
-              renderAll();
-            });
-            return;
-          }
-          const button = event.target.closest("[data-suggestion-action]");
-          if (!button) return;
-          void handleSuggestionAction(button.dataset.suggestionAction, button.dataset.suggestionId).catch((error) => {
-            alert(`处理建议失败：${error.message}`);
-          });
+        document.getElementById("resume-download-optimized").addEventListener("click", () => {
+          downloadOptimizedResume();
+        });
+        document.getElementById("resume-current-preview").addEventListener("input", (event) => {
+          const resumeState = currentResumeOptimization();
+          resumeState.optimizedDraft = event.target.value;
         });
         document.getElementById("create-text-material").addEventListener("click", () => {
           void proceedAfterUnsavedCheck(async () => {

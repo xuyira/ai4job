@@ -1254,6 +1254,30 @@ async function handleApi(req, res) {
     }
   }
 
+  if (req.method === "POST" && req.url === "/api/generate-optimized-resume") {
+    try {
+      const payload = JSON.parse((await readRequestBody(req)) || "{}");
+      const session = await optimizationService.loadSession(payload.user, payload.sessionId);
+      if (payload.stream) {
+        await handleWorkflowSse(res, async (writeEvent) => {
+          await optimizationService.generateOptimizedResume({
+            session,
+            writeEvent,
+          });
+        });
+        return;
+      }
+      const optimizedResumeVersion = await optimizationService.generateOptimizedResume({
+        session,
+      });
+      sendJson(res, 200, { ok: true, data: { sessionId: session.id, optimizedResumeVersion } });
+      return;
+    } catch (error) {
+      sendJson(res, 400, { ok: false, error: error.message || "生成优化简历失败" });
+      return;
+    }
+  }
+
   if (req.method === "POST" && req.url === "/api/generate-suggestions") {
     try {
       const payload = JSON.parse((await readRequestBody(req)) || "{}");

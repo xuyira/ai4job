@@ -1,6 +1,18 @@
 {
   "materials": [
     {
+      "id": "3258543f-e0c6-4f50-8362-acaa67ba3bf5",
+      "name": "【徐怡然】个人简历.md",
+      "category": "其他",
+      "type": "file",
+      "content": "",
+      "fileName": "【徐怡然】个人简历.md",
+      "filePath": "files/3258543f-e0c6-4f50-8362-acaa67ba3bf5.md",
+      "mimeType": "text/markdown",
+      "createdAt": "2026-04-08T13:25:01.935Z",
+      "updatedAt": "2026-04-08T13:25:01.935Z"
+    },
+    {
       "id": "425fc804-e6a3-48bf-8532-31c071569467",
       "name": "【徐怡然】个人简历.md - 优化版 2026-04-08",
       "category": "简历版本",

@@ -13,6 +13,19 @@ export function buildJobAnalysisPrompt({ job, jobMaterials }) {
   ].join("\n");
 }
 
+export function buildOptimizedResumePrompt({ jobAnalysis, resumeText }) {
+  return [
+    "你是简历优化工作流中的简历改写节点。输出必须是 JSON。",
+    "字段必须包含：optimizedResume, changeSummary。",
+    "optimizedResume 必须是完整 markdown 简历正文，不要省略标题、段落或列表。",
+    "changeSummary 必须是数组，列出 3 到 8 条本次改动说明，每条一句话，聚焦你改了什么以及为什么改。",
+    "只能基于原简历已有事实和岗位分析进行改写，不能虚构经历、数据、项目或成果。",
+    "如果岗位要求在原简历中缺少事实支撑，不要伪造补写；应通过更强的表达、结构调整和已有经历重组来提升匹配度。",
+    `岗位分析：${JSON.stringify(jobAnalysis)}`,
+    `原简历：\n${resumeText || "-"}`,
+  ].join("\n");
+}
+
 export function buildResumeScorePrompt({ jobAnalysis, resumeText, personalMaterials, scoreType }) {
   return [
     "你是简历评分节点。输出必须是 JSON。",
